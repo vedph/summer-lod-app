@@ -1,0 +1,79 @@
+<mat-card>
+  <mat-card-title>Summer LOD</mat-card-title>
+  <mat-card-content>
+    <div id="container">
+      <!-- xml -->
+      <div id="xml">
+        <ngx-monaco-editor
+          class="editor"
+          [formControl]="xml"
+          [options]="editorOptions"
+        ></ngx-monaco-editor>
+      </div>
+
+      <!-- xslt -->
+      <div id="xslt">
+        <ngx-monaco-editor
+          class="editor"
+          [formControl]="xslt"
+          [options]="editorOptions"
+        ></ngx-monaco-editor>
+      </div>
+
+      <!-- result -->
+      <div id="result">
+        <!-- toolbar -->
+        <div>
+          <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+        </div>
+        <div class="toolbar-row">
+          <!-- reset -->
+          <button
+            type="button"
+            mat-icon-button
+            color="warn"
+            (click)="resetCode()"
+            [disabled]="busy"
+            matTooltip="Reset the code"
+          >
+            <mat-icon>restart_alt</mat-icon>
+          </button>
+          <!-- transform -->
+          <button
+            type="button"
+            mat-icon-button
+            color="primary"
+            (click)="transform()"
+            [disabled]="busy || xml.invalid || xslt.invalid"
+            matTooltip="Transform XML with XSLT"
+          >
+            <mat-icon>play_circle</mat-icon>
+          </button>
+          <!-- parse -->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="parseEntities()"
+            [disabled]="busy || xml.invalid"
+            matTooltip="Parse XML entities"
+          >
+            <mat-icon>people</mat-icon>
+          </button>
+
+          <!-- error -->
+          <span class="error">
+            <mat-icon *ngIf="error" color="warn">error</mat-icon>
+            <span *ngIf="error">{{ error }}</span>
+          </span>
+        </div>
+
+        <!-- html -->
+        <div
+          id="rendition"
+          *ngIf="rendition"
+          [innerHTML]="rendition | safeHtml"
+        ></div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

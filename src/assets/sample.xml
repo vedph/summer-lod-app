@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Title</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>Publication information</p>
+      </publicationStmt>
+      <sourceDesc>
+        <!-- persons -->
+        <listPerson>
+          <person xml:id="p_bassi_domenico">
+            <persName>
+              <roleName>padre</roleName>
+              <forename>Domenico</forename>
+              <surname>Bassi</surname>
+            </persName>
+            <idno type="VIAF">88031584</idno>
+            <idno type="wikipedia">https://it.wikipedia.org/wiki/Domenico_Bassi_%28filologo%29</idno>
+          </person>
+          <person xml:id="p_seneca">
+            <persName>
+              <forename type="praenomen">Lucius</forename>
+              <surname type="nomen">Annaeus</surname>
+              <surname type="cognomen">Seneca</surname>
+            </persName>
+            <idno type="dbpedia">http://dbpedia.org/resource/Seneca_the_Younger</idno>
+            <link type="wikipedia" target="https://en.wikipedia.org/wiki/Seneca_the_Younger"/>
+          </person>
+          <person xml:id="p_sersale_gerolamo">
+            <persName>
+              <forename>Gerolamo</forename>
+              <surname>Sersale</surname>
+              <roleName>duca di Cerisano</roleName>
+            </persName>
+          </person>
+          <person xml:id="p_fogliani_sforza_daragona_giovanni">
+            <persName>
+              <forename>Giovanni</forename>
+              <surname>Fogliani</surname>
+              <surname>Sforza</surname>
+              <surname>d'Aragona</surname>
+            </persName>
+            <link type="wikipedia" target="https://it.wikipedia.org/wiki/Giovanni_Fogliani_Sforza_d%27Aragona"/>
+          </person>
+        </listPerson>
+        <!-- places -->
+        <listPlace>
+          <place xml:id="l_piacenza">
+            <placeName>
+              <name>Piacenza</name>,              <district>Emilia Romagna</district>,
+              <country>Italy</country>.
+            </placeName>
+            <idno type="URI">http://dbpedia.org/resource/Piacenza</idno>
+          </place>
+        </listPlace>
+        <!-- organizations -->
+        <listOrg>
+          <org xml:id="o_vatican_library">
+            <orgName>Biblioteca Vaticana</orgName>
+            <idno type="URI">http://dbpedia.org/resource/Vatican_Library</idno>
+            <link type="wikipedia" target="https://en.wikipedia.org/wiki/Holy_See"/>
+          </org>
+        </listOrg>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <!-- structural elements -->
+      <div type="chapter" n="1">
+        <head>
+          <title type="main" n="1">Structural Elements</title>
+        </head>
+        <p>Everybody knows <q>div</q>: a subdivision of text. There are many in this
+             document.</p>
+        <p>Paragraphs are sense units. If we just want a block of text with no specific meaning,
+             we use the <q>ab</q> element.</p>
+        <ab> A block <lb/>
+ of text </ab>
+        <p>We can also use line/page breaks<note n="1" type="footnote">These breaks mark page
+                beginning.</note> to mark their beginning: <lb/>
+ here starts a line, and <pb n="2" />
+ here are the first words of page <num value="2">two</num>.
+    </p>
+    <p>We might also have lists of any sort. The additive colors used in CSS are:</p>
+    <list type="numbered">
+      <item n="1">one</item>
+      <item n="2">two</item>
+      <item n="3">three</item>
+    </list>
+    <p>And then a bulleted list:</p>
+    <list type="bulleted">
+      <item>red</item>
+      <item>green</item>
+      <item>blue</item>
+    </list>
+    <p>This ends our short survey on structural elements.</p>
+  </div>
+  <!-- logical elements -->
+  <div type="chapter" n="2">
+    <head>
+      <title type="main" n="2">Logical Elements</title>
+      <title type="desc">The most common elements roughly classified as logical</title>
+    </head>
+    <p>A paragraph is here. It's a sense unit, not just a text block.</p>
+    <p>When you find a name, you can be lazy and just mark it as such: <name ref="#p_bassi_domenico">padre Bassi</name>. This is not so smart, as we are not
+             able to determine which words represent which part of the name. For instance,
+      <q>padre</q> is a title; and <q>Bassi</q> a surname.</p>
+    <p>A better way may be this: <persName ref="#p_bassi_domenico">
+      <roleName>padre</roleName>
+      <surname>Bassi</surname>
+    </persName>. Now every piece of the name has its own element. You might also notice
+             the <q>ref</q> attribute here: it references a <q>person</q> element in this
+             document, where you will find the full canonical name of that person, and a number of
+             external URIs linking to LOD entities.</p>
+  <p>We can also use other names: the <orgName ref="#o_vatican_library">Vatican
+                Library</orgName> is not in <placeName ref="#l_piacenza">Piacenza</placeName>.
+  </p>
+</div>
+</body>
+</text>
+</TEI>

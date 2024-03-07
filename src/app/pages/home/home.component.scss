@@ -1,0 +1,53 @@
+.toolbar-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.editor {
+  min-height: 600px;
+}
+
+div#container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "xml xslt"
+    "result result";
+  gap: 8px;
+}
+
+div#xml {
+  grid-area: xml;
+}
+
+div#xslt {
+  grid-area: xslt;
+}
+
+div#result {
+  grid-area: result;
+}
+
+div#rendition {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+
+/* lt-md */
+@media only screen and (max-width: 959px) {
+  div#container {
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "xml"
+      "xslt"
+      "result";
+  }
+}
