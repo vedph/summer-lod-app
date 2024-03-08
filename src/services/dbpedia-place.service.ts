@@ -26,7 +26,7 @@ export interface PlaceInfo {
 @Injectable({
   providedIn: 'root',
 })
-export class DbPediaPlaceService {
+export class DbpediaPlaceService {
   constructor(
     private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,

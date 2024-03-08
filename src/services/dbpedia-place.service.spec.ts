@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DbPediaPlaceService } from './dbpedia-place.service';
+import { DbpediaPlaceService } from './dbpedia-place.service';
 
 describe('DbPediaPlaceService', () => {
-  let service: DbPediaPlaceService;
+  let service: DbpediaPlaceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DbPediaPlaceService);
+    service = TestBed.inject(DbpediaPlaceService);
   });
 
   it('should be created', () => {

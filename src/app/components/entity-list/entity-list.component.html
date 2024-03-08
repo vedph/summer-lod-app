@@ -1,1 +1,93 @@
-<p>entity-list works!</p>
+<div>
+  <form class="form-row">
+    <!-- type filter -->
+    <mat-form-field>
+      <mat-label>type</mat-label>
+      <mat-select [formControl]="typeFilter">
+        <mat-option [value]="null">any</mat-option>
+        <mat-option value="person">person</mat-option>
+        <mat-option value="organization">organization</mat-option>
+        <mat-option value="place">place</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- name or ID filter -->
+    <mat-form-field>
+      <input matInput placeholder="name or ID" [formControl]="nameOrIdFilter" />
+      <button
+        *ngIf="nameOrIdFilter.value"
+        type="button"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="nameOrIdFilter.reset()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
+
+  <!-- entities list-->
+  <div>
+    <table *ngIf="filteredEntities.length">
+      <thead>
+        <tr>
+          <th></th>
+          <th>type</th>
+          <th>name(s)</th>
+          <th>link(s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of filteredEntities">
+          <td class="fit-width">
+            <button
+              type="button"
+              mat-icon-button
+              matTooltip="View details"
+              (click)="selectedEntity = e"
+            >
+              <mat-icon>expand_circle_down</mat-icon>
+            </button>
+          </td>
+          <td>{{ e.type }}</td>
+          <td>
+            @if (e.names.length === 1) {
+            {{ e.names[0] }}
+            } @else {
+            <ul>
+              <li *ngFor="let name of e.names">{{ name }}</li>
+            </ul>
+            }
+          </td>
+          <td>
+            @if (e.links?.length === 1) {
+            {{ e.links![0] }}
+            } @else {
+            <ul>
+              <li *ngFor="let link of e.links">
+                <a [href]="link" target="_blank">{{ link | ellipsis }}</a>
+              </li>
+            </ul>
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- entity details -->
+  <div>
+    <mat-expansion-panel
+      [expanded]="selectedEntity && (personInfo || placeInfo)"
+      [disabled]="!selectedEntity || !(personInfo || placeInfo)"
+    >
+      <mat-expansion-panel-header> details </mat-expansion-panel-header>
+      @if (selectedEntity!.type === 'person') {
+      <app-person-info [info]="personInfo"></app-person-info>
+      } @else if (selectedEntity!.type === 'place') {
+      <app-place-info [info]="placeInfo"></app-place-info>
+      }
+    </mat-expansion-panel>
+  </div>
+</div>

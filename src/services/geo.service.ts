@@ -4,7 +4,7 @@ import { Observable, catchError, map } from 'rxjs';
 
 import { ErrorService } from '@myrmidon/ng-tools';
 
-interface Coordinates {
+export interface Coordinates {
   latitude: number;
   longitude: number;
 }

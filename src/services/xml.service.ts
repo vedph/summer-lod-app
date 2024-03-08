@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, retry } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 
 import { EnvService, ErrorService } from '@myrmidon/ng-tools';
+
+import { Coordinates } from './geo.service';
 
 export interface ParsedEntity {
   ids: string[];
@@ -10,6 +12,8 @@ export interface ParsedEntity {
   names: string[];
   links?: string[];
   description?: string;
+  // supplied by entity list
+  coords?: Coordinates;
 }
 
 export interface XmlRendition {
