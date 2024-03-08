@@ -60,6 +60,13 @@
             </placeName>
             <idno type="URI">http://dbpedia.org/resource/Rome</idno>
           </place>
+          <place xml:id="l_venezia">
+            <placeName>
+              <name>Venice</name>,              <district>Veneto</district>,
+              <country>Italy</country>.
+            </placeName>
+            <idno type="URI">http://dbpedia.org/resource/Venice</idno>
+          </place>
         </listPlace>
         <!-- organizations -->
         <listOrg>

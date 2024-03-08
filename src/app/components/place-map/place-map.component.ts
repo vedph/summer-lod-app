@@ -79,7 +79,7 @@ export class PlaceMapComponent implements OnInit {
       ) as LngLat[];
       const bounds = this.getRectBounds(pagePoints);
       if (bounds) {
-        this._map?.fitBounds(bounds);
+        this._map?.fitBounds(bounds, { padding: 50 });
       }
     }
   }
