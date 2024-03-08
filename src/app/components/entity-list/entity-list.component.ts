@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { debounceTime, distinctUntilChanged, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, merge, race, take } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -97,13 +97,25 @@ export class EntityListComponent implements OnInit {
       if (entity.type === 'place') {
         for (const id of entity.ids) {
           if (id.startsWith('Q')) {
-            this._geoService.getCoordsFromWikidata(id).subscribe((coords) => {
-              entity.coords = coords;
-            });
+            race(
+              this._geoService.getCoordsFromWikidata(id),
+              this._geoService.getCoordsFromDBpedia(id)
+            )
+              .pipe(take(1))
+              .subscribe((coords) => {
+                entity.coords = coords;
+                return;
+              });
           } else if (id.startsWith('http://dbpedia.org/resource/')) {
-            this._geoService.getCoordsFromDBpedia(id).subscribe((coords) => {
-              entity.coords = coords;
-            });
+            race(
+              this._geoService.getCoordsFromWikidata(id),
+              this._geoService.getCoordsFromDBpedia(id)
+            )
+              .pipe(take(1))
+              .subscribe((coords) => {
+                entity.coords = coords;
+                return;
+              });
           }
         }
       }

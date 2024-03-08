@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -24,6 +25,7 @@ import { NgToolsModule } from '@myrmidon/ng-tools';
 import { ParsedEntity, XmlService } from '../../../services/xml.service';
 import { AssetService } from '../../../services/asset.service';
 import { GeoService } from '../../../services/geo.service';
+import { EntityListComponent } from '../../components/entity-list/entity-list.component';
 
 @Component({
   selector: 'app-home',
@@ -38,9 +40,11 @@ import { GeoService } from '../../../services/geo.service';
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
+    MatTabsModule,
     MatTooltipModule,
     MonacoEditorModule,
     NgToolsModule,
+    EntityListComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -150,6 +154,10 @@ export class HomeComponent implements OnInit {
   public resetCode(): void {
     this.loadDefault();
     this.rendition = undefined;
+  }
+
+  public pickEntity(entity: ParsedEntity): void {
+    // TODO
   }
 
   public test(): void {

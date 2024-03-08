@@ -69,12 +69,23 @@
           </span>
         </div>
 
-        <!-- html -->
-        <div
-          id="rendition"
-          *ngIf="rendition"
-          [innerHTML]="rendition | safeHtml"
-        ></div>
+        <mat-tab-group>
+          <!-- html -->
+          <mat-tab label="HTML">
+            <div
+              id="rendition"
+              *ngIf="rendition"
+              [innerHTML]="rendition | safeHtml"
+            ></div>
+          </mat-tab>
+          <!-- entities -->
+          <mat-tab label="entities">
+            <app-entity-list
+              [entities]="entities"
+              (entityPick)="pickEntity($event)"
+            />
+          </mat-tab>
+        </mat-tab-group>
       </div>
     </div>
   </mat-card-content>
