@@ -6,13 +6,22 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { debounceTime, distinctUntilChanged, merge, race, take } from 'rxjs';
+import {
+  concat,
+  debounceTime,
+  distinctUntilChanged,
+  firstValueFrom,
+  merge,
+  race,
+  take,
+} from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -44,6 +53,7 @@ import { PlaceInfoComponent } from '../place-info/place-info.component';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatProgressBarModule,
     MatSelectModule,
     MatTabsModule,
     MatTooltipModule,
@@ -63,14 +73,14 @@ export class EntityListComponent implements OnInit {
   }
   public set entities(value: ParsedEntity[]) {
     if (this._entities === value) return;
-    this._entities = value;
-    this.supplyCoordinates(value);
+    this.setEntities(value);
   }
 
   @Output()
   public entityPick: EventEmitter<ParsedEntity> =
     new EventEmitter<ParsedEntity>();
 
+  public busy?: boolean;
   public typeFilter: FormControl<string | null>;
   public nameOrIdFilter: FormControl<string | null>;
   public filteredEntities: ParsedEntity[] = [];
@@ -94,34 +104,52 @@ export class EntityListComponent implements OnInit {
       .subscribe(() => this.filterEntities());
   }
 
-  private supplyCoordinates(entities: ParsedEntity[]): void {
+  private resetFilters(): void {
+    this.typeFilter.reset(null);
+    this.nameOrIdFilter.reset(null);
+  }
+
+  private async setEntities(entities: ParsedEntity[]): Promise<void> {
+    this._entities = entities;
+
+    this.busy = true;
     for (const entity of entities) {
+      // only places have coordinates
       if (entity.type === 'place') {
+        // find the first id having coordinates
         for (const id of entity.ids) {
-          if (id.startsWith('Q')) {
-            race(
-              this._geoService.getCoordsFromWikidata(id),
-              this._geoService.getCoordsFromDBpedia(id)
-            )
-              .pipe(take(1))
-              .subscribe((coords) => {
+          if (id.startsWith('http://dbpedia.org/resource/')) {
+            // DBpedia
+            try {
+              const coords = await firstValueFrom(
+                this._geoService.getCoordsFromDBpedia(id)
+              );
+              if (coords) {
                 entity.coords = coords;
-                return;
-              });
-          } else if (id.startsWith('http://dbpedia.org/resource/')) {
-            race(
-              this._geoService.getCoordsFromWikidata(id),
-              this._geoService.getCoordsFromDBpedia(id)
-            )
-              .pipe(take(1))
-              .subscribe((coords) => {
+                break;
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          } else if (id.startsWith('Q')) {
+            // Wikidata
+            try {
+              const coords = await firstValueFrom(
+                this._geoService.getCoordsFromWikidata(id)
+              );
+              if (coords) {
                 entity.coords = coords;
-                return;
-              });
+                break;
+              }
+            } catch (error) {
+              console.error(error);
+            }
           }
         }
       }
     }
+    this.busy = false;
+    this.resetFilters();
   }
 
   private filterEntities(): void {

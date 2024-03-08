@@ -1,4 +1,7 @@
 <div>
+  <div>
+    <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+  </div>
   <form class="form-row">
     <!-- type filter -->
     <mat-form-field>
@@ -42,12 +45,13 @@
         <tr *ngFor="let e of filteredEntities">
           <td class="fit-width">
             <button
+              color="primary"
               type="button"
               mat-icon-button
               matTooltip="View details"
               (click)="selectEntity(e)"
             >
-              <mat-icon>expand_circle_down</mat-icon>
+              <mat-icon>info</mat-icon>
             </button>
           </td>
           <td>{{ e.type }}</td>
