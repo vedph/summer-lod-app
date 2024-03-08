@@ -163,6 +163,68 @@ export class HomeComponent implements OnInit {
     this.rendition = undefined;
   }
 
+  private saveXmlCode(xml: string, extension = '.xml'): void {
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    // create filename from date and time
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0].replace(':', '-');
+    a.download = `vessdph${date}_${time}${extension}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  public saveXml(): void {
+    if (!this.xml.value) {
+      return;
+    }
+    this.saveXmlCode(this.xml.value);
+  }
+
+  public saveXslt(): void {
+    if (!this.xslt.value) {
+      return;
+    }
+    this.saveXmlCode(this.xslt.value, '.xslt');
+  }
+
+  public loadXml(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xml';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.xml.setValue(e.target?.result as string);
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  }
+
+  public loadXslt(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xslt';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.xslt.setValue(e.target?.result as string);
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  }
+
   public pickEntity(entity: ParsedEntity): void {
     // TODO
   }

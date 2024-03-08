@@ -27,6 +27,49 @@
           <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
         </div>
         <div class="toolbar-row">
+          <span class="toolbar-divider">XML</span>
+          <!-- load XML-->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="loadXml()"
+            [disabled]="busy"
+            matTooltip="Load XML from file"
+          >
+            <mat-icon>upload_file</mat-icon>
+          </button>
+          <!-- save XML -->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="saveXml()"
+            [disabled]="busy || xml.invalid"
+            matTooltip="Save XML to file"
+          >
+            <mat-icon>save</mat-icon>
+          </button>
+          <span class="toolbar-divider">XSLT</span>
+          <!-- load XSLT -->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="loadXslt()"
+            [disabled]="busy"
+            matTooltip="Load XSLT from file"
+          >
+            <mat-icon>upload_file</mat-icon>
+          </button>
+          <!-- save XSLT -->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="saveXslt()"
+            [disabled]="busy || xslt.invalid"
+            matTooltip="Save XSLT to file"
+          >
+            <mat-icon>save</mat-icon>
+          </button>
+
           <!-- reset -->
           <button
             type="button"
