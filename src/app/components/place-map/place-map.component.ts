@@ -14,7 +14,7 @@ import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 
 import { EnvService } from '@myrmidon/ng-tools';
 
-import { GeoMarker } from '../../../services/geo.service';
+import { GeoMarker, GeoPoint } from '../../../services/geo.service';
 import { MapglWrapperModule } from '../../mapgl-wrapper-module';
 import { ParsedEntity } from '../../../services/xml.service';
 
@@ -29,6 +29,7 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
   private _map?: Map;
   private _rendered?: boolean;
   private _entities: any[] = [];
+  private _flyToPoint?: GeoPoint;
 
   public resultSource?: GeoJSON.FeatureCollection<GeoJSON.Point>;
   public rawResultSource?: GeoJSONSourceRaw;
@@ -44,6 +45,17 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
     if (this._entities === value) return;
     this._entities = value;
     this.updateMarkers();
+  }
+
+  @Input()
+  public get flyToPoint(): GeoPoint | undefined | null {
+    return this._flyToPoint;
+  }
+  public set flyToPoint(value: GeoPoint | undefined | null) {
+    this._flyToPoint = value || undefined;
+    if (this._flyToPoint) {
+      this.flyToLocation(new LngLat(value!.long, value!.lat));
+    }
   }
 
   constructor() {
@@ -92,7 +104,7 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
   }
 
   private flyToLocation(location: LngLat) {
-    this._map?.flyTo({ center: location, zoom: 4 });
+    this._map?.flyTo({ center: location, zoom: 6 });
   }
 
   public onMapCreate(map: Map): void {

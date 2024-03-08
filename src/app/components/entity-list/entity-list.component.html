@@ -60,6 +60,14 @@
             >
               <mat-icon>info</mat-icon>
             </button>
+            <button
+              type="button"
+              mat-icon-button
+              matTooltip="Fly to this location"
+              (click)="flyToPoint = e.point"
+            >
+              <mat-icon>location_on</mat-icon>
+            </button>
           </td>
           <td>{{ e.type }}</td>
           <td>
@@ -104,6 +112,9 @@
 
   <!-- map -->
   <div id="map">
-    <app-place-map [entities]="filteredPlaces"></app-place-map>
+    <app-place-map
+      [entities]="filteredPlaces"
+      [flyToPoint]="flyToPoint"
+    ></app-place-map>
   </div>
 </div>

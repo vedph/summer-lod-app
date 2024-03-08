@@ -26,7 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
 import { ParsedEntity } from '../../../services/xml.service';
-import { GeoService } from '../../../services/geo.service';
+import { GeoPoint, GeoService } from '../../../services/geo.service';
 import {
   DbpediaPersonService,
   PersonInfo,
@@ -87,6 +87,7 @@ export class EntityListComponent implements OnInit {
   public selectedEntity?: ParsedEntity;
   public personInfo?: PersonInfo;
   public placeInfo?: PlaceInfo;
+  public flyToPoint?: GeoPoint;
 
   constructor(
     private _geoService: GeoService,
