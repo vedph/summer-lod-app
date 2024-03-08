@@ -1,62 +1,64 @@
-<div class="container">
-  <!-- depiction -->
-  <div class="floated" *ngIf="info?.depiction?.value">
-    <img
-      class="depiction"
-      alt="{{ info?.names?.length ? info!.names![0] : 'person' }}"
-      [src]="info?.depiction?.value"
-    />
+<div>
+  <div class="container">
+    <!-- depiction -->
+    <div class="floated" *ngIf="info?.depiction?.value">
+      <img
+        class="depiction"
+        alt="{{ info?.names?.length ? info!.names![0] : 'person' }}"
+        [src]="info?.depiction?.value"
+      />
+    </div>
+    <!-- name(s) -->
+    <ul *ngIf="info?.names?.length">
+      <li *ngFor="let n of info?.names">{{ n.value }} ({{ n["xml:lang"] }})</li>
+    </ul>
+    <!-- birth -->
+    <ul>
+      <li *ngIf="info?.birthDate?.value">
+        birth:
+        <a
+          *ngIf="info?.birthPlace?.type === 'uri'"
+          target="_blank"
+          [href]="info?.birthPlace?.value"
+          >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
+        </a>
+        <span *ngIf="info?.birthPlace?.type !== 'uri'"
+          >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
+        </span>
+        <span *ngIf="info?.birthDate?.value">{{ info?.birthDate?.value }}</span>
+      </li>
+      <!-- death -->
+      <li *ngIf="info?.deathDate?.value">
+        death:
+        <a
+          *ngIf="info?.deathPlace?.type === 'uri'"
+          target="_blank"
+          [href]="info?.deathPlace?.value"
+          >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
+        </a>
+        <span *ngIf="info?.deathPlace?.type !== 'uri'"
+          >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
+        </span>
+        <span *ngIf="info?.deathDate?.value">{{ info?.deathDate?.value }}</span>
+        <span *ngIf="info?.birthDate && info?.deathDate">
+          (aged {{ getAge(info?.birthDate, info?.deathDate) }})</span
+        >
+      </li>
+    </ul>
+    <!-- abstract -->
+    <div>
+      <mat-form-field>
+        <mat-select placeholder="abstract language" [formControl]="language">
+          <mat-option *ngFor="let l of languages" [value]="l">{{
+            getLangName(l)
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <ng-container>{{ selectedAbstract }}</ng-container>
   </div>
-  <!-- name(s) -->
-  <ul *ngIf="info?.names?.length">
-    <li *ngFor="let n of info?.names">{{ n.value }} ({{ n["xml:lang"] }})</li>
-  </ul>
-  <!-- birth -->
-  <ul>
-    <li *ngIf="info?.birthDate?.value">
-      birth:
-      <a
-        *ngIf="info?.birthPlace?.type === 'uri'"
-        target="_blank"
-        [href]="info?.birthPlace?.value"
-        >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
-      </a>
-      <span *ngIf="info?.birthPlace?.type !== 'uri'"
-        >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
-      </span>
-      <span *ngIf="info?.birthDate?.value">{{ info?.birthDate?.value }}</span>
-    </li>
-    <!-- death -->
-    <li *ngIf="info?.deathDate?.value">
-      death:
-      <a
-        *ngIf="info?.deathPlace?.type === 'uri'"
-        target="_blank"
-        [href]="info?.deathPlace?.value"
-        >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
-      </a>
-      <span *ngIf="info?.deathPlace?.type !== 'uri'"
-        >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
-      </span>
-      <span *ngIf="info?.deathDate?.value">{{ info?.deathDate?.value }}</span>
-      <span *ngIf="info?.birthDate && info?.deathDate">
-        (aged {{ getAge(info?.birthDate, info?.deathDate) }})</span
-      >
-    </li>
-  </ul>
-  <!-- abstract -->
-  <div>
-    <mat-form-field>
-      <mat-select placeholder="abstract language" [formControl]="language">
-        <mat-option *ngFor="let l of languages" [value]="l">{{
-          getLangName(l)
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <!-- wiki link -->
+  <div *ngIf="info?.topic">
+    <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
   </div>
-  <ng-container>{{ selectedAbstract }}</ng-container>
-</div>
-<!-- wiki link -->
-<div *ngIf="info?.topic">
-  <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
 </div>

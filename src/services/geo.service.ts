@@ -4,9 +4,16 @@ import { Observable, catchError, map } from 'rxjs';
 
 import { ErrorService } from '@myrmidon/ng-tools';
 
-export interface Coordinates {
-  latitude: number;
-  longitude: number;
+export interface GeoPoint {
+  lat: number;
+  long: number;
+  alt?: number;
+}
+
+export interface GeoMarker extends GeoPoint {
+  id: string;
+  name?: string;
+  options?: any;
 }
 
 /**
@@ -19,7 +26,7 @@ export interface Coordinates {
 export class GeoService {
   constructor(private http: HttpClient, private _error: ErrorService) {}
 
-  getCoordsFromWikidata(entityId: string): Observable<Coordinates> {
+  getPointFromWikidata(entityId: string): Observable<GeoPoint> {
     const query = `
       SELECT ?lat ?long
       WHERE {
@@ -34,15 +41,15 @@ export class GeoService {
     return this.http.get<any>(url).pipe(
       map((response) => {
         const bindings = response.results.bindings[0];
-        const latitude = parseFloat(bindings.lat.value);
-        const longitude = parseFloat(bindings.long.value);
-        return { latitude, longitude };
+        const lat = parseFloat(bindings.lat.value);
+        const long = parseFloat(bindings.long.value);
+        return { lat, long };
       }),
       catchError(this._error.handleError)
     );
   }
 
-  getCoordsFromDBpedia(resourceId: string): Observable<Coordinates> {
+  getPointFromDBpedia(resourceId: string): Observable<GeoPoint> {
     const query = `
       PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
       PREFIX dbo: <http://dbpedia.org/ontology/>
@@ -59,9 +66,9 @@ export class GeoService {
     return this.http.get<any>(url).pipe(
       map((response) => {
         const bindings = response.results.bindings[0];
-        const latitude = parseFloat(bindings.lat.value);
-        const longitude = parseFloat(bindings.long.value);
-        return { latitude, longitude };
+        const lat = parseFloat(bindings.lat.value);
+        const long = parseFloat(bindings.long.value);
+        return { lat, long };
       }),
       catchError(this._error.handleError)
     );

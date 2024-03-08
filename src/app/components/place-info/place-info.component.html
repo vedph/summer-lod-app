@@ -1,29 +1,33 @@
-<div class="container">
-  <!-- depiction -->
-  <div class="floated" *ngIf="info?.depiction?.value">
-    <img
-      class="depiction"
-      alt="{{ info?.labels?.length ? info!.labels![0].value : 'place' }}"
-      [src]="info?.depiction?.value"
-    />
+<div>
+  <div class="container">
+    <!-- depiction -->
+    <div class="floated" *ngIf="info?.depiction?.value">
+      <img
+        class="depiction"
+        alt="{{ info?.labels?.length ? info!.labels![0].value : 'place' }}"
+        [src]="info?.depiction?.value"
+      />
+    </div>
+    <!-- label(s) -->
+    <ul *ngIf="info?.labels?.length" class="two-cols">
+      <li *ngFor="let l of info?.labels">
+        {{ l.value }} ({{ l["xml:lang"] }})
+      </li>
+    </ul>
+    <!-- abstract -->
+    <div>
+      <mat-form-field>
+        <mat-select placeholder="abstract language" [formControl]="language">
+          <mat-option *ngFor="let l of languages" [value]="l">{{
+            getLangName(l)
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <ng-container>{{ selectedAbstract }}</ng-container>
   </div>
-  <!-- label(s) -->
-  <ul *ngIf="info?.labels?.length" class="two-cols">
-    <li *ngFor="let l of info?.labels">{{ l.value }} ({{ l["xml:lang"] }})</li>
-  </ul>
-  <!-- abstract -->
-  <div>
-    <mat-form-field>
-      <mat-select placeholder="abstract language" [formControl]="language">
-        <mat-option *ngFor="let l of languages" [value]="l">{{
-          getLangName(l)
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <!-- wiki link -->
+  <div *ngIf="info?.topic">
+    <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
   </div>
-  <ng-container>{{ selectedAbstract }}</ng-container>
-</div>
-<!-- wiki link -->
-<div *ngIf="info?.topic">
-  <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
 </div>

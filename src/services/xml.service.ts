@@ -4,7 +4,7 @@ import { Observable, catchError } from 'rxjs';
 
 import { EnvService, ErrorService } from '@myrmidon/ng-tools';
 
-import { Coordinates } from './geo.service';
+import { GeoPoint } from './geo.service';
 
 export interface ParsedEntity {
   ids: string[];
@@ -13,7 +13,7 @@ export interface ParsedEntity {
   links?: string[];
   description?: string;
   // supplied by entity list
-  coords?: Coordinates;
+  point?: GeoPoint;
 }
 
 export interface XmlRendition {

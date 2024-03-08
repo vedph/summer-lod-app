@@ -7,13 +7,10 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {
-  concat,
   debounceTime,
   distinctUntilChanged,
   firstValueFrom,
   merge,
-  race,
-  take,
 } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -29,7 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
 import { ParsedEntity } from '../../../services/xml.service';
-import { GeoService } from '../../../services/geo.service';
+import { GeoPoint, GeoService } from '../../../services/geo.service';
 import {
   DbpediaPersonService,
   PersonInfo,
@@ -40,6 +37,7 @@ import {
 } from '../../../services/dbpedia-place.service';
 import { PersonInfoComponent } from '../person-info/person-info.component';
 import { PlaceInfoComponent } from '../place-info/place-info.component';
+import { PlaceMapComponent } from '../place-map/place-map.component';
 
 @Component({
   selector: 'app-entity-list',
@@ -60,6 +58,7 @@ import { PlaceInfoComponent } from '../place-info/place-info.component';
     NgToolsModule,
     PersonInfoComponent,
     PlaceInfoComponent,
+    PlaceMapComponent,
   ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.scss',
@@ -84,6 +83,7 @@ export class EntityListComponent implements OnInit {
   public typeFilter: FormControl<string | null>;
   public nameOrIdFilter: FormControl<string | null>;
   public filteredEntities: ParsedEntity[] = [];
+  public points: GeoPoint[] = [];
   public selectedEntity?: ParsedEntity;
   public personInfo?: PersonInfo;
   public placeInfo?: PlaceInfo;
@@ -122,10 +122,10 @@ export class EntityListComponent implements OnInit {
             // DBpedia
             try {
               const coords = await firstValueFrom(
-                this._geoService.getCoordsFromDBpedia(id)
+                this._geoService.getPointFromDBpedia(id)
               );
               if (coords) {
-                entity.coords = coords;
+                entity.point = coords;
                 break;
               }
             } catch (error) {
@@ -135,10 +135,10 @@ export class EntityListComponent implements OnInit {
             // Wikidata
             try {
               const coords = await firstValueFrom(
-                this._geoService.getCoordsFromWikidata(id)
+                this._geoService.getPointFromWikidata(id)
               );
               if (coords) {
-                entity.coords = coords;
+                entity.point = coords;
                 break;
               }
             } catch (error) {
@@ -168,6 +168,9 @@ export class EntityListComponent implements OnInit {
       }
       return true;
     });
+    this.points = this.filteredEntities
+      .filter((e) => e.point)
+      .map((e) => e.point!);
   }
 
   public selectEntity(entity: ParsedEntity): void {
