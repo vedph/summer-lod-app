@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -14,7 +14,7 @@ import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 
 import { EnvService } from '@myrmidon/ng-tools';
 
-import { GeoMarker, GeoPoint } from '../../../services/geo.service';
+import { GeoMarker } from '../../../services/geo.service';
 import { MapglWrapperModule } from '../../mapgl-wrapper-module';
 import { ParsedEntity } from '../../../services/xml.service';
 
@@ -25,7 +25,7 @@ import { ParsedEntity } from '../../../services/xml.service';
   templateUrl: './place-map.component.html',
   styleUrl: './place-map.component.scss',
 })
-export class PlaceMapComponent implements OnInit {
+export class PlaceMapComponent implements OnInit, AfterViewInit {
   private _map?: Map;
   private _rendered?: boolean;
   private _entities: any[] = [];
@@ -46,7 +46,7 @@ export class PlaceMapComponent implements OnInit {
     this.updateMarkers();
   }
 
-  constructor(private _env: EnvService) {
+  constructor() {
     // https://stackoverflow.com/questions/62343360/add-text-to-mapbox-marker
     this.labelLayout = {
       'text-field': ['get', 'title'],
@@ -57,8 +57,15 @@ export class PlaceMapComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.updateMarkers();
+  }
+
+  public ngAfterViewInit(): void {
+    setTimeout(() => {
+      console.log('initial resize to fit');
+      this._map?.resize();
+    });
   }
 
   private updateMarkers(): void {
@@ -105,6 +112,7 @@ export class PlaceMapComponent implements OnInit {
     // resize to fit container
     // https://github.com/Wykks/ngx-mapbox-gl/issues/344
     if (!this._rendered) {
+      console.log('resize to fit');
       event.target.resize();
       this._rendered = true;
     }
