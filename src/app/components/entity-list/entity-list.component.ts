@@ -83,7 +83,7 @@ export class EntityListComponent implements OnInit {
   public typeFilter: FormControl<string | null>;
   public nameOrIdFilter: FormControl<string | null>;
   public filteredEntities: ParsedEntity[] = [];
-  public points: GeoPoint[] = [];
+  public filteredPlaces: ParsedEntity[] = [];
   public selectedEntity?: ParsedEntity;
   public personInfo?: PersonInfo;
   public placeInfo?: PlaceInfo;
@@ -169,9 +169,7 @@ export class EntityListComponent implements OnInit {
       }
       return true;
     });
-    this.points = this.filteredEntities
-      .filter((e) => e.point)
-      .map((e) => e.point!);
+    this.filteredPlaces = this.filteredEntities.filter(e => e.point);
   }
 
   public selectEntity(entity: ParsedEntity): void {

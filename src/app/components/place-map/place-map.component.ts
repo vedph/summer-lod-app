@@ -16,6 +16,7 @@ import { EnvService } from '@myrmidon/ng-tools';
 
 import { GeoMarker, GeoPoint } from '../../../services/geo.service';
 import { MapglWrapperModule } from '../../mapgl-wrapper-module';
+import { ParsedEntity } from '../../../services/xml.service';
 
 @Component({
   selector: 'app-place-map',
@@ -27,7 +28,7 @@ import { MapglWrapperModule } from '../../mapgl-wrapper-module';
 export class PlaceMapComponent implements OnInit {
   private _map?: Map;
   private _rendered?: boolean;
-  private _points: any[] = [];
+  private _entities: any[] = [];
 
   public resultSource?: GeoJSON.FeatureCollection<GeoJSON.Point>;
   public rawResultSource?: GeoJSONSourceRaw;
@@ -36,12 +37,12 @@ export class PlaceMapComponent implements OnInit {
   public markers: GeoMarker[] = [];
 
   @Input()
-  public get points(): GeoPoint[] {
-    return this._points;
+  public get entities(): ParsedEntity[] {
+    return this._entities;
   }
-  public set points(value: GeoPoint[]) {
-    if (this._points === value) return;
-    this._points = value;
+  public set entities(value: ParsedEntity[]) {
+    if (this._entities === value) return;
+    this._entities = value;
     this.updateMarkers();
   }
 
@@ -61,19 +62,30 @@ export class PlaceMapComponent implements OnInit {
   }
 
   private updateMarkers(): void {
-    this.markers = this._points.map((p) => {
+    this.markers = this._entities.map((e: ParsedEntity) => {
       return {
-        id: p.uri,
-        lat: p.point?.lat || 0,
-        long: p.point?.long || 0,
-        name: p.label,
+        id: e.ids[0],
+        lat: e.point?.lat || 0,
+        long: e.point?.long || 0,
+        name: e.names[0],
       };
     });
     this.setFeaturesFromMarkers();
+
+    // zoom to include all the markers
+    if (this.markers?.length) {
+      const pagePoints: LngLat[] = this.markers!.filter((r) => r.lat).map(
+        (r) => new LngLat(r.long!, r.lat!)
+      ) as LngLat[];
+      const bounds = this.getRectBounds(pagePoints);
+      if (bounds) {
+        this._map?.fitBounds(bounds);
+      }
+    }
   }
 
   private flyToLocation(location: LngLat) {
-    this._map?.flyTo({ center: location, zoom: 14 });
+    this._map?.flyTo({ center: location, zoom: 4 });
   }
 
   public onMapCreate(map: Map): void {

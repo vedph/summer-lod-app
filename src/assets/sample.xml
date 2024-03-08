@@ -53,6 +53,13 @@
             </placeName>
             <idno type="URI">http://dbpedia.org/resource/Piacenza</idno>
           </place>
+          <place xml:id="l_roma">
+            <placeName>
+              <name>Rome</name>,              <district>Lazio</district>,
+              <country>Italy</country>.
+            </placeName>
+            <idno type="URI">http://dbpedia.org/resource/Rome</idno>
+          </place>
         </listPlace>
         <!-- organizations -->
         <listOrg>
