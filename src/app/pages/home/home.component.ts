@@ -23,6 +23,7 @@ import { NgToolsModule } from '@myrmidon/ng-tools';
 
 import { Entity, XmlService } from '../../../services/xml.service';
 import { AssetService } from '../../../services/asset.service';
+import { LodService } from '../../../services/lod.service';
 
 @Component({
   selector: 'app-home',
@@ -57,6 +58,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private _xmlService: XmlService,
     private _assetService: AssetService,
+    private _lodService: LodService,
     formBuilder: FormBuilder
   ) {
     this.xml = formBuilder.control<string>('', {
@@ -148,5 +150,18 @@ export class HomeComponent implements OnInit {
   public resetCode(): void {
     this.loadDefault();
     this.rendition = undefined;
+  }
+
+  public test(): void {
+    this._lodService
+      .getCoordsFromDBpedia('http://dbpedia.org/resource/Rome')
+      .subscribe({
+        next: (coords) => {
+          console.log(coords);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
   }
 }
