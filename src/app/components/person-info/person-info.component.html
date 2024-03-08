@@ -46,7 +46,7 @@
   </ul>
   <!-- abstract -->
   <div>
-    <mat-form-field class="short-field">
+    <mat-form-field>
       <mat-select placeholder="abstract language" [formControl]="language">
         <mat-option *ngFor="let l of languages" [value]="l">{{
           getLangName(l)

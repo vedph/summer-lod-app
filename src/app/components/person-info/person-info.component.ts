@@ -3,7 +3,12 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 
@@ -27,15 +32,26 @@ import { LodService, RdfTerm } from '../../../services/lod.service';
 })
 export class PersonInfoComponent implements OnInit, OnDestroy {
   private _subs?: Subscription[];
-  private _langMap: Map<string, string> | undefined;
+  private _langMap?: Map<string, string>;
+  private _info: PersonInfo | null = null;
 
-  @Input() info?: PersonInfo;
+  @Input()
+  public get info(): PersonInfo | null {
+    return this._info;
+  }
+  public set info(value: PersonInfo | null | undefined) {
+    if (this._info === value) {
+      return;
+    }
+    this._info = value || null;
+    this.updateLanguages(value?.abstracts);
+  }
 
-  public languages: string[] | undefined;
+  public languages?: string[];
   public language: FormControl<string | null>;
-  public selectedAbstract: string | undefined;
+  public selectedAbstract?: string;
 
-  public busy: boolean | undefined;
+  public busy?: boolean;
 
   constructor(
     private _lodService: LodService,
@@ -63,6 +79,23 @@ export class PersonInfoComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this._subs?.forEach((s) => s.unsubscribe());
+  }
+
+  private updateLanguages(abstracts: RdfTerm[] | undefined): void {
+    if (abstracts) {
+      this.languages = this._lodService.getLanguages(abstracts);
+      // select the browser's language if available, else english if available
+      const lang = navigator.language.split('-')[0];
+      if (this.languages.includes(lang)) {
+        this.language.setValue(lang);
+      } else if (this.languages.includes('en')) {
+        this.language.setValue('en');
+      } else {
+        this.language.setValue(null);
+      }
+    } else {
+      this.languages = [];
+    }
   }
 
   public getLangName(code: string): string {

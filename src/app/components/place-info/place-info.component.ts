@@ -14,7 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PlaceInfo } from '../../../services/dbpedia-place.service';
 import { AssetService } from '../../../services/asset.service';
-import { LodService } from '../../../services/lod.service';
+import { LodService, RdfTerm } from '../../../services/lod.service';
 
 @Component({
   selector: 'app-place-info',
@@ -31,14 +31,26 @@ import { LodService } from '../../../services/lod.service';
   styleUrl: './place-info.component.scss',
 })
 export class PlaceInfoComponent {
+  private _info: PlaceInfo | null = null;
   private _subs?: Subscription[];
-  private _langMap: Map<string, string> | undefined;
+  private _langMap?: Map<string, string>;
 
-  @Input() info?: PlaceInfo;
+  @Input()
+  public get info(): PlaceInfo | null {
+    return this._info;
+  }
 
-  public languages: string[] | undefined;
+  public set info(value: PlaceInfo | null | undefined) {
+    if (this._info === value) {
+      return;
+    }
+    this._info = value || null;
+    this.updateLanguages(value?.abstracts);
+  }
+
+  public languages?: string[];
   public language: FormControl<string | null>;
-  public selectedAbstract: string | undefined;
+  public selectedAbstract?: string;
 
   public busy: boolean | undefined;
 
@@ -68,6 +80,23 @@ export class PlaceInfoComponent {
 
   public ngOnDestroy(): void {
     this._subs?.forEach((s) => s.unsubscribe());
+  }
+
+  private updateLanguages(abstracts: RdfTerm[] | undefined): void {
+    if (abstracts) {
+      this.languages = this._lodService.getLanguages(abstracts);
+      // select the browser's language if available, else english if available
+      const lang = navigator.language.split('-')[0];
+      if (this.languages.includes(lang)) {
+        this.language.setValue(lang);
+      } else if (this.languages.includes('en')) {
+        this.language.setValue('en');
+      } else {
+        this.language.setValue(null);
+      }
+    } else {
+      this.languages = [];
+    }
   }
 
   public getLangName(code: string): string {

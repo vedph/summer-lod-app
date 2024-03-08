@@ -166,17 +166,4 @@ export class HomeComponent implements OnInit {
   public pickEntity(entity: ParsedEntity): void {
     // TODO
   }
-
-  public test(): void {
-    this._lodService
-      .getCoordsFromDBpedia('http://dbpedia.org/resource/Rome')
-      .subscribe({
-        next: (coords) => {
-          console.log(coords);
-        },
-        error: (error) => {
-          console.error(error);
-        },
-      });
-  }
 }
