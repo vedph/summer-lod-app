@@ -241,6 +241,31 @@ export class HomeComponent implements OnInit {
     input.click();
   }
 
+  public prettifyXslt(): void {
+    if (this.busy) {
+      return;
+    }
+    this.error = undefined;
+    this.busy = true;
+
+    this._xmlService.prettifyXml(this.xslt.value).subscribe({
+      next: (result) => {
+        if (result.error) {
+          this.error = result.error;
+          return;
+        }
+        this.xslt.setValue(result.xml!);
+      },
+      error: (error) => {
+        this.error = error.message;
+        console.error(JSON.stringify(error));
+      },
+      complete: () => {
+        this.busy = false;
+      },
+    });
+  }
+
   public pickEntity(entity: ParsedEntity): void {
     // TODO
   }

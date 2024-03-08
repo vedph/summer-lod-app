@@ -49,6 +49,7 @@
           >
             <mat-icon>save</mat-icon>
           </button>
+          <!-- prettify XML -->
           <button
             type="button"
             mat-icon-button
@@ -78,6 +79,16 @@
             matTooltip="Save XSLT to file"
           >
             <mat-icon>save</mat-icon>
+          </button>
+          <!-- prettify XSLT -->
+          <button
+            type="button"
+            mat-icon-button
+            (click)="prettifyXslt()"
+            [disabled]="busy || xslt.invalid"
+            matTooltip="Prettify XSLT"
+          >
+            <mat-icon>format_align_right</mat-icon>
           </button>
 
           <!-- reset -->

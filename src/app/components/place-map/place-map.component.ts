@@ -111,6 +111,17 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
     this._map = map;
     // navigation
     this._map.addControl(new NavigationControl());
+    // add click event listener
+    this.setupMarkerClickEvent();
+  }
+
+  private setupMarkerClickEvent(): void {
+    // Assuming 'result-pin-layer' is the id of the layer where your markers are added
+    this._map?.on('click', 'result-pin-layer', (e) => {
+      // e.features[0] contains the clicked marker's properties
+      const marker = (e as any).features[0];
+      console.log(marker);
+    });
   }
 
   public onMapClick(event: MapMouseEvent): void {
