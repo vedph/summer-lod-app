@@ -48,6 +48,15 @@
           >
             <mat-icon>save</mat-icon>
           </button>
+          <button
+            type="button"
+            mat-icon-button
+            (click)="prettifyXml()"
+            [disabled]="busy || xml.invalid"
+            matTooltip="Prettify XML"
+          >
+            <mat-icon>format_align_right</mat-icon>
+          </button>
           <span class="toolbar-divider">XSLT</span>
           <!-- load XSLT -->
           <button

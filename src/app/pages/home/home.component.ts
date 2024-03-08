@@ -208,6 +208,31 @@ export class HomeComponent implements OnInit {
     input.click();
   }
 
+  public prettifyXml(): void {
+    if (this.busy) {
+      return;
+    }
+    this.error = undefined;
+    this.busy = true;
+
+    this._xmlService.prettifyXml(this.xml.value).subscribe({
+      next: (result) => {
+        if (result.error) {
+          this.error = result.error;
+          return;
+        }
+        this.xml.setValue(result.xml!);
+      },
+      error: (error) => {
+        this.error = error.message;
+        console.error(JSON.stringify(error));
+      },
+      complete: () => {
+        this.busy = false;
+      },
+    });
+  }
+
   public loadXslt(): void {
     const input = document.createElement('input');
     input.type = 'file';

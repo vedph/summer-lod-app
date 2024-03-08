@@ -16,6 +16,11 @@ export interface ParsedEntity {
   point?: GeoPoint;
 }
 
+export interface XmlResult {
+  xml?: string;
+  error?: string;
+}
+
 export interface XmlRendition {
   result?: string;
   error?: string;
@@ -51,6 +56,14 @@ export class XmlService {
   public parseTeiEntities(xml: string): Observable<ParsedEntityList> {
     return this._http
       .post<ParsedEntityList>(`${this._env.get('apiUrl')}xml/entities`, {
+        xml: xml,
+      })
+      .pipe(catchError(this._error.handleError));
+  }
+
+  public prettifyXml(xml: string): Observable<XmlResult> {
+    return this._http
+      .post<XmlResult>(`${this._env.get('apiUrl')}xml/prettify`, {
         xml: xml,
       })
       .pipe(catchError(this._error.handleError));
