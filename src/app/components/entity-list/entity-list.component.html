@@ -83,9 +83,9 @@
       [disabled]="!selectedEntity || !(personInfo || placeInfo)"
     >
       <mat-expansion-panel-header> details </mat-expansion-panel-header>
-      @if (selectedEntity!.type === 'person') {
+      @if (selectedEntity?.type === 'person') {
       <app-person-info [info]="personInfo"></app-person-info>
-      } @else if (selectedEntity!.type === 'place') {
+      } @else if (selectedEntity?.type === 'place') {
       <app-place-info [info]="placeInfo"></app-place-info>
       }
     </mat-expansion-panel>

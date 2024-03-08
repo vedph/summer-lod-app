@@ -10,11 +10,12 @@ import { debounceTime, distinctUntilChanged, merge, race, take } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
@@ -42,6 +43,7 @@ import { PlaceInfoComponent } from '../place-info/place-info.component';
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatSelectModule,
     MatTabsModule,
     MatTooltipModule,
