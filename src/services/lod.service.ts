@@ -1,65 +1,125 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map } from 'rxjs';
 
-import { ErrorService } from '@myrmidon/ng-tools';
+// https://www.w3.org/TR/2013/REC-sparql11-results-json-20130321/#select-results-form
 
-interface Coordinates {
-  latitude: number;
-  longitude: number;
+export interface SparqlResultHead {
+  vars: string[];
+  link?: string[];
+}
+
+export interface RdfTerm {
+  type: string;
+  value: string;
+  'xml:lang'?: string;
+  datatype?: string;
+}
+
+export interface SparqlResultBinding {
+  [key: string]: RdfTerm;
+}
+
+export interface SparqlResult {
+  head: SparqlResultHead;
+  results: {
+    bindings: SparqlResultBinding[];
+  };
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class LodService {
-  constructor(private http: HttpClient, private _error: ErrorService) {}
+  constructor() {}
 
-  getCoordsFromWikidata(entityId: string): Observable<Coordinates> {
-    const query = `
-      SELECT ?lat ?long
-      WHERE {
-        wd:${entityId} wdt:P625 ?coord .
-        BIND(xsd:decimal(strBefore(str(?coord), " ")) AS ?lat)
-        BIND(xsd:decimal(strAfter(str(?coord), " ")) AS ?long)
+  /**
+   * Add the specified term to the set, if its language is not already
+   * present.
+   *
+   * @param binding The source binding.
+   * @param name The property name in the binding.
+   * @param set The target set of RdfTerm's.
+   * @returns The set.
+   */
+  public addTerm(
+    binding: SparqlResultBinding,
+    name: string,
+    set?: RdfTerm[]
+  ): RdfTerm[] {
+    if (!set) {
+      set = [];
+    }
+    if (binding[name]) {
+      if (!set.find((t) => t['xml:lang'] === binding[name]['xml:lang'])) {
+        set.push(binding[name]);
+        return set;
       }
-    `;
-    const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
-      query
-    )}&format=json`;
-    return this.http.get<any>(url).pipe(
-      map((response) => {
-        const bindings = response.results.bindings[0];
-        const latitude = parseFloat(bindings.lat.value);
-        const longitude = parseFloat(bindings.long.value);
-        return { latitude, longitude };
-      }),
-      catchError(this._error.handleError)
-    );
+    }
+    return set;
   }
 
-  getCoordsFromDBpedia(resourceId: string): Observable<Coordinates> {
-    const query = `
-      PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-      PREFIX dbo: <http://dbpedia.org/ontology/>
-
-      SELECT ?lat ?long
-      WHERE {
-        <${resourceId}> geo:lat ?lat ;
-                        geo:long ?long .
+  /**
+   * Replace the specified term content with that coming from the
+   * specified binding, if this has the preferred language.
+   *
+   * @param binding The source binding.
+   * @param name The property name in the binding.
+   * @param preferredLang The preferred language ID (e.g. 'en') or null
+   * to match either the default language (en) or no language at all.
+   * @param term The target term or null.
+   * @returns The target term..
+   */
+  public replaceTerm(
+    binding: SparqlResultBinding,
+    name: string,
+    preferredLang: string | null,
+    term: RdfTerm | null
+  ): RdfTerm {
+    if (!term) {
+      term = {
+        type: binding[name]?.type || '',
+        value: binding[name]?.value || '',
+      };
+    }
+    if (binding[name]) {
+      if (
+        term['xml:lang'] === preferredLang ||
+        (!term['xml:lang'] && !preferredLang)
+      ) {
+        return term;
       }
-    `;
-    const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(
-      query
-    )}&format=json`;
-    return this.http.get<any>(url).pipe(
-      map((response) => {
-        const bindings = response.results.bindings[0];
-        const latitude = parseFloat(bindings.lat.value);
-        const longitude = parseFloat(bindings.long.value);
-        return { latitude, longitude };
-      }),
-      catchError(this._error.handleError)
-    );
+      // update term
+      term.type = binding[name]?.type;
+      term.value = binding[name]?.value;
+      term['xml:lang'] = binding['xml:lang']?.value;
+      term.datatype = binding[name]?.datatype;
+    }
+    return term;
+  }
+
+  public getIdFromUri(uri: string): string {
+    const i = uri.lastIndexOf('/');
+    return i > -1 ? uri.substr(i + 1) : uri;
+  }
+
+  public getLanguages(terms?: RdfTerm[]): string[] {
+    if (!terms) {
+      return [];
+    }
+    return terms.map((t) => t['xml:lang'] || 'en');
+  }
+
+  public convertDMSToDD(
+    d: number,
+    m: number,
+    s: number,
+    direction: string
+  ): number {
+    let dd = d + m / 60 + s / (60 * 60);
+
+    if (direction === 'S' || direction === 'W') {
+      dd = dd * -1;
+    }
+    // don't do anything for N or E
+    return dd;
   }
 }

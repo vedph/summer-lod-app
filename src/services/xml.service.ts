@@ -4,7 +4,7 @@ import { Observable, catchError, retry } from 'rxjs';
 
 import { EnvService, ErrorService } from '@myrmidon/ng-tools';
 
-export interface Entity {
+export interface ParsedEntity {
   ids: string[];
   type: string;
   names: string[];
@@ -17,8 +17,8 @@ export interface XmlRendition {
   error?: string;
 }
 
-export interface EntityList {
-  entities: Entity[];
+export interface ParsedEntityList {
+  entities: ParsedEntity[];
   error?: string;
 }
 
@@ -41,9 +41,9 @@ export class XmlService {
       .pipe(catchError(this._error.handleError));
   }
 
-  public parseTeiEntities(xml: string): Observable<EntityList> {
+  public parseTeiEntities(xml: string): Observable<ParsedEntityList> {
     return this._http
-      .post<EntityList>(`${this._env.get('apiUrl')}xml/entities`, {
+      .post<ParsedEntityList>(`${this._env.get('apiUrl')}xml/entities`, {
         xml: xml,
       })
       .pipe(catchError(this._error.handleError));

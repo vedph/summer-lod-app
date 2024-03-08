@@ -21,9 +21,9 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
-import { Entity, XmlService } from '../../../services/xml.service';
+import { ParsedEntity, XmlService } from '../../../services/xml.service';
 import { AssetService } from '../../../services/asset.service';
-import { LodService } from '../../../services/lod.service';
+import { GeoService } from '../../../services/geo.service';
 
 @Component({
   selector: 'app-home',
@@ -48,7 +48,7 @@ import { LodService } from '../../../services/lod.service';
 export class HomeComponent implements OnInit {
   public editorOptions = { theme: 'vs-dark', language: 'xml' };
   public rendition?: string;
-  public entities: Entity[] = [];
+  public entities: ParsedEntity[] = [];
 
   public xml: FormControl<string>;
   public xslt: FormControl<string>;
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private _xmlService: XmlService,
     private _assetService: AssetService,
-    private _lodService: LodService,
+    private _lodService: GeoService,
     formBuilder: FormBuilder
   ) {
     this.xml = formBuilder.control<string>('', {

@@ -7,6 +7,8 @@ import { EnvServiceProvider } from '@myrmidon/ng-tools';
 
 import { routes } from './app.routes';
 
+export const CACHE_ID = 'VEDPHSS2024';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
