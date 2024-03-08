@@ -26,7 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
 import { ParsedEntity } from '../../../services/xml.service';
-import { GeoPoint, GeoService } from '../../../services/geo.service';
+import { GeoService } from '../../../services/geo.service';
 import {
   DbpediaPersonService,
   PersonInfo,
@@ -113,41 +113,43 @@ export class EntityListComponent implements OnInit {
     this._entities = entities;
 
     this.busy = true;
-    for (const entity of entities) {
-      // only places have coordinates
-      if (entity.type === 'place') {
-        // find the first id having coordinates
-        for (const id of entity.ids) {
-          if (id.startsWith('http://dbpedia.org/resource/')) {
-            // DBpedia
-            try {
-              const point = await firstValueFrom(
-                this._geoService.getPointFromDBpedia(id)
-              );
-              if (point) {
-                entity.point = point;
-                break;
+    setTimeout(async () => {
+      for (const entity of entities) {
+        // only places have coordinates
+        if (entity.type === 'place') {
+          // find the first id having coordinates
+          for (const id of entity.ids) {
+            if (id.startsWith('http://dbpedia.org/resource/')) {
+              // DBpedia
+              try {
+                const point = await firstValueFrom(
+                  this._geoService.getPointFromDBpedia(id)
+                );
+                if (point) {
+                  entity.point = point;
+                  break;
+                }
+              } catch (error) {
+                console.error(error);
               }
-            } catch (error) {
-              console.error(error);
-            }
-          } else if (id.startsWith('Q')) {
-            // Wikidata
-            try {
-              const point = await firstValueFrom(
-                this._geoService.getPointFromWikidata(id)
-              );
-              if (point) {
-                entity.point = point;
-                break;
+            } else if (id.startsWith('Q')) {
+              // Wikidata
+              try {
+                const point = await firstValueFrom(
+                  this._geoService.getPointFromWikidata(id)
+                );
+                if (point) {
+                  entity.point = point;
+                  break;
+                }
+              } catch (error) {
+                console.error(error);
               }
-            } catch (error) {
-              console.error(error);
             }
           }
         }
       }
-    }
+    });
     this.busy = false;
     this.resetFilters();
     this.filterEntities();
@@ -169,7 +171,7 @@ export class EntityListComponent implements OnInit {
       }
       return true;
     });
-    this.filteredPlaces = this.filteredEntities.filter(e => e.point);
+    this.filteredPlaces = this.filteredEntities.filter((e) => e.point);
   }
 
   public selectEntity(entity: ParsedEntity): void {

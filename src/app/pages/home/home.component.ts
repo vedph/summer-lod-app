@@ -15,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -40,7 +39,6 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     MatIconModule,
     MatInputModule,
     MatProgressBarModule,
-    MatTabsModule,
     MatTooltipModule,
     MonacoEditorModule,
     NgToolsModule,
@@ -58,7 +56,6 @@ export class HomeComponent implements OnInit {
   public xslt: FormControl<string>;
   public error?: string;
   public busy?: boolean;
-  public tabIndex: number = 0;
 
   constructor(
     private _xmlService: XmlService,
@@ -116,9 +113,6 @@ export class HomeComponent implements OnInit {
           return;
         }
         this.rendition = rendition.result;
-        setTimeout(() => {
-          this.tabIndex = 0;
-        });
       },
       error: (error) => {
         this.error = error.message;
@@ -144,9 +138,6 @@ export class HomeComponent implements OnInit {
           return;
         }
         this.entities = result.entities;
-        setTimeout(() => {
-          this.tabIndex = 1;
-        });
       },
       error: (error) => {
         this.error = error.message;

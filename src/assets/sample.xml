@@ -46,12 +46,12 @@
         </listPerson>
         <!-- places -->
         <listPlace>
-          <place xml:id="l_piacenza">
+          <place xml:id="l_bologna">
             <placeName>
-              <name>Piacenza</name>,              <district>Emilia Romagna</district>,
+              <name>Bologna</name>,              <district>Emilia Romagna</district>,
               <country>Italy</country>.
             </placeName>
-            <idno type="URI">http://dbpedia.org/resource/Piacenza</idno>
+            <idno type="URI">http://dbpedia.org/resource/Bologna</idno>
           </place>
           <place xml:id="l_roma">
             <placeName>

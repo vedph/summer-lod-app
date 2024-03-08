@@ -71,7 +71,7 @@ export class PersonInfoComponent implements OnInit, OnDestroy {
           const i = this.languages.findIndex((l) => {
             return this.language.value === l;
           });
-          this.selectedAbstract = this.info.abstracts[i].value;
+          this.selectedAbstract = this.info.abstracts[i]?.value;
         }
       }),
     ];

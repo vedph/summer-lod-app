@@ -22,10 +22,11 @@
 
       <!-- result -->
       <div id="result">
-        <!-- toolbar -->
+        <!-- progress -->
         <div>
           <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
         </div>
+        <!-- toolbar -->
         <div class="toolbar-row">
           <span class="toolbar-divider">XML</span>
           <!-- load XML-->
@@ -118,24 +119,21 @@
             <span *ngIf="error">{{ error }}</span>
           </span>
         </div>
-
-        <mat-tab-group [(tabIndex)]="tabIndex">
+        <div>
           <!-- html -->
-          <mat-tab label="HTML">
-            <div
-              id="rendition"
-              *ngIf="rendition"
-              [innerHTML]="rendition | safeHtml"
-            ></div>
-          </mat-tab>
+          <div
+            id="rendition"
+            *ngIf="rendition"
+            [innerHTML]="rendition | safeHtml"
+          ></div>
           <!-- entities -->
-          <mat-tab label="entities">
+          <div>
             <app-entity-list
               [entities]="entities"
               (entityPick)="pickEntity($event)"
             />
-          </mat-tab>
-        </mat-tab-group>
+          </div>
+        </div>
       </div>
     </div>
   </mat-card-content>
