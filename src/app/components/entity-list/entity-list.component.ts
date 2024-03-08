@@ -121,11 +121,11 @@ export class EntityListComponent implements OnInit {
           if (id.startsWith('http://dbpedia.org/resource/')) {
             // DBpedia
             try {
-              const coords = await firstValueFrom(
+              const point = await firstValueFrom(
                 this._geoService.getPointFromDBpedia(id)
               );
-              if (coords) {
-                entity.point = coords;
+              if (point) {
+                entity.point = point;
                 break;
               }
             } catch (error) {
@@ -134,11 +134,11 @@ export class EntityListComponent implements OnInit {
           } else if (id.startsWith('Q')) {
             // Wikidata
             try {
-              const coords = await firstValueFrom(
+              const point = await firstValueFrom(
                 this._geoService.getPointFromWikidata(id)
               );
-              if (coords) {
-                entity.point = coords;
+              if (point) {
+                entity.point = point;
                 break;
               }
             } catch (error) {
@@ -150,6 +150,7 @@ export class EntityListComponent implements OnInit {
     }
     this.busy = false;
     this.resetFilters();
+    this.filterEntities();
   }
 
   private filterEntities(): void {
