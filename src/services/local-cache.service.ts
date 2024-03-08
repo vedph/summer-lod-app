@@ -9,6 +9,9 @@ interface CacheItem<T> {
 const MAX_CACHED_ITEMS = 10;
 const MAX_ITEM_SIZE = 1024;
 
+/**
+ * Service to cache data locally.
+ */
 @Injectable({
   providedIn: 'root',
 })

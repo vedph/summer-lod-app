@@ -22,6 +22,9 @@ export interface PersonInfo {
   topic?: RdfTerm;
 }
 
+/**
+ * Service to get data from DBPedia about people.
+ */
 @Injectable({
   providedIn: 'root',
 })

@@ -20,6 +20,9 @@ export interface PlaceInfo {
   long?: RdfTerm;
 }
 
+/**
+ * Service to get data from DBPedia about places.
+ */
 @Injectable({
   providedIn: 'root',
 })

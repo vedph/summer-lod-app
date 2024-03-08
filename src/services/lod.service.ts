@@ -25,6 +25,9 @@ export interface SparqlResult {
   };
 }
 
+/**
+ * Service to handle common operations on LOD query results.
+ */
 @Injectable({
   providedIn: 'root',
 })

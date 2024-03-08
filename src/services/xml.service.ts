@@ -22,6 +22,9 @@ export interface ParsedEntityList {
   error?: string;
 }
 
+/**
+ * Service to handle XML transform and parsing via backend.
+ */
 @Injectable({
   providedIn: 'root',
 })

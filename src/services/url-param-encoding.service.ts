@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpUrlEncodingCodec } from '@angular/common/http';
 
+/**
+ * Service to encode URL parameters.
+ */
 @Injectable({
   providedIn: 'root',
 })

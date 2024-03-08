@@ -9,6 +9,10 @@ interface Coordinates {
   longitude: number;
 }
 
+/**
+ * Service to get geographic coordinates from Wikidata and DBpedia
+ * given the corresponding place ID.
+ */
 @Injectable({
   providedIn: 'root',
 })

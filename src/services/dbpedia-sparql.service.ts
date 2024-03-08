@@ -5,6 +5,9 @@ import { HttpParams, HttpClient } from '@angular/common/http';
 import { UrlParamEncodingService } from './url-param-encoding.service';
 import { SparqlResult } from './lod.service';
 
+/**
+ * Service to get data from DBPedia using SPARQL.
+ */
 @Injectable({
   providedIn: 'root',
 })
