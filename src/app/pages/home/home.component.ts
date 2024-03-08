@@ -44,7 +44,7 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     MatTooltipModule,
     MonacoEditorModule,
     NgToolsModule,
-    EntityListComponent
+    EntityListComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit {
   public xslt: FormControl<string>;
   public error?: string;
   public busy?: boolean;
+  public tabIndex: number = 0;
 
   constructor(
     private _xmlService: XmlService,
@@ -115,6 +116,9 @@ export class HomeComponent implements OnInit {
           return;
         }
         this.rendition = rendition.result;
+        setTimeout(() => {
+          this.tabIndex = 0;
+        });
       },
       error: (error) => {
         this.error = error.message;
@@ -140,6 +144,9 @@ export class HomeComponent implements OnInit {
           return;
         }
         this.entities = result.entities;
+        setTimeout(() => {
+          this.tabIndex = 1;
+        });
       },
       error: (error) => {
         this.error = error.message;

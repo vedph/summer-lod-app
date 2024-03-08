@@ -38,26 +38,25 @@ export class DbpediaPlaceService {
     return `PREFIX dbp: <http://dbpedia.org/property/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX dbr: <http://dbpedia.org/resource/>
     PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
     SELECT DISTINCT
-      dbr:${id} as ?place ?label
+      <${id}> as ?place ?label
       ?topic ?depiction ?abstract
       ?lat ?long
     WHERE {
-      dbr:${id} rdfs:label ?label.
+      <${id}> rdfs:label ?label.
       OPTIONAL {
-        dbr:${id} geo:lat ?lat;
+        <${id}> geo:lat ?lat;
         geo:long ?long.
       }
       OPTIONAL {
-        dbr:${id} foaf:isPrimaryTopicOf ?topic.
+        <${id}> foaf:isPrimaryTopicOf ?topic.
       }
       OPTIONAL {
-        dbr:${id} foaf:depiction ?depiction.
+        <${id}> foaf:depiction ?depiction.
       }
       OPTIONAL {
-        dbr:${id} dbo:abstract ?abstract.
+        <${id}> dbo:abstract ?abstract.
       }
     }`;
   }
@@ -66,11 +65,10 @@ export class DbpediaPlaceService {
     return `PREFIX dbp: <http://dbpedia.org/property/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX dbr: <http://dbpedia.org/resource/>
     PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    SELECT DISTINCT dbr:${id} as ?place ?lat ?long
+    SELECT DISTINCT <${id}> as ?place ?lat ?long
     WHERE {
-      dbr:${id} geo:lat ?lat;
+      <${id}> geo:lat ?lat;
         geo:long ?long.
     }`;
   }
@@ -142,6 +140,7 @@ export class DbpediaPlaceService {
     }
 
     const query = this.buildQuery(id);
+    console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {
@@ -198,6 +197,7 @@ export class DbpediaPlaceService {
     }
 
     const query = this.buildPosQuery(id);
+    console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {

@@ -40,42 +40,41 @@ export class DbpediaPersonService {
     return `PREFIX dbp: <http://dbpedia.org/property/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX dbr: <http://dbpedia.org/resource/>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-    SELECT DISTINCT dbr:${id} as ?person ?name
+    SELECT DISTINCT <${id}> as ?person ?name
       ?birth_date ?birth_place ?birth_place_label
       ?death_date ?death_place ?death_place_label
       ?topic ?depiction ?abstract
     WHERE {
-      dbr:${id} a owl:Thing.
+      <${id}> a owl:Thing.
       OPTIONAL {
-        dbr:${id} dbp:title ?name.
+        <${id}> dbp:title ?name.
       }
       OPTIONAL {
-        dbr:${id} foaf:name ?name.
+        <${id}> foaf:name ?name.
       }
       OPTIONAL {
-        dbr:${id} dbo:birthDate ?birth_date.
+        <${id}> dbo:birthDate ?birth_date.
        }
       OPTIONAL {
-        dbr:${id} dbo:deathDate ?death_date.
+        <${id}> dbo:deathDate ?death_date.
       }
       OPTIONAL {
-        dbr:${id} foaf:isPrimaryTopicOf ?topic.
+        <${id}> foaf:isPrimaryTopicOf ?topic.
       }
       OPTIONAL {
-        dbr:${id} foaf:depiction ?depiction.
+        <${id}> foaf:depiction ?depiction.
       }
       OPTIONAL {
-        dbr:${id} dbo:abstract ?abstract.
+        <${id}> dbo:abstract ?abstract.
       }
       OPTIONAL {
-        dbr:${id} dbo:birthPlace ?birth_place.
+        <${id}> dbo:birthPlace ?birth_place.
         ?birth_place rdfs:label ?birth_place_label.
       }
       OPTIONAL {
-        dbr:${id} dbo:deathPlace ?death_place.
+        <${id}> dbo:deathPlace ?death_place.
         ?death_place rdfs:label ?death_place_label.
       }
       FILTER(lang(?birth_place_label)="en")
@@ -182,6 +181,7 @@ export class DbpediaPersonService {
     }
 
     const query = this.buildQuery(id);
+    console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {
