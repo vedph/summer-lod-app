@@ -1,40 +1,44 @@
-<div>
-  <!-- progress -->
-  <div>
-    <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+<div id="container">
+  <!-- filters -->
+  <div id="filters">
+    <div>
+      <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+    </div>
+    <form class="form-row">
+      <!-- type filter -->
+      <mat-form-field>
+        <mat-label>type</mat-label>
+        <mat-select [formControl]="typeFilter">
+          <mat-option [value]="null">any</mat-option>
+          <mat-option value="person">person</mat-option>
+          <mat-option value="organization">organization</mat-option>
+          <mat-option value="place">place</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- name or ID filter -->
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="name or ID"
+          [formControl]="nameOrIdFilter"
+        />
+        <button
+          *ngIf="nameOrIdFilter.value"
+          type="button"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="nameOrIdFilter.reset()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </form>
   </div>
 
-  <!-- filters -->
-  <form class="form-row">
-    <!-- type filter -->
-    <mat-form-field>
-      <mat-label>type</mat-label>
-      <mat-select [formControl]="typeFilter">
-        <mat-option [value]="null">any</mat-option>
-        <mat-option value="person">person</mat-option>
-        <mat-option value="organization">organization</mat-option>
-        <mat-option value="place">place</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <!-- name or ID filter -->
-    <mat-form-field>
-      <input matInput placeholder="name or ID" [formControl]="nameOrIdFilter" />
-      <button
-        *ngIf="nameOrIdFilter.value"
-        type="button"
-        matSuffix
-        mat-icon-button
-        aria-label="Clear"
-        (click)="nameOrIdFilter.reset()"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </form>
-
   <!-- entities list-->
-  <div>
+  <div id="list">
     <table *ngIf="filteredEntities.length">
       <thead>
         <tr>
@@ -84,7 +88,7 @@
   </div>
 
   <!-- entity details -->
-  <div>
+  <div id="details">
     <mat-expansion-panel
       [expanded]="selectedEntity && (personInfo || placeInfo)"
       [disabled]="!selectedEntity || !(personInfo || placeInfo)"
@@ -99,5 +103,7 @@
   </div>
 
   <!-- map -->
-  <app-place-map [points]="points"></app-place-map>
+  <div id="map">
+    <app-place-map [points]="points"></app-place-map>
+  </div>
 </div>
