@@ -17,9 +17,15 @@ docker push vedph2020/summer-lod-app:latest
 
 ## Overview
 
-This toy application has been created for an imagined workflow where you start from a TEI text, have an XSLT transform it into HTML, and extract entities from it, enriching them with data from the LOD.
+This toy application has been created for a workflow like this:
 
-The UI provides:
+1. start from a TEI text.
+2. add an XSLT transformation to render TEI into HTML.
+3. extract entities from TEI, enriching them with data from the LOD.
+
+This workflow can be useful to show how all these technologies work together in a real-world scenario, even though the toy application is minimalist and so are the sample documents handled by it.
+
+The UI relies on a [backend API](https://github.com/vedph/summer-lod-api) for processing XML, and provides:
 
 - a code panel for XML.
 - a code panel for XSLT.
@@ -35,5 +41,7 @@ The UI provides:
 - [WikiData lookup](https://query.wikidata.org/)
 
 ## Screenshot
+
+This screenshot was taken from the current alpha version of the app:
 
 ![screenshot](shot.png)
