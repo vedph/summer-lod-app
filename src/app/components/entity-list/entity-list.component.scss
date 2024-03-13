@@ -7,6 +7,19 @@
 .form-row * {
   flex: 0 0 auto;
 }
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+table tr:nth-child(even) {
+  background-color: #efefef;
+}
 td.fit-width {
   width: 1px;
   white-space: nowrap;
