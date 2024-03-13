@@ -177,13 +177,26 @@ export class EntityListComponent implements OnInit {
 
   public selectEntity(entity: ParsedEntity): void {
     this.selectedEntity = entity;
+
     if (entity.type === 'person') {
-      this._dbpPersonService.getInfo(entity.ids[0]).subscribe((info) => {
-        this.personInfo = info || undefined;
+      this.busy = true;
+      this._dbpPersonService.getInfo(entity.ids[0]).subscribe({
+        next: (info) => {
+          this.personInfo = info || undefined;
+        },
+        complete: () => {
+          this.busy = false;
+        },
       });
     } else if (entity.type === 'place') {
-      this._dbpPlaceService.getInfo(entity.ids[0]).subscribe((info) => {
-        this.placeInfo = info || undefined;
+      this.busy = true;
+      this._dbpPlaceService.getInfo(entity.ids[0]).subscribe({
+        next: (info) => {
+          this.placeInfo = info || undefined;
+        },
+        complete: () => {
+          this.busy = false;
+        },
       });
     }
     this.entityPick.emit(entity);
