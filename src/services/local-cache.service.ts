@@ -71,6 +71,7 @@ export class LocalCacheService {
     if (this._env.get('cacheDisabled')) {
       return undefined;
     }
+    console.debug('cache hit for ' + id);
     return (
       this._storageService.retrieve(
         this.buildKey(cacheId, id),
