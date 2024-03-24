@@ -3,13 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { EnvService } from '@myrmidon/ng-tools';
 import { CommonModule } from '@angular/common';
 
-import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { MonacoWrapperModule } from './monaco-wrapper.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MonacoWrapperModule],
+  imports: [CommonModule, RouterOutlet, MonacoWrapperModule, LeafletModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -18,8 +18,5 @@ export class AppComponent {
 
   constructor(env: EnvService) {
     this.version = env.get('version') || '';
-    NgxMapboxGLModule.withConfig({
-      accessToken: env.get('mapbox_token')!,
-    });
   }
 }

@@ -172,7 +172,7 @@ export class EntityListComponent implements OnInit {
       }
       return true;
     });
-    this.filteredPlaces = this.filteredEntities.filter((e) => e.point);
+    this.filteredPlaces = this.filteredEntities.filter((e) => e.type === 'place');
   }
 
   public selectEntity(entity: ParsedEntity): void {

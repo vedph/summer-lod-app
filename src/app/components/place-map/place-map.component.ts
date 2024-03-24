@@ -1,41 +1,70 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
-  AnyLayout,
-  GeoJSONSourceRaw,
-  LngLat,
-  LngLatBounds,
+  latLng,
+  latLngBounds,
+  marker,
+  tileLayer,
   Map,
-  MapMouseEvent,
-  NavigationControl,
-} from 'mapbox-gl';
-import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+  icon,
+  layerGroup,
+  Layer,
+  Marker,
+} from 'leaflet';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
-import { EnvService } from '@myrmidon/ng-tools';
-
-import { GeoMarker, GeoPoint } from '../../../services/geo.service';
-import { MapglWrapperModule } from '../../mapgl-wrapper-module';
+import { GeoPoint } from '../../../services/geo.service';
 import { ParsedEntity } from '../../../services/xml.service';
+
+const OSM_ATTR =
+  '&copy; <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 @Component({
   selector: 'app-place-map',
   standalone: true,
-  imports: [CommonModule, MapglWrapperModule, NgxMapboxGLModule],
+  imports: [CommonModule, LeafletModule],
   templateUrl: './place-map.component.html',
   styleUrl: './place-map.component.scss',
 })
 export class PlaceMapComponent implements OnInit, AfterViewInit {
-  private _map?: Map;
-  private _rendered?: boolean;
-  private _entities: any[] = [];
   private _flyToPoint?: GeoPoint;
+  private _map?: Map;
+  private _entities: ParsedEntity[] = [];
+  // map between string from lat+long and entity
+  private _entityMarkers: { [key: string]: ParsedEntity } = {};
 
-  public resultSource?: GeoJSON.FeatureCollection<GeoJSON.Point>;
-  public rawResultSource?: GeoJSONSourceRaw;
-  public readonly labelLayout: AnyLayout;
-  public isGlobeView?: boolean;
-  public markers: GeoMarker[] = [];
+  public leafletLayers: Layer[] = [];
+
+  public leafletOptions = {
+    layers: [
+      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: OSM_ATTR,
+      }),
+    ],
+    zoom: 5,
+    center: latLng(46.879966, -121.726909),
+  };
+
+  public layersControl = {
+    baseLayers: {
+      'Open Street Map': tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { maxZoom: 18, attribution: OSM_ATTR }
+      ),
+    },
+    overlays: {
+      Markers: layerGroup([]),
+    },
+  };
 
   @Input()
   public get entities(): ParsedEntity[] {
@@ -44,7 +73,7 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
   public set entities(value: ParsedEntity[]) {
     if (this._entities === value) return;
     this._entities = value;
-    this.updateMarkers();
+    this.updateMarkers(value);
   }
 
   @Input()
@@ -54,154 +83,107 @@ export class PlaceMapComponent implements OnInit, AfterViewInit {
   public set flyToPoint(value: GeoPoint | undefined | null) {
     this._flyToPoint = value || undefined;
     if (this._flyToPoint) {
-      this.flyToLocation(new LngLat(value!.long, value!.lat));
+      this.flyToLocation(value!.lat, value!.long);
     }
   }
 
-  constructor() {
-    // https://stackoverflow.com/questions/62343360/add-text-to-mapbox-marker
-    this.labelLayout = {
-      'text-field': ['get', 'title'],
-      'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-      'text-radial-offset': 0.5,
-      'text-justify': 'auto',
-      'icon-image': ['concat', ['get', 'icon'], '-15'],
-    };
-  }
+  @Output()
+  public entityPick: EventEmitter<ParsedEntity> = new EventEmitter();
 
   public ngOnInit(): void {
-    this.updateMarkers();
+    this.updateMarkers(this._entities);
   }
 
-  public ngAfterViewInit(): void {
-    setTimeout(() => {
-      console.log('initial resize to fit');
-      this._map?.resize();
-    });
+  public ngAfterViewInit() {
+    this.fitMapToMarkers();
   }
 
-  private updateMarkers(): void {
-    this.markers = this._entities.map((e: ParsedEntity) => {
-      return {
-        id: e.ids[0],
-        lat: e.point?.lat || 0,
-        long: e.point?.long || 0,
-        name: e.names[0],
-      };
-    });
-    this.setFeaturesFromMarkers();
+  private isMarker(layer: any): boolean {
+    return typeof layer.getLatLng === 'function';
+  }
 
-    // zoom to include all the markers
-    if (this.markers?.length) {
-      const pagePoints: LngLat[] = this.markers!.filter((r) => r.lat).map(
-        (r) => new LngLat(r.long!, r.lat!)
-      ) as LngLat[];
-      const bounds = this.getRectBounds(pagePoints);
-      if (bounds) {
-        this._map?.fitBounds(bounds, { padding: 50 });
-      }
+  public fitMapToMarkers() {
+    if (!this._map || !this.leafletLayers.length) return;
+
+    const latlngs = this.leafletLayers
+      .filter((layer: Layer) => this.isMarker(layer))
+      .map((marker) => (marker as Marker).getLatLng());
+    const bounds = latLngBounds(latlngs);
+    this._map.fitBounds(bounds);
+  }
+
+  private createMarker(
+    latlng: [number, number],
+    label?: string,
+    permanent = true
+  ) {
+    const newMarker = marker(latlng, {
+      icon: icon({
+        iconSize: [25, 41],
+        iconAnchor: [13, 41],
+        iconUrl: 'assets/img/marker-icon.png',
+        shadowUrl: 'assets/img/marker-shadow.png',
+      }),
+    }).setLatLng(latlng);
+    if (label) {
+      newMarker.bindTooltip(label, {
+        permanent: permanent,
+        direction: 'top',
+        offset: [0, -35],
+      });
+    }
+    newMarker.on('click', () => this.handleMarkerClick(latlng));
+    return newMarker;
+  }
+
+  private handleMarkerClick(latlng: [number, number]) {
+    // find entity from latlng using _entityMarkers
+    const key = this.getEntityPositionKey(latlng[0], latlng[1]);
+    const entity = this._entityMarkers[key];
+    if (entity) {
+      this.entityPick.emit(entity);
     }
   }
 
-  private flyToLocation(location: LngLat) {
-    this._map?.flyTo({ center: location, zoom: 6 });
-  }
-
-  public onMapCreate(map: Map): void {
+  public onMapReady(map: Map) {
     this._map = map;
-    // navigation
-    this._map.addControl(new NavigationControl());
-    // add click event listener
-    this.setupMarkerClickEvent();
   }
 
-  private setupMarkerClickEvent(): void {
-    // Assuming 'result-pin-layer' is the id of the layer where your markers are added
-    this._map?.on('click', 'result-pin-layer', (e) => {
-      // e.features[0] contains the clicked marker's properties
-      const marker = (e as any).features[0];
-      console.log(marker);
-    });
+  public flyToLocation(lat: number, lng: number, zoom = 10) {
+    if (!this._map) return;
+
+    this._map.flyTo(latLng(lat, lng), zoom);
   }
 
-  public onMapClick(event: MapMouseEvent): void {
-    if (!this._map || !event.lngLat) {
-      return;
-    }
-    console.log(event.point);
+  private getEntityPositionKey(lat: number, long: number): string {
+    return `${lat}_${long}`;
   }
 
-  public onRender(event: any): void {
-    // resize to fit container
-    // https://github.com/Wykks/ngx-mapbox-gl/issues/344
-    if (!this._rendered) {
-      console.log('resize to fit');
-      event.target.resize();
-      this._rendered = true;
-    }
-  }
+  private updateMarkers(entities: ParsedEntity[]): void {
+    this._entityMarkers = {};
 
-  private getRectBounds(points: LngLat[]): LngLatBounds | null {
-    // min lng,lat and max lng,lat
-    const min = new LngLat(180, 90);
-    const max = new LngLat(-180, -90);
-    points.forEach((pt) => {
-      // min
-      if (min.lng > pt.lng) {
-        min.lng = pt.lng;
-      }
-      if (min.lat > pt.lat) {
-        min.lat = pt.lat;
-      }
-      // max
-      if (max.lng < pt.lng) {
-        max.lng = pt.lng;
-      }
-      if (max.lat < pt.lat) {
-        max.lat = pt.lat;
-      }
-    });
-    return new LngLatBounds(min, max);
-  }
+    // add markers from locations
+    this.leafletLayers = entities
+      .filter((e) => e.point)
+      .map((e) => {
+        const m = this.createMarker([e.point!.lat, e.point!.long]);
+        m.bindPopup(e.names[0]);
+        this._entityMarkers[
+          this.getEntityPositionKey(e.point!.lat, e.point!.long)
+        ] = e;
+        return m;
+      });
 
-  private setFeaturesFromMarkers(): void {
-    const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
-    if (this.markers?.length) {
-      this.markers
-        .filter((r) => r.lat)
-        .forEach((r) => {
-          features.push({
-            type: 'Feature',
-            properties: {
-              id: r.id,
-              title: r.name,
-            },
-            geometry: {
-              type: 'Point',
-              coordinates: [r.long || 0, r.lat || 0],
-            },
-          });
-        });
-    }
-    // the markers source
-    this.resultSource = {
-      type: 'FeatureCollection',
-      features: features,
-    };
-    // the markers labels source
-    this.rawResultSource = {
-      type: 'geojson',
-      data: this.resultSource,
-    };
-    // fit to markers bounds
-    if (this.markers?.length) {
-      const pagePoints: LngLat[] = this.markers!.filter((r) => r.lat).map(
-        (r) => new LngLat(r.long!, r.lat!)
-      ) as LngLat[];
-      const bounds = this.getRectBounds(pagePoints);
-      if (bounds) {
-        this._map?.fitBounds(bounds);
+    // if there is a single marker, center the map on it;
+    // else fit it to the markers bounds
+    if (this.leafletLayers.length === 1) {
+      const marker = this.leafletLayers[0];
+      if (this.isMarker(marker)) {
+        const latLng = (marker as Marker).getLatLng();
+        this.flyToLocation(latLng.lat, latLng.lng);
       }
+    } else {
+      this.fitMapToMarkers();
     }
   }
 }

@@ -115,6 +115,7 @@
     <app-place-map
       [entities]="filteredPlaces"
       [flyToPoint]="flyToPoint"
+      (entityPick)="selectEntity($event)"
     ></app-place-map>
   </div>
 </div>

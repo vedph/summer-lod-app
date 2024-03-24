@@ -36,7 +36,7 @@
             "styles": [
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss",
-              "mapbox-gl/dist/mapbox-gl.css"
+              "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": []
           },
