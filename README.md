@@ -36,7 +36,7 @@ The UI relies on a [backend API](https://github.com/vedph/summer-lod-api) for pr
 
 ## Notes
 
-- ⚠️ until this is not fixed, if updating MapboxGL ensure to apply patch for this [MapboxGL issue](https://github.com/Wykks/ngx-mapbox-gl/issues/410)
+- ⚠️ Before switching to Leaflet, updating MapboxGL required to apply patch for this [MapboxGL issue](https://github.com/Wykks/ngx-mapbox-gl/issues/410)
 - [DBPedia lookup](https://lookup.dbpedia.org/index.html)
 - [WikiData lookup](https://query.wikidata.org/)
 
