@@ -176,6 +176,7 @@ export class EntityListComponent implements OnInit {
   }
 
   public selectEntity(entity: ParsedEntity): void {
+    if (this.busy) return;
     this.selectedEntity = entity;
 
     if (entity.type === 'person') {

@@ -51,6 +51,9 @@ export class GeoService {
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
       query
     )}&format=json`;
+
+    console.log(query);
+
     return this.http.get<any>(url).pipe(
       map((response) => {
         const bindings = response.results.bindings[0];
@@ -82,6 +85,9 @@ export class GeoService {
     const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(
       query
     )}&format=json`;
+
+    console.log(query);
+
     return this.http.get<any>(url).pipe(
       map((response) => {
         const bindings = response.results.bindings[0];

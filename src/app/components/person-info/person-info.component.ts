@@ -51,8 +51,6 @@ export class PersonInfoComponent implements OnInit, OnDestroy {
   public language: FormControl<string | null>;
   public selectedAbstract?: string;
 
-  public busy?: boolean;
-
   constructor(
     private _lodService: LodService,
     assetService: AssetService,

@@ -52,8 +52,6 @@ export class PlaceInfoComponent {
   public language: FormControl<string | null>;
   public selectedAbstract?: string;
 
-  public busy: boolean | undefined;
-
   constructor(
     private _lodService: LodService,
     assetService: AssetService,
@@ -85,7 +83,7 @@ export class PlaceInfoComponent {
   private updateLanguages(abstracts: RdfTerm[] | undefined): void {
     if (abstracts) {
       this.languages = this._lodService.getLanguages(abstracts);
-      // select the browser's language if available, else english if available
+      // select the browser's language if available, else English if available
       const lang = navigator.language.split('-')[0];
       if (this.languages.includes(lang)) {
         this.language.setValue(lang);
