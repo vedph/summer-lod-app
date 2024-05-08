@@ -38,7 +38,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: PROXY_INTERCEPTOR_OPTIONS,
       useValue: {
-        proxyUrl: (window as any).__env?.proxyUrl as string,
+        proxyUrl: (window as any).__env?.apiUrl as string + 'proxy',
         urls: [
           'http://lookup.dbpedia.org/api/search',
           'http://lookup.dbpedia.org/api/prefix',
