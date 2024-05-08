@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -26,10 +26,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
 import { NgToolsModule } from '@myrmidon/ng-tools';
+import { CadmusTextEdService } from '@myrmidon/cadmus-text-ed';
 
 import { ParsedEntity, XmlService } from '../../../services/xml.service';
 import { AssetService } from '../../../services/asset.service';
-import { GeoService } from '../../../services/geo.service';
 import { EntityListComponent } from '../../components/entity-list/entity-list.component';
 
 @Component({
@@ -50,13 +50,14 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     NgToolsModule,
     EntityListComponent,
   ],
+  providers: [CadmusTextEdService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private _subs?: Subscription[];
-  private _xmlEditor?: monaco.editor.IEditor;
-  private _xsltEditor?: monaco.editor.IEditor;
+  private _xmlEditor?: monaco.editor.IStandaloneCodeEditor;
+  private _xsltEditor?: monaco.editor.IStandaloneCodeEditor;
   private _xmlModel?: monaco.editor.ITextModel;
   private _xsltModel?: monaco.editor.ITextModel;
 
@@ -71,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private _xmlService: XmlService,
     private _assetService: AssetService,
-    private _lodService: GeoService,
+    private _editService: CadmusTextEdService,
     formBuilder: FormBuilder
   ) {
     this.xml = formBuilder.control<string>('', {
@@ -84,6 +85,29 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  private async applyEdit(selector: string) {
+    if (!this._xmlEditor) {
+      return;
+    }
+    const selection = this._xmlEditor.getSelection();
+    const text = selection
+      ? this._xmlEditor.getModel()!.getValueInRange(selection)
+      : '';
+
+    const result = await this._editService.edit({
+      selector,
+      text: text,
+    });
+
+    this._xmlEditor.executeEdits('my-source', [
+      {
+        range: selection!,
+        text: result.text,
+        forceMoveMarkers: true,
+      },
+    ]);
+  }
+
   public onXmlEditorInit(editor: monaco.editor.IEditor) {
     editor.updateOptions({
       minimap: {
@@ -94,7 +118,21 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this._xmlModel = this._xmlModel || monaco.editor.createModel('', 'xml');
     editor.setModel(this._xmlModel);
-    this._xmlEditor = editor;
+    this._xmlEditor = editor as monaco.editor.IStandaloneCodeEditor;
+
+    this._xmlEditor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
+      () => {
+        this.applyEdit('txt.emoji');
+      }
+    );
+    this._xmlEditor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL,
+      () => {
+        this.applyEdit('lod.link');
+      }
+    );
+
     this.loadDefaultXml();
     editor.focus();
   }
@@ -109,7 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this._xsltModel = this._xsltModel || monaco.editor.createModel('', 'xml');
     editor.setModel(this._xsltModel);
-    this._xsltEditor = editor;
+    this._xsltEditor = editor as monaco.editor.IStandaloneCodeEditor;
     this.loadDefaultXslt();
   }
 

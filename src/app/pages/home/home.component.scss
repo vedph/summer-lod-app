@@ -5,13 +5,19 @@
   flex-wrap: wrap;
 }
 
+#title {
+  background-color: #c0c0c0;
+  text-align: center;
+  color: #606060;
+}
+
 div#container {
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
-  "xml xslt"
-  "result result";
+    "xml xslt"
+    "result result";
   gap: 8px;
 }
 
