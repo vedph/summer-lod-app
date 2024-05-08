@@ -4,26 +4,25 @@
   align-items: center;
   flex-wrap: wrap;
 }
-.editor {
-  min-height: 600px;
-}
 
 div#container {
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
-    "xml xslt"
-    "result result";
+  "xml xslt"
+  "result result";
   gap: 8px;
 }
 
 div#xml {
   grid-area: xml;
+  min-height: 600px;
 }
 
 div#xslt {
   grid-area: xslt;
+  min-height: 600px;
 }
 
 div#result {

@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { EnvServiceProvider } from '@myrmidon/ng-tools';
+import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
 import { routes } from './app.routes';
 
@@ -15,5 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     EnvServiceProvider,
     importProvidersFrom(HttpClientModule),
+    importProvidersFrom(NgeMonacoModule.forRoot({})),
   ],
 };

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -7,7 +7,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { forkJoin, take } from 'rxjs';
+import {
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  take,
+} from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
@@ -40,15 +46,20 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     MatInputModule,
     MatProgressBarModule,
     MatTooltipModule,
-    MonacoEditorModule,
+    NgeMonacoModule,
     NgToolsModule,
     EntityListComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
-  public editorOptions = { theme: 'vs-dark', language: 'xml' };
+export class HomeComponent implements OnInit, OnDestroy {
+  private _subs?: Subscription[];
+  private _xmlEditor?: monaco.editor.IEditor;
+  private _xsltEditor?: monaco.editor.IEditor;
+  private _xmlModel?: monaco.editor.ITextModel;
+  private _xsltModel?: monaco.editor.ITextModel;
+
   public rendition?: string;
   public entities: ParsedEntity[] = [];
 
@@ -73,6 +84,65 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  public onXmlEditorInit(editor: monaco.editor.IEditor) {
+    editor.updateOptions({
+      minimap: {
+        side: 'right',
+      },
+      wordWrap: 'on',
+      automaticLayout: true,
+    });
+    this._xmlModel = this._xmlModel || monaco.editor.createModel('', 'xml');
+    editor.setModel(this._xmlModel);
+    this._xmlEditor = editor;
+    this.loadDefaultXml();
+    editor.focus();
+  }
+
+  public onXsltEditorInit(editor: monaco.editor.IEditor) {
+    editor.updateOptions({
+      minimap: {
+        side: 'right',
+      },
+      wordWrap: 'on',
+      automaticLayout: true,
+    });
+    this._xsltModel = this._xsltModel || monaco.editor.createModel('', 'xml');
+    editor.setModel(this._xsltModel);
+    this._xsltEditor = editor;
+    this.loadDefaultXslt();
+  }
+
+  private loadDefaultXml(): void {
+    this.busy = true;
+    this._assetService.loadText('sample.xml').subscribe({
+      next: (xml) => {
+        this.xml.setValue(xml);
+      },
+      error: (error) => {
+        this.error = error.message;
+      },
+      complete: () => {
+        this.busy = false;
+      },
+    });
+  }
+
+  private loadDefaultXslt(): void {
+    this.busy = true;
+    this._assetService.loadText('sample.xslt').subscribe({
+      next: (xslt) => {
+        this.xslt.setValue(xslt);
+      },
+      error: (error) => {
+        this.error = error.message;
+      },
+      complete: () => {
+        this.busy = false;
+      },
+    });
+  }
+
   private loadDefault(): void {
     this.busy = true;
 
@@ -83,8 +153,8 @@ export class HomeComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: ([xslt, xml]) => {
-          this.xslt.setValue(xslt);
           this.xml.setValue(xml);
+          this.xslt.setValue(xslt);
         },
         error: (error) => {
           this.error = error.message;
@@ -96,7 +166,25 @@ export class HomeComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.loadDefault();
+    this._subs = [];
+    // xml
+    this._subs.push(
+      this.xml.valueChanges
+        .pipe(distinctUntilChanged(), debounceTime(200))
+        .subscribe(() => {
+          this._xmlModel?.setValue(this.xml.value);
+        })
+    );
+    // xslt
+    this._subs.push(
+      this.xslt.valueChanges
+        .pipe(distinctUntilChanged(), debounceTime(200))
+        .subscribe(() => this._xsltModel?.setValue(this.xslt.value))
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this._subs?.forEach((sub) => sub.unsubscribe());
   }
 
   public transform(): void {

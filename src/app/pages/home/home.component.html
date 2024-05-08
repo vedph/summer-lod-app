@@ -4,20 +4,18 @@
     <div id="container">
       <!-- xml -->
       <div id="xml">
-        <ngx-monaco-editor
-          class="editor"
-          [formControl]="xml"
-          [options]="editorOptions"
-        ></ngx-monaco-editor>
+        <nge-monaco-editor
+          style="--editor-height: 100%"
+          (ready)="onXmlEditorInit($event)"
+        />
       </div>
 
       <!-- xslt -->
       <div id="xslt">
-        <ngx-monaco-editor
-          class="editor"
-          [formControl]="xslt"
-          [options]="editorOptions"
-        ></ngx-monaco-editor>
+        <nge-monaco-editor
+          style="--editor-height: 100%"
+          (ready)="onXsltEditorInit($event)"
+        />
       </div>
 
       <!-- result -->
