@@ -45,3 +45,7 @@ The UI relies on a [backend API](https://github.com/vedph/summer-lod-api) for pr
 This screenshot was taken from the current alpha version of the app:
 
 ![screenshot](shot.png)
+
+## History
+
+- 2024-05-24: updated Angular and packages.
