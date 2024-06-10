@@ -77,6 +77,12 @@ A toolbar allows to:
   - identifier(s) are in its children elements `idno`.
   - link(s) are in its children elements `link`.
 
+Once entities have been parsed, the [entities list component](./src/app/components/entity-list/entity-list.component.ts) receives them and manages their display. At this time, places are no different from all the other entities: they just have labels, IDs, and links, and no more.
+
+As here we need position, to demonstrate that the backend has no georeferenced data and everything comes from a LOD service here the [GeoService](./src/app/services/geo.service.ts) is used to supply coordinates for each entity classified as a place.
+
+If the user selects an entity which is either a place or a person, the entity list component uses a corresponding DBPedia service to retrieve and display more data about it. As querying takes a lot of time, the DBPedia service caches its result and reuses it whenever possible.
+
 ### LOD Services
 
 The public **DBPedia** service is accessed by services which build a SPARQL query with the received parameters (open the browser developer console - F12 in most systems - to look at the generated SPARQL):
@@ -85,7 +91,12 @@ The public **DBPedia** service is accessed by services which build a SPARQL quer
 - [DbpediaPlaceService](./src/services/dbpedia-place.service.ts) for places.
 - [DbpediaSparqlService](./src/services/dbpedia-sparql.service.ts) is used to parse the received results.
 
-Additionally, a [GeoService](./src/app/services/geo.service.ts)
+Additionally, a [GeoService](./src/app/services/geo.service.ts) is used to find coordinates for place entities, drawing data from DBPedia or Wikipedia according to the entity ID:
+
+- if the ID starts with `http://dbpedia.org/resource/`, we look into DBPedia.
+- if the ID starts with `Q`, we look into Wikidata.
+
+This of course assumes that our place entities use one of the two providers, which is fine for the sake of this toy app. As querying these public services takes a lot of time, the geo service caches its result and reuses it whenever possible.
 
 ## History
 

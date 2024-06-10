@@ -177,6 +177,7 @@ export class DbpediaPersonService {
   public getInfo(id: string): Observable<PersonInfo | null> {
     const cached = this._cacheService.get<SparqlResult>(CACHE_ID, id);
     if (cached) {
+      console.log(`Cache hit for person ${id}`, cached);
       return of(this.buildInfo(cached));
     }
 

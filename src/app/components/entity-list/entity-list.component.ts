@@ -57,8 +57,8 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
     NgToolsModule,
     PersonInfoComponent,
     PlaceInfoComponent,
-    PlaceMapComponent
-],
+    PlaceMapComponent,
+  ],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.scss',
 })
@@ -77,6 +77,9 @@ export class EntityListComponent implements OnInit {
     this.setEntities(value);
   }
 
+  /**
+   * Emits when an entity is selected.
+   */
   @Output()
   public entityPick: EventEmitter<ParsedEntity> =
     new EventEmitter<ParsedEntity>();
@@ -174,7 +177,9 @@ export class EntityListComponent implements OnInit {
       }
       return true;
     });
-    this.filteredPlaces = this.filteredEntities.filter((e) => e.type === 'place');
+    this.filteredPlaces = this.filteredEntities.filter(
+      (e) => e.type === 'place'
+    );
   }
 
   public selectEntity(entity: ParsedEntity): void {
@@ -186,6 +191,7 @@ export class EntityListComponent implements OnInit {
       this._dbpPersonService.getInfo(entity.ids[0]).subscribe({
         next: (info) => {
           this.personInfo = info || undefined;
+          this.entityPick.emit(entity);
         },
         complete: () => {
           this.busy = false;
@@ -196,12 +202,14 @@ export class EntityListComponent implements OnInit {
       this._dbpPlaceService.getInfo(entity.ids[0]).subscribe({
         next: (info) => {
           this.placeInfo = info || undefined;
+          this.entityPick.emit(entity);
         },
         complete: () => {
           this.busy = false;
         },
       });
+    } else {
+      this.entityPick.emit(entity);
     }
-    this.entityPick.emit(entity);
   }
 }

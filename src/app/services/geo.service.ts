@@ -38,6 +38,7 @@ export class GeoService {
   getPointFromWikidata(id: string): Observable<GeoPoint> {
     const cached = this._cacheService.get<GeoPoint>(CACHE_ID, GEO_PREFIX + id);
     if (cached) {
+      console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
     }
 
@@ -53,7 +54,7 @@ export class GeoService {
       query
     )}&format=json`;
 
-    console.log(query);
+    console.log("Wikidata Query:\n" + query);
 
     return this.http.get<any>(url).pipe(
       map((response) => {
@@ -70,6 +71,7 @@ export class GeoService {
   getPointFromDBpedia(id: string): Observable<GeoPoint> {
     const cached = this._cacheService.get<GeoPoint>(CACHE_ID, GEO_PREFIX + id);
     if (cached) {
+      console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
     }
 
@@ -87,7 +89,7 @@ export class GeoService {
       query
     )}&format=json`;
 
-    console.log(query);
+    console.log("DBPedia Query:\n" + query);
 
     return this.http.get<any>(url).pipe(
       map((response) => {

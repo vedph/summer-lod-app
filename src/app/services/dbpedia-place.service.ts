@@ -193,6 +193,7 @@ export class DbpediaPlaceService {
       POS_PREFIX + id
     );
     if (cached) {
+      console.log(`Cache hit for place ${id}`, cached);
       return of(this.buildPosInfo(cached));
     }
 
