@@ -3,7 +3,7 @@
   <mat-card-content>
     <div id="container">
       <!-- xml -->
-      <div id="xml">
+      <div id="xml" class="boxed">
         <nge-monaco-editor
           style="--editor-height: 100%"
           (ready)="onXmlEditorInit($event)"
@@ -11,7 +11,7 @@
       </div>
 
       <!-- xslt -->
-      <div id="xslt">
+      <div id="xslt" class="boxed">
         <nge-monaco-editor
           style="--editor-height: 100%"
           (ready)="onXsltEditorInit($event)"
@@ -125,7 +125,7 @@
             [disabled]="busy || xml.invalid"
             matTooltip="Parse XML entities"
           >
-            <mat-icon>people</mat-icon>
+            <mat-icon class="mat-accent">people</mat-icon>
           </button>
 
           <!-- error -->
@@ -140,10 +140,10 @@
         <div>
           <!-- html -->
           @if (rendition) {
-          <div id="rendition" [innerHTML]="rendition | safeHtml"></div>
+          <div id="rendition" class="boxed" [innerHTML]="rendition | safeHtml"></div>
           }
           <!-- entities -->
-          <div>
+          <div class="boxed">
             <app-entity-list
               [entities]="entities"
               (entityPick)="pickEntity($event)"

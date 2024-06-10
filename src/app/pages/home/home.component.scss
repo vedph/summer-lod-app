@@ -6,13 +6,13 @@
 }
 
 #title {
-  background-color: #e1af17;;
+  background-color: #e1af17;
   text-align: center;
   color: white;
   margin-bottom: 8px;
 }
 
-div#container {
+#container {
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr 1fr;
@@ -22,21 +22,28 @@ div#container {
   gap: 8px;
 }
 
-div#xml {
+.boxed {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+#xml {
   grid-area: xml;
   min-height: 600px;
 }
 
-div#xslt {
+#xslt {
   grid-area: xslt;
   min-height: 600px;
 }
 
-div#result {
+#result {
   grid-area: result;
 }
 
-div#rendition {
+#rendition {
   border: 1px solid #ccc;
   padding: 8px;
 }
