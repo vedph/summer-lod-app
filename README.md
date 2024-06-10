@@ -6,12 +6,12 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 🐋 Quick Docker image build:
 
-1. update version in `env.js` (and in Docker compose file), then `ng build`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.2 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
+2. `docker build . -t vedph2020/summer-lod-app:0.0.5 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.2
+docker push vedph2020/summer-lod-app:0.0.5
 docker push vedph2020/summer-lod-app:latest
 ```
 
@@ -100,8 +100,13 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+### 0.0.5
+
 - 2024-06-10:
   - updated Angular and packages.
   - added `class="mat-X"` for each `color="X"` (e.g. `class="mat-primary"` wherever there is a `color="primary"`) to allow transitioning to Angular Material M3 from M2. This also implies adding it directly to the target element, so in the case of `mat-icon` inside a `button` with `color` the class is added to `mat-icon` directly (unless the button too has the same color). This allows to keep the old M2 clients while using the new M3, because it seems that the compatibility mixin is not effective in some cases like inheritance of `color`, and in the future `color` will be replaced by `class` altogether.
   - applied [M3 theme](https://material.angular.io/guide/theming).
+
+### 0.0.4
+
 - 2024-05-24: updated Angular and packages.
