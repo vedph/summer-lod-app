@@ -22,7 +22,12 @@
       <div id="result">
         <!-- progress -->
         <div>
-          <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+          <mat-progress-bar
+            *ngIf="busy"
+            mode="indeterminate"
+            color="primary"
+            class="mat-primary"
+          />
         </div>
         <!-- toolbar -->
         <div class="toolbar-row">
@@ -98,7 +103,7 @@
             [disabled]="busy"
             matTooltip="Reset the code"
           >
-            <mat-icon>restart_alt</mat-icon>
+            <mat-icon class="mat-warn">restart_alt</mat-icon>
           </button>
           <!-- transform -->
           <button
@@ -109,7 +114,7 @@
             [disabled]="busy || xml.invalid || xslt.invalid"
             matTooltip="Transform XML with XSLT"
           >
-            <mat-icon>play_circle</mat-icon>
+            <mat-icon class="mat-primary">play_circle</mat-icon>
           </button>
           <!-- parse -->
           <button
@@ -124,7 +129,9 @@
 
           <!-- error -->
           <span class="error">
-            <mat-icon *ngIf="error" color="warn">error</mat-icon>
+            <mat-icon *ngIf="error" color="warn" class="mat-warn"
+              >error</mat-icon
+            >
             <span *ngIf="error">{{ error }}</span>
           </span>
         </div>

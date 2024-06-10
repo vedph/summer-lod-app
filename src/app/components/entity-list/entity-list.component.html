@@ -2,7 +2,12 @@
   <!-- filters -->
   <div id="filters">
     <div>
-      <mat-progress-bar *ngIf="busy" mode="indeterminate" color="primary" />
+      <mat-progress-bar
+        *ngIf="busy"
+        mode="indeterminate"
+        color="primary"
+        class="mat-primary"
+      />
     </div>
     <form class="form-row">
       <!-- type filter -->
@@ -58,7 +63,7 @@
               matTooltip="View details"
               (click)="selectEntity(e)"
             >
-              <mat-icon>info</mat-icon>
+              <mat-icon class="mat-primary">info</mat-icon>
             </button>
             <button
               type="button"
