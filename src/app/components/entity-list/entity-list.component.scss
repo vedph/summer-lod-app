@@ -18,8 +18,8 @@ table td {
   padding: 8px;
 }
 
-table tr:nth-child(even) {
-  background-color: #efefef;
+tbody tr:nth-child(odd) {
+  background-color: #e2e2e2;
 }
 td.fit-width {
   width: 1px;
