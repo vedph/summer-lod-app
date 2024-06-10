@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormControl,
@@ -20,13 +20,12 @@ import { LodService, RdfTerm } from '../../../services/lod.service';
   selector: 'app-place-info',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   templateUrl: './place-info.component.html',
   styleUrl: './place-info.component.scss',
 })

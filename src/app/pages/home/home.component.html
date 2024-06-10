@@ -22,12 +22,13 @@
       <div id="result">
         <!-- progress -->
         <div>
+          @if (busy) {
           <mat-progress-bar
-            *ngIf="busy"
             mode="indeterminate"
             color="primary"
             class="mat-primary"
           />
+          }
         </div>
         <!-- toolbar -->
         <div class="toolbar-row">
@@ -129,19 +130,18 @@
 
           <!-- error -->
           <span class="error">
-            <mat-icon *ngIf="error" color="warn" class="mat-warn"
-              >error</mat-icon
-            >
-            <span *ngIf="error">{{ error }}</span>
+            @if (error) {
+            <mat-icon color="warn" class="mat-warn">error</mat-icon>
+            } @if (error) {
+            <span>{{ error }}</span>
+            }
           </span>
         </div>
         <div>
           <!-- html -->
-          <div
-            id="rendition"
-            *ngIf="rendition"
-            [innerHTML]="rendition | safeHtml"
-          ></div>
+          @if (rendition) {
+          <div id="rendition" [innerHTML]="rendition | safeHtml"></div>
+          }
           <!-- entities -->
           <div>
             <app-entity-list

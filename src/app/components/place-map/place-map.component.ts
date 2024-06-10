@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 import {
   latLng,
@@ -30,7 +30,7 @@ const OSM_ATTR =
 @Component({
   selector: 'app-place-map',
   standalone: true,
-  imports: [CommonModule, LeafletModule],
+  imports: [LeafletModule],
   templateUrl: './place-map.component.html',
   styleUrl: './place-map.component.scss',
 })

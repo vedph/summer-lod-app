@@ -12,7 +12,8 @@ table {
   width: 100%;
 }
 
-table th, table td {
+table th,
+table td {
   border: 1px solid #ddd;
   padding: 8px;
 }
@@ -46,4 +47,8 @@ div#details {
 }
 div#map {
   grid-area: map;
+}
+tr#placeholder {
+  color: silver;
+  text-align: center;
 }

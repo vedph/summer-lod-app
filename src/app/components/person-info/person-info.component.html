@@ -1,64 +1,75 @@
 <div>
   <div class="container">
     <!-- depiction -->
-    <div class="floated" *ngIf="info?.depiction?.value">
+    @if (info?.depiction?.value) {
+    <div class="floated">
       <img
         class="depiction"
         alt="{{ info?.names?.length ? info!.names![0] : 'person' }}"
         [src]="info?.depiction?.value"
       />
     </div>
+    }
     <!-- name(s) -->
-    <ul *ngIf="info?.names?.length">
-      <li *ngFor="let n of info?.names">{{ n.value }} ({{ n["xml:lang"] }})</li>
+    @if (info?.names?.length) {
+    <ul>
+      @for (n of info?.names; track n) {
+      <li>{{ n.value }} ({{ n["xml:lang"] }})</li>
+      }
     </ul>
+    }
     <!-- birth -->
     <ul>
-      <li *ngIf="info?.birthDate?.value">
-        birth:
-        <a
-          *ngIf="info?.birthPlace?.type === 'uri'"
-          target="_blank"
-          [href]="info?.birthPlace?.value"
+      @if (info?.birthDate?.value) {
+      <li>
+        birth: @if (info?.birthPlace?.type === 'uri') {
+        <a target="_blank" [href]="info?.birthPlace?.value"
           >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
         </a>
-        <span *ngIf="info?.birthPlace?.type !== 'uri'"
+        } @if (info?.birthPlace?.type !== 'uri') {
+        <span
           >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
         </span>
-        <span *ngIf="info?.birthDate?.value">{{ info?.birthDate?.value }}</span>
+        } @if (info?.birthDate?.value) {
+        <span>{{ info?.birthDate?.value }}</span>
+        }
       </li>
+      }
       <!-- death -->
-      <li *ngIf="info?.deathDate?.value">
-        death:
-        <a
-          *ngIf="info?.deathPlace?.type === 'uri'"
-          target="_blank"
-          [href]="info?.deathPlace?.value"
+      @if (info?.deathDate?.value) {
+      <li>
+        death: @if (info?.deathPlace?.type === 'uri') {
+        <a target="_blank" [href]="info?.deathPlace?.value"
           >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
         </a>
-        <span *ngIf="info?.deathPlace?.type !== 'uri'"
+        } @if (info?.deathPlace?.type !== 'uri') {
+        <span
           >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
         </span>
-        <span *ngIf="info?.deathDate?.value">{{ info?.deathDate?.value }}</span>
-        <span *ngIf="info?.birthDate && info?.deathDate">
-          (aged {{ getAge(info?.birthDate, info?.deathDate) }})</span
-        >
+        } @if (info?.deathDate?.value) {
+        <span>{{ info?.deathDate?.value }}</span>
+        } @if (info?.birthDate && info?.deathDate) {
+        <span> (aged {{ getAge(info?.birthDate, info?.deathDate) }})</span>
+        }
       </li>
+      }
     </ul>
     <!-- abstract -->
     <div>
       <mat-form-field>
         <mat-select placeholder="abstract language" [formControl]="language">
-          <mat-option *ngFor="let l of languages" [value]="l">{{
-            getLangName(l)
-          }}</mat-option>
+          @for (l of languages; track l) {
+          <mat-option [value]="l">{{ getLangName(l) }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
     <div class="text-cols">{{ selectedAbstract }}</div>
   </div>
   <!-- wiki link -->
-  <div *ngIf="info?.topic">
+  @if (info?.topic) {
+  <div>
     <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
   </div>
+  }
 </div>

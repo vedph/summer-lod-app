@@ -5,7 +5,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import {
   debounceTime,
   distinctUntilChanged,
@@ -43,7 +43,6 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
   selector: 'app-entity-list',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -58,14 +57,17 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
     NgToolsModule,
     PersonInfoComponent,
     PlaceInfoComponent,
-    PlaceMapComponent,
-  ],
+    PlaceMapComponent
+],
   templateUrl: './entity-list.component.html',
   styleUrl: './entity-list.component.scss',
 })
 export class EntityListComponent implements OnInit {
   private _entities: ParsedEntity[] = [];
 
+  /**
+   * List of entities to display.
+   */
   @Input()
   public get entities(): ParsedEntity[] {
     return this._entities;

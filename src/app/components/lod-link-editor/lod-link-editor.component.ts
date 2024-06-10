@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Inject, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -17,7 +17,7 @@ import { ViafRefLookupService } from '@myrmidon/cadmus-refs-viaf-lookup';
 @Component({
   selector: 'app-lod-link-editor',
   standalone: true,
-  imports: [CommonModule, RefLookupSetComponent],
+  imports: [RefLookupSetComponent],
   templateUrl: './lod-link-editor.component.html',
   styleUrl: './lod-link-editor.component.scss',
 })

@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormControl,
@@ -20,13 +20,12 @@ import { LodService, RdfTerm } from '../../../services/lod.service';
   selector: 'app-person-info',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   templateUrl: './person-info.component.html',
   styleUrl: './person-info.component.scss',
 })

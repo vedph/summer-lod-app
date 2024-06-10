@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -21,6 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
@@ -36,7 +36,6 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
   selector: 'app-home',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -73,6 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _xmlService: XmlService,
     private _assetService: AssetService,
     private _editService: CadmusTextEdService,
+    private _snackbar: MatSnackBar,
     formBuilder: FormBuilder
   ) {
     this.xml = formBuilder.control<string>('', {
@@ -268,6 +268,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.error = error.message;
         console.error(JSON.stringify(error));
+        this._snackbar.open('Error parsing entities', 'OK');
       },
       complete: () => {
         this.busy = false;

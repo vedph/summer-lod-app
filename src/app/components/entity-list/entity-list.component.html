@@ -1,13 +1,15 @@
 <div id="container">
   <!-- filters -->
+  @if (entities.length) {
   <div id="filters">
     <div>
+      @if (busy) {
       <mat-progress-bar
-        *ngIf="busy"
         mode="indeterminate"
         color="primary"
         class="mat-primary"
       />
+      }
     </div>
     <form class="form-row">
       <!-- type filter -->
@@ -28,8 +30,8 @@
           placeholder="name or ID"
           [formControl]="nameOrIdFilter"
         />
+        @if (nameOrIdFilter.value) {
         <button
-          *ngIf="nameOrIdFilter.value"
           type="button"
           matSuffix
           mat-icon-button
@@ -38,13 +40,16 @@
         >
           <mat-icon>close</mat-icon>
         </button>
+        }
       </mat-form-field>
     </form>
   </div>
+  }
 
   <!-- entities list-->
   <div id="list">
-    <table *ngIf="filteredEntities.length">
+    @if (filteredEntities.length) {
+    <table>
       <thead>
         <tr>
           <th></th>
@@ -54,7 +59,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let e of filteredEntities">
+        @for (e of filteredEntities; track e) {
+        <tr>
           <td class="fit-width">
             <button
               color="primary"
@@ -80,7 +86,9 @@
             {{ e.names[0] }}
             } @else {
             <ul>
-              <li *ngFor="let name of e.names">{{ name }}</li>
+              @for (name of e.names; track name) {
+              <li>{{ name }}</li>
+              }
             </ul>
             }
           </td>
@@ -89,15 +97,24 @@
             {{ e.links![0] }}
             } @else {
             <ul>
-              <li *ngFor="let link of e.links">
+              @for (link of e.links; track link) {
+              <li>
                 <a [href]="link" target="_blank">{{ link | ellipsis }}</a>
               </li>
+              }
             </ul>
             }
           </td>
         </tr>
+        }
+        @empty {
+          <tr id="placeholder">
+            <td colspan="4">(no entities)</td>
+          </tr>
+        }
       </tbody>
     </table>
+    }
   </div>
 
   <!-- entity details -->
