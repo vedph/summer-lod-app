@@ -29,8 +29,8 @@ import { NgeMonacoModule } from '@cisstech/nge/monaco';
 import { NgToolsModule } from '@myrmidon/ng-tools';
 import { CadmusTextEdService } from '@myrmidon/cadmus-text-ed';
 
-import { ParsedEntity, XmlService } from '../../../services/xml.service';
-import { AssetService } from '../../../services/asset.service';
+import { ParsedEntity, XmlService } from '../../services/xml.service';
+import { AssetService } from '../../services/asset.service';
 import { EntityListComponent } from '../../components/entity-list/entity-list.component';
 
 @Component({

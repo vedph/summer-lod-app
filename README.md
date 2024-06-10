@@ -48,23 +48,44 @@ This screenshot was taken from the current alpha version of the app:
 
 ## Technical Overview
 
-The toy app has a single page with these main areas:
+A [backend API](https://github.com/vedph/summer-lod-api) provides these endpoints:
 
-- an XML code editor (Monaco-based). At startup this loads a default document.
-- an XSLT code editor (Monaco-based). At startup this loads a default document.
+- POST xml/rendition
+- POST xml/entities
+- POST xml/prettify
+- POST xml/uglify
+- GET proxy
+
+The toy app has a single page (essentially the home page component) with these main areas:
+
+- an XML code editor (Monaco-based). At startup this loads a default document using the [AssetService](/src/services/asset.service.ts).
+- an XSLT code editor (Monaco-based). At startup this loads a default document as above.
 - the HTML rendition of XML via XSLT.
 - a list of LOD entities as extracted from XML.
 
 A toolbar allows to:
 
-- load XML
-- save XML
-- prettify XML code
-- load XSLT
-- save XSLT
-- prettify XSLT code
-- transform XML using XSLT
-- parse LOD entities from XML
+- load XML from file.
+- save XML to file.
+- prettify XML code.
+- load XSLT from file.
+- save XSLT to file.
+- prettify XSLT code. This is done by the backend which receives an XML code to prettify or uglify.
+- transform XML using XSLT: this is done by the backend which receives both XML and XSLT code.
+- parse LOD entities from XML. The backend entities parser is very raw, and just scans each TEI `person`, `org` or `place` element descending from the root TEI element, assuming that:
+  - name(s) are in its children elements `persName`, `orgName`, `placeName`, respectively.
+  - identifier(s) are in its children elements `idno`.
+  - link(s) are in its children elements `link`.
+
+### LOD Services
+
+The public **DBPedia** service is accessed by services which build a SPARQL query with the received parameters (open the browser developer console - F12 in most systems - to look at the generated SPARQL):
+
+- [DbpediaPersonService](./src/services/dbpedia-person.service.ts) for persons.
+- [DbpediaPlaceService](./src/services/dbpedia-place.service.ts) for places.
+- [DbpediaSparqlService](./src/services/dbpedia-sparql.service.ts) is used to parse the received results.
+
+Additionally, a [GeoService](./src/app/services/geo.service.ts)
 
 ## History
 

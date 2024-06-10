@@ -21,8 +21,8 @@ import {
 } from 'leaflet';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
-import { GeoPoint } from '../../../services/geo.service';
-import { ParsedEntity } from '../../../services/xml.service';
+import { GeoPoint } from '../../services/geo.service';
+import { ParsedEntity } from '../../services/xml.service';
 
 const OSM_ATTR =
   '&copy; <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';

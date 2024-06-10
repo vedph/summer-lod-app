@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 
 import { ErrorService } from '@myrmidon/ng-tools';
+
+import { CACHE_ID } from '../app.config';
 import { LocalCacheService } from './local-cache.service';
-import { CACHE_ID } from '../app/app.config';
 
 export interface GeoPoint {
   lat: number;

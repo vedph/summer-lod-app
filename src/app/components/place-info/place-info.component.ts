@@ -12,9 +12,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { PlaceInfo } from '../../../services/dbpedia-place.service';
-import { AssetService } from '../../../services/asset.service';
-import { LodService, RdfTerm } from '../../../services/lod.service';
+import { PlaceInfo } from '../../services/dbpedia-place.service';
+import { AssetService } from '../../services/asset.service';
+import { LodService, RdfTerm } from '../../services/lod.service';
 
 @Component({
   selector: 'app-place-info',

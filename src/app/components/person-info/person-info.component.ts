@@ -12,9 +12,9 @@ import {
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
 
-import { PersonInfo } from '../../../services/dbpedia-person.service';
-import { AssetService } from '../../../services/asset.service';
-import { LodService, RdfTerm } from '../../../services/lod.service';
+import { PersonInfo } from '../../services/dbpedia-person.service';
+import { AssetService } from '../../services/asset.service';
+import { LodService, RdfTerm } from '../../services/lod.service';
 
 @Component({
   selector: 'app-person-info',

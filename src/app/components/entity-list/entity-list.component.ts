@@ -25,16 +25,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NgToolsModule } from '@myrmidon/ng-tools';
 
-import { ParsedEntity } from '../../../services/xml.service';
-import { GeoPoint, GeoService } from '../../../services/geo.service';
+import { ParsedEntity } from '../../services/xml.service';
+import { GeoPoint, GeoService } from '../../services/geo.service';
 import {
   DbpediaPersonService,
   PersonInfo,
-} from '../../../services/dbpedia-person.service';
+} from '../../services/dbpedia-person.service';
 import {
   DbpediaPlaceService,
   PlaceInfo,
-} from '../../../services/dbpedia-place.service';
+} from '../../services/dbpedia-place.service';
 import { PersonInfoComponent } from '../person-info/person-info.component';
 import { PlaceInfoComponent } from '../place-info/place-info.component';
 import { PlaceMapComponent } from '../place-map/place-map.component';

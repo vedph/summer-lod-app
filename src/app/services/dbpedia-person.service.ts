@@ -3,10 +3,10 @@ import { Observable, catchError, map, of } from 'rxjs';
 
 import { ErrorService } from '@myrmidon/ng-tools';
 
+import { CACHE_ID } from '../app.config';
 import { DbpediaSparqlService } from './dbpedia-sparql.service';
 import { LocalCacheService } from './local-cache.service';
 import { LodService, RdfTerm, SparqlResult } from './lod.service';
-import { CACHE_ID } from '../app/app.config';
 
 export interface PersonInfo {
   uri: string | null;
