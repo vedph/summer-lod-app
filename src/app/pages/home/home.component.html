@@ -140,7 +140,14 @@
         <div>
           <!-- html -->
           @if (rendition) {
-          <div id="rendition" class="boxed" [innerHTML]="rendition | safeHtml"></div>
+          <div id="rendition" class="boxed">
+            <mat-expansion-panel [expanded]="rendition" [disabled]="!rendition">
+              <mat-expansion-panel-header>
+                <mat-panel-title>HTML</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div [innerHTML]="rendition | safeHtml"></div>
+            </mat-expansion-panel>
+          </div>
           }
           <!-- entities -->
           <div class="boxed">
