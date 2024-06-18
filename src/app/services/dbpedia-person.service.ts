@@ -36,7 +36,7 @@ export class DbpediaPersonService {
     private _lodService: LodService
   ) {}
 
-  public buildQuery(id: string): string {
+  public buildQuery(id: string, languages?: string[]): string {
     return `PREFIX dbp: <http://dbpedia.org/property/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -50,9 +50,11 @@ export class DbpediaPersonService {
       <${id}> a owl:Thing.
       OPTIONAL {
         <${id}> dbp:title ?name.
+        ${LodService.buildLangFilter('?name', languages)}
       }
       OPTIONAL {
         <${id}> foaf:name ?name.
+        ${LodService.buildLangFilter('?name', languages)}
       }
       OPTIONAL {
         <${id}> dbo:birthDate ?birth_date.
@@ -68,17 +70,18 @@ export class DbpediaPersonService {
       }
       OPTIONAL {
         <${id}> dbo:abstract ?abstract.
+        ${LodService.buildLangFilter('?abstract', languages)}
       }
       OPTIONAL {
         <${id}> dbo:birthPlace ?birth_place.
         ?birth_place rdfs:label ?birth_place_label.
+        ${LodService.buildLangFilter('?birth_place_label', languages)}
       }
       OPTIONAL {
         <${id}> dbo:deathPlace ?death_place.
         ?death_place rdfs:label ?death_place_label.
+        ${LodService.buildLangFilter('?death_place_label', languages)}
       }
-      FILTER(lang(?birth_place_label)="en")
-      FILTER(lang(?death_place_label)="en")
     }`;
   }
 
@@ -181,7 +184,7 @@ export class DbpediaPersonService {
       return of(this.buildInfo(cached));
     }
 
-    const query = this.buildQuery(id);
+    const query = this.buildQuery(id, ['en', 'it']);
     console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),

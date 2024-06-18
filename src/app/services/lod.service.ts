@@ -125,4 +125,23 @@ export class LodService {
     // don't do anything for N or E
     return dd;
   }
+
+  public static buildLangFilter(
+    variable: string,
+    languages?: string[]
+  ): string {
+    if (!languages || languages.length === 0) {
+      return '';
+    }
+    const sb: string[] = [];
+    sb.push('FILTER(');
+    for (let i = 0; i < languages.length; i++) {
+      if (i > 0) {
+        sb.push(' || ');
+      }
+      sb.push(`lang(${variable})="${languages[i]}"`);
+    }
+    sb.push(')');
+    return sb.join('');
+  }
 }

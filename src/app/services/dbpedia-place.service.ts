@@ -34,7 +34,7 @@ export class DbpediaPlaceService {
     private _lodService: LodService
   ) {}
 
-  public buildQuery(id: string): string {
+  public buildQuery(id: string, languages?: string[]): string {
     return `PREFIX dbp: <http://dbpedia.org/property/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -45,6 +45,7 @@ export class DbpediaPlaceService {
       ?lat ?long
     WHERE {
       <${id}> rdfs:label ?label.
+      ${LodService.buildLangFilter('?label', languages)}
       OPTIONAL {
         <${id}> geo:lat ?lat;
         geo:long ?long.
@@ -57,6 +58,7 @@ export class DbpediaPlaceService {
       }
       OPTIONAL {
         <${id}> dbo:abstract ?abstract.
+        ${LodService.buildLangFilter('?abstract', languages)}
       }
     }`;
   }
@@ -139,7 +141,7 @@ export class DbpediaPlaceService {
       return of(this.buildInfo(cached));
     }
 
-    const query = this.buildQuery(id);
+    const query = this.buildQuery(id, ['en', 'it']);
     console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),

@@ -100,6 +100,8 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-06-18: limited DBPedia to 2 languages to optimize performance avoiding Cartesian results with many languages.
+
 ### 0.0.5
 
 - 2024-06-10:
