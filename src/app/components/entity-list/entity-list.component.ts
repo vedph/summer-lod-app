@@ -182,13 +182,21 @@ export class EntityListComponent implements OnInit {
     );
   }
 
+  private getDbpediaId(ids: string[]): string | undefined {
+    return ids.find((id) => id.startsWith('http://dbpedia.org/resource/'));
+  }
+
   public selectEntity(entity: ParsedEntity): void {
     if (this.busy) return;
     this.selectedEntity = entity;
+    const id = this.getDbpediaId(entity.ids);
+    if (!id) {
+      return;
+    }
 
     if (entity.type === 'person') {
       this.busy = true;
-      this._dbpPersonService.getInfo(entity.ids[0]).subscribe({
+      this._dbpPersonService.getInfo(id).subscribe({
         next: (info) => {
           this.personInfo = info || undefined;
           this.entityPick.emit(entity);
@@ -199,7 +207,7 @@ export class EntityListComponent implements OnInit {
       });
     } else if (entity.type === 'place') {
       this.busy = true;
-      this._dbpPlaceService.getInfo(entity.ids[0]).subscribe({
+      this._dbpPlaceService.getInfo(id).subscribe({
         next: (info) => {
           this.placeInfo = info || undefined;
           this.entityPick.emit(entity);

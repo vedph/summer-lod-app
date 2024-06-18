@@ -100,6 +100,9 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-06-18:
+  - do not assume that 1st ID in entity is DBPedia.
+
 ### 0.0.6
 
 - 2024-06-18:
