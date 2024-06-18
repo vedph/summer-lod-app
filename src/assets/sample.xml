@@ -1,129 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title>Title</title>
+        <title>Pedagogical sketchbook</title>
       </titleStmt>
       <publicationStmt>
-        <p>Publication information</p>
+        <p>Istituto Italiano di Studi Germanici</p>
       </publicationStmt>
       <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement>xx</settlement>
+            <repository>xx</repository>
+            <idno>zzz</idno>
+          </msIdentifier>
+          <physDesc>
+            <objectDesc/>
+          </physDesc>
+        </msDesc>
         <!-- persons -->
         <listPerson>
-          <person xml:id="p_plato">
+          <person xml:id="p_picasso_pablo">
             <persName>
-              <forename>Plato</forename>
+              <forename>Pablo</forename>
+              <surname>Picasso</surname>
             </persName>
-            <idno type="dbpedia">http://dbpedia.org/resource/Plato</idno>
-            <link type="wikipedia">https://en.wikipedia.org/wiki/Plato</link>
+            <idno type="dbpedia">http://dbpedia.org/resource/Pablo_Picasso</idno>
+            <idno type="VIAF">15873</idno>
+            <link target="https://en.wikipedia.org/wiki/Pablo_Picasso" type="wikipedia"/>
           </person>
-          <person xml:id="p_seneca">
+          <person xml:id="p_braque_georges">
             <persName>
-              <forename type="praenomen">Lucius</forename>
-              <surname type="nomen">Annaeus</surname>
-              <surname type="cognomen">Seneca</surname>
+              <forename>Georges</forename>
+              <surname>Braque</surname>
+              <idno type="dbpedia">http://dbpedia.org/resource/Georges_Braque</idno>
+              <idno type="VIAF">9867924</idno>
+              <link target="https://it.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
             </persName>
-            <idno type="dbpedia">http://dbpedia.org/resource/Seneca_the_Younger</idno>
-            <link type="wikipedia" target="https://en.wikipedia.org/wiki/Seneca_the_Younger"/>
-          </person>
-          <person xml:id="p_sersale_gerolamo">
-            <persName>
-              <forename>Gerolamo</forename>
-              <surname>Sersale</surname>
-              <roleName>duca di Cerisano</roleName>
-            </persName>
-          </person>
-          <person xml:id="p_fogliani_sforza_daragona_giovanni">
-            <persName>
-              <forename>Giovanni</forename>
-              <surname>Fogliani</surname>
-              <surname>Sforza</surname>
-              <surname>d'Aragona</surname>
-            </persName>
-            <link type="wikipedia" target="https://it.wikipedia.org/wiki/Giovanni_Fogliani_Sforza_d%27Aragona"/>
           </person>
         </listPerson>
         <!-- places -->
         <listPlace>
-          <place xml:id="l_bologna">
+          <place xml:id="l_paris">
             <placeName>
-              <name>Bologna</name>,              <district>Emilia Romagna</district>,
-              <country>Italy</country>.
+              <name>Paris</name>,              <country>France</country>.
             </placeName>
-            <idno type="URI">http://dbpedia.org/resource/Bologna</idno>
-          </place>
-          <place xml:id="l_roma">
-            <placeName>
-              <name>Rome</name>,              <district>Lazio</district>,
-              <country>Italy</country>.
-            </placeName>
-            <idno type="URI">http://dbpedia.org/resource/Rome</idno>
-          </place>
-          <place xml:id="l_venezia">
-            <placeName>
-              <name>Venice</name>,              <district>Veneto</district>,
-              <country>Italy</country>.
-            </placeName>
-            <idno type="URI">http://dbpedia.org/resource/Venice</idno>
+            <idno type="URI">http://dbpedia.org/resource/Paris</idno>
+            <idno type="wikipedia">https://en.wikipedia.org/wiki/Paris</idno>
           </place>
         </listPlace>
-        <!-- organizations -->
-        <listOrg>
-          <org xml:id="o_vatican_library">
-            <orgName>Biblioteca Vaticana</orgName>
-            <idno type="URI">http://dbpedia.org/resource/Vatican_Library</idno>
-            <link type="wikipedia" target="https://en.wikipedia.org/wiki/Holy_See"/>
-          </org>
-        </listOrg>
       </sourceDesc>
     </fileDesc>
   </teiHeader>
+  <standOff>
+    <linkGrp type="alignment" subtype="deu-ita">
+      <link target="#deu-s1 #ita-s1"/>
+      <link target="#deu-s2 #ita-s2"/>
+      <link target="#deu-s3 #ita-s3"/>
+      <link target="#deu-s4_s5 #ita-s4"/>
+      <link target="#deu-s6 #ita-s5"/>
+      <link target="#deu-s7 #ita-s6"/>
+    </linkGrp>
+  </standOff>
+  <facsimile>
+    <surface>
+      <graphic xml:id="facs-orig-1r-1" url="/KLEE_Formlehre_page-0001.jpg"/>
+      <graphic xml:id="facs-orig-1r-2" url="/KLEE_Formlehre_page-0001.jpg"/>
+    </surface>
+  </facsimile>
   <text>
     <body>
-      <!-- structural elements -->
-      <div type="chapter" n="1">
-        <head>
-          <title type="main" n="1">Structural Elements</title>
-        </head>
-        <p>Everybody knows <q>div</q>: a subdivision of text. There are many in this
-             document.</p>
-        <p>Paragraphs are sense units. If we just want a block of text with no specific meaning,
-             we use the <q>ab</q> element.</p>
-        <ab> A block <lb/>
- of text </ab>
-        <p>We can also use line/page breaks<note n="1" type="footnote">These breaks mark page
-                beginning.</note> to mark their beginning: <lb/>
- here starts a line, and <pb n="2" />
- here are the first words of page <num value="2">two</num>.
-    </p>
-    <p>We might also have lists of any sort. The additive colors used in CSS are:</p>
-    <list type="numbered">
-      <item n="1">one</item>
-      <item n="2">two</item>
-      <item n="3">three</item>
-    </list>
-    <p>And then a bulleted list:</p>
-    <list type="bulleted">
-      <item>red</item>
-      <item>green</item>
-      <item>blue</item>
-    </list>
-    <p>This ends our short survey on structural elements.</p>
-  </div>
-  <!-- logical elements -->
-  <div type="chapter" n="2">
-    <head>
-      <title type="main" n="2">Logical Elements</title>
-      <title type="desc">The most common elements roughly classified as logical</title>
-    </head>
-    <p>A paragraph is here. It's a sense unit, not just a text block.</p>
-    <p>When you find a name, you can be lazy and just mark it as such: <name ref="#p_plato">Plato</name>.
-    </p>
-    <p>We can also use other names: the <orgName ref="#o_vatican_library">Vatican
-                Library</orgName> is not in <placeName ref="#l_piacenza">Piacenza</placeName>.
-    </p>
-  </div>
+      <div type="transcription" xml:lang="GE">
+        <!-- NOTE: added @n to all pb elements -->
+        <pb xml:id="pb-orig-1r-1" facs="#facs-orig-1r-1" n="1r"/>
+        <ab>
+          <s xml:id="deu-s1">
+            <lb corresp="#l1"/>
+Umgekehrt zum Verlauf dieser kurzen <w>Dar-<lb corresp="#l2" />
+stellung</w> der Linie verläuft die darin zugleich <lb corresp="#l3"/>
+enthaltene
+            Darstellung der Fläche. </s>
+        <s xml:id="deu-s2"> Als die <lb corresp="#l4"/>
+Linie aktiv war, teilte sie in imaginäre
+        <lb corresp="#l5"/>
+Flächen. </s>
+      <s xml:id="deu-s3"> Dazwischen drängte sich der <w>Flächen-<lb corresp="#l6" />
+charakter</w> hervor, und wurde dann <lb corresp="#l7"/>
+aktiv, als die Linie als
+            passiv bezeichnet <lb corresp="#l8"/>
+wurde. </s>
+</ab>
+<ab>
+  <s xml:id="deu-s4">
+    <lb corresp="#l9"/>
+Die Fläche ist, rein gezüchtet, das ruhige <lb corresp="#l10" />
+Element. </s>
+  <s xml:id="deu-s5"> Gerät sie aber in Bewegung, <lb corresp="#l11"/>
+Ꚛ  <lb corresp="#l12" />
+so nähert sie sich dem Liniencharakter. </s>
+<s xml:id="deu-s6">
+  <lb corresp="#l13"/>
+Je weiter <lb corresp="#l14"/>
+Ꚛ<lb corresp="#l15"/>
+die Linie AB
+            sich fort- <lb corresp="#l16"/>
+bewegt, desto dünner wird dadurch die beschriebene <lb corresp="#l17"/>
+Fläche im Verhältnis zu ihrer Länge, <lb corresp="#l18"/>
+bis man
+            schliesslich von einem <w>Zusammen- <lb corresp="#l19"/>
+fallen</w> von A mit B sprechen
+            kann, womit <lb corresp="#l20"/>
+wir bei der aktiven Linie wieder angelangt sind. </s>
+</ab>
+<ab>
+<s xml:id="deu-s7">
+<lb corresp="#l21"/>
+* (Dieser Abschnitt ist repetirt auf Seite 143-146) </s>
+</ab>
+<ab>
+<s xml:id="deu-s8">Übung: Die Violine. Modelle: ein Violoncell, zwei Violinen</s>
+<s xml:id="deu-s9">Vorrede: Die Violine als vollendete Form, als Kunstwerk, als
+            selbständige Persönlichkeit (nicht Maschine).</s>
+<s xml:id="deu-s10">Die Auffassung beispielsweise bei <name ref="#p_picasso_pablo">Picasso</name>, <name ref="#p_braque_georges">Braque</name> und den jetzigen
+<placeName ref="#l_paris">Parisern</placeName>.
+</s>
+</ab>
+</div>
+
+<div type="translation" xml:lang="IT">
+<pb xml:id="pb-trans-1r-1" facs="#facs-orig-1r-1" n="1r"/>
+<p>
+<s xml:id="ita-s1"> In senso inverso al decorso di questa breve rappresentazione della
+            linea procede la rappresentazione, che pure è contenuta in questa, del piano. </s>
+<s xml:id="ita-s2"> Quando la linea era attiva divideva in superfici immaginarie. </s>
+<s xml:id="ita-s3"> In mezzo ad esse si imponeva il carattere di superficie, diventando
+            attivo quando la linea veniva detta passiva. </s>
+</p>
+<p>
+<s xml:id="ita-s4"> La superficie, coltivata allo stato puro, è l’elemento calmo, ma se
+            finisce per muoversi, ◌ si avvicina al carattere della linea. </s>
+<s xml:id="ita-s5"> Quanto più la linea AB si muove in avanti, tanto più in questo modo
+            diventa sottile la superficie descritta in rapporto alla sua lunghezza, finché infine si
+            può parlare di una coincidenza tra A e B, con il che siamo di nuovo giunti alla linea
+            attiva.</s>
+<s xml:id="ita-s6"> (Questa sezione è ripresa alle pagine 143-146). </s>
+</p>
+<!-- TODO fix this -->
+<pb facs="#facs-orig-1r-2" n="2"/>
+
+<p>
+<s xml:id="ita-s7">Esercizio: il violino. Modelli: un violoncello, due violini.</s>
+</p>
+<p>
+<s xml:id="ita-s8">Premessa: il violino come forma compiuta, come opera d’arte, come
+            personalità autonoma (non macchina).</s>
+<s xml:id="ita-s9">Tale concezione a esempio in <name ref="#p_picasso_pablo">Picasso</name>, <name ref="#p_braque_georges">Braque</name>, e l’attuale scuola di
+<placeName ref="#l_paris">Parigi</placeName>.
+</s>
+</p>
+</div>
 </body>
 </text>
 </TEI>

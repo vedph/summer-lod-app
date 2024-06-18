@@ -7,11 +7,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.5 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+2. `docker build . -t vedph2020/summer-lod-app:0.0.6 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.5
+docker push vedph2020/summer-lod-app:0.0.6
 docker push vedph2020/summer-lod-app:latest
 ```
 
@@ -100,7 +100,12 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
-- 2024-06-18: limited DBPedia to 2 languages to optimize performance avoiding Cartesian results with many languages.
+### 0.0.6
+
+- 2024-06-18:
+  - updated Angular.
+  - limited DBPedia to 2 languages to optimize performance avoiding Cartesian results with many languages.
+  - new samples from Klee.
 
 ### 0.0.5
 
