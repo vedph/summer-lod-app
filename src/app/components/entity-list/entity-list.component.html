@@ -97,12 +97,16 @@
           </td>
           <td>
             @if (e.links?.length === 1) {
-            {{ e.links![0] }}
+            <a href="{{ e.links![0] }}" target="_blank" rel="noopener">{{
+              e.links![0]
+            }}</a>
             } @else {
             <ul>
               @for (link of e.links; track link) {
               <li>
-                <a [href]="link" target="_blank">{{ link | ellipsis }}</a>
+                <a [href]="link" target="_blank" rel="noopener">{{
+                  link | ellipsis
+                }}</a>
               </li>
               }
             </ul>

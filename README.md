@@ -7,11 +7,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.6 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+2. `docker build . -t vedph2020/summer-lod-app:0.0.7 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.6
+docker push vedph2020/summer-lod-app:0.0.7
 docker push vedph2020/summer-lod-app:latest
 ```
 
@@ -100,8 +100,11 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+### 0.0.7
+
 - 2024-06-18:
   - do not assume that 1st ID in entity is DBPedia.
+  - fixed single entity link not clickable in entities list.
 
 ### 0.0.6
 

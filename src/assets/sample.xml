@@ -36,10 +36,10 @@
             <persName>
               <forename>Georges</forename>
               <surname>Braque</surname>
-              <idno type="dbpedia">http://dbpedia.org/resource/Georges_Braque</idno>
-              <idno type="VIAF">9867924</idno>
-              <link target="https://it.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
             </persName>
+            <idno type="dbpedia">http://dbpedia.org/resource/Georges_Braque</idno>
+            <idno type="VIAF">9867924</idno>
+            <link target="https://it.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
           </person>
         </listPerson>
         <!-- places -->
@@ -124,7 +124,7 @@ wir bei der aktiven Linie wieder angelangt sind. </s>
 <s xml:id="deu-s8">Übung: Die Violine. Modelle: ein Violoncell, zwei Violinen</s>
 <s xml:id="deu-s9">Vorrede: Die Violine als vollendete Form, als Kunstwerk, als
             selbständige Persönlichkeit (nicht Maschine).</s>
-<s xml:id="deu-s10">Die Auffassung beispielsweise bei <name ref="#p_picasso_pablo">Picasso</name>, <name ref="#p_braque_georges">Braque</name> und den jetzigen
+<s xml:id="deu-s10">Die Auffassung beispielsweise bei <name ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name> und den jetzigen
 <placeName ref="#l_paris">Parisern</placeName>.
 </s>
 </ab>
@@ -157,7 +157,7 @@ wir bei der aktiven Linie wieder angelangt sind. </s>
 <p>
 <s xml:id="ita-s8">Premessa: il violino come forma compiuta, come opera d’arte, come
             personalità autonoma (non macchina).</s>
-<s xml:id="ita-s9">Tale concezione a esempio in <name ref="#p_picasso_pablo">Picasso</name>, <name ref="#p_braque_georges">Braque</name>, e l’attuale scuola di
+<s xml:id="ita-s9">Tale concezione a esempio in <name ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name>, e l’attuale scuola di
 <placeName ref="#l_paris">Parigi</placeName>.
 </s>
 </p>

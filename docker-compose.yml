@@ -3,7 +3,7 @@ version: '3.7'
 services:
   # api
   summer-lod-api:
-    image: vedph2020/summer-lod-api:0.0.3
+    image: vedph2020/summer-lod-api:0.0.4
     container_name: summer-lod-api
     ports:
       - 5275:8080
@@ -14,7 +14,7 @@ services:
 
   # app
   summer-lod-app:
-    image: vedph2020/summer-lod-app:0.0.6
+    image: vedph2020/summer-lod-app:0.0.7
     container_name: summer-lod-app
     ports:
       - 4200:80
