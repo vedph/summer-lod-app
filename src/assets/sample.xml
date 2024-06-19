@@ -39,17 +39,18 @@
             </persName>
             <idno type="dbpedia">http://dbpedia.org/resource/Georges_Braque</idno>
             <idno type="VIAF">9867924</idno>
-            <link target="https://it.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
+            <link target="https://en.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
           </person>
         </listPerson>
         <!-- places -->
         <listPlace>
           <place xml:id="l_paris">
             <placeName>
-              <name>Paris</name>,              <country>France</country>.
+              <name>Paris</name>, <country>France</country>.
             </placeName>
-            <idno type="URI">http://dbpedia.org/resource/Paris</idno>
+            <idno type="dbpedia">http://dbpedia.org/resource/Paris</idno>
             <idno type="wikipedia">https://en.wikipedia.org/wiki/Paris</idno>
+            <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/>
           </place>
         </listPlace>
       </sourceDesc>

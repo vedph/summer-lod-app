@@ -100,6 +100,8 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-06-19: updated sample XML (thanks Paolo!).
+
 ### 0.0.7
 
 - 2024-06-18:
