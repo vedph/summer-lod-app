@@ -5,7 +5,21 @@
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title>Pedagogical sketchbook</title>
+        <title>Bildnerische Formlehre</title>
+        <respStmt>
+          <resp>Scientific Director</resp>
+          <name>Hansmichael Hohenegger</name>
+        </respStmt>
+        <respStmt>
+          <resp>Metadata curation</resp>
+          <name>Federico Boschetti</name>
+          <name>Tiziana Mancinelli</name>
+        </respStmt>
+        <respStmt>
+          <resp>LOD curation</resp>
+          <name>Daniele Fusi</name>
+          <name>Paolo Monella</name>
+        </respStmt>
       </titleStmt>
       <publicationStmt>
         <p>Istituto Italiano di Studi Germanici</p>
@@ -13,13 +27,20 @@
       <sourceDesc>
         <msDesc>
           <msIdentifier>
-            <settlement>xx</settlement>
-            <repository>xx</repository>
-            <idno>zzz</idno>
+            <settlement>Bern</settlement>
+            <geogName>Schweiz</geogName>
+            <institution>Zentrum Paul Klee</institution>
           </msIdentifier>
-          <physDesc>
-            <objectDesc/>
-          </physDesc>
+          <p>
+            <objectType>Notebook</objectType>
+            <dimensions>
+              <width unit="cm">17,6</width>
+              <height unit="cm">21</height>
+            </dimensions>
+          </p>
+          <p>The 192-page notebook comprises lectures and exercises Klee gave at the beginning of
+            his appointment at the Bauhaus, Bauhaus, in the winter semester of 1921–22 and repeated
+            in the summer semester of 1922.</p>
         </msDesc>
         <!-- persons -->
         <listPerson>
@@ -30,7 +51,8 @@
             </persName>
             <idno type="dbpedia">http://dbpedia.org/resource/Pablo_Picasso</idno>
             <idno type="VIAF">15873</idno>
-            <link target="https://en.wikipedia.org/wiki/Pablo_Picasso" type="wikipedia"/>
+            <!-- Have a look at the change below from "link" to "ptr" -->
+            <ptr target="https://en.wikipedia.org/wiki/Pablo_Picasso" type="wikipedia"/>
           </person>
           <person xml:id="p_braque_georges">
             <persName>
@@ -39,18 +61,17 @@
             </persName>
             <idno type="dbpedia">http://dbpedia.org/resource/Georges_Braque</idno>
             <idno type="VIAF">9867924</idno>
-            <link target="https://en.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/>
+            <!-- <link target="https://en.wikipedia.org/wiki/Georges_Braque" type="wikipedia"/> -->
           </person>
         </listPerson>
         <!-- places -->
         <listPlace>
           <place xml:id="l_paris">
             <placeName>
-              <name>Paris</name>, <country>France</country>.
-            </placeName>
+              <name>Paris</name>, <country>France</country>. </placeName>
             <idno type="dbpedia">http://dbpedia.org/resource/Paris</idno>
             <idno type="wikipedia">https://en.wikipedia.org/wiki/Paris</idno>
-            <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/>
+            <!-- <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/> -->
           </place>
         </listPlace>
       </sourceDesc>
@@ -58,111 +79,82 @@
   </teiHeader>
   <standOff>
     <linkGrp type="alignment" subtype="deu-ita">
-      <link target="#deu-s1 #ita-s1"/>
-      <link target="#deu-s2 #ita-s2"/>
-      <link target="#deu-s3 #ita-s3"/>
-      <link target="#deu-s4_s5 #ita-s4"/>
-      <link target="#deu-s6 #ita-s5"/>
-      <link target="#deu-s7 #ita-s6"/>
+      <link target="#deu-s1 #en-s1"/>
+      <link target="#deu-s2 #en-s2"/>
+      <link target="#deu-s3 #en-s3"/>
+      <link target="#deu-s4_s5 #en-s4"/>
+      <link target="#deu-s6 #en-s5"/>
+      <link target="#deu-s7 #en-s6"/>
     </linkGrp>
   </standOff>
   <facsimile>
     <surface>
-      <graphic xml:id="facs-orig-1r-1" url="/KLEE_Formlehre_page-0001.jpg"/>
-      <graphic xml:id="facs-orig-1r-2" url="/KLEE_Formlehre_page-0001.jpg"/>
+      <graphic xml:id="facs-orig-12" url="/KLEE_Formlehre_page-0001.jpg"/>
+      <graphic xml:id="facs-orig-13" url="/KLEE_Formlehre_page-0001.jpg"/>
     </surface>
   </facsimile>
   <text>
     <body>
       <div type="transcription" xml:lang="GE">
-        <!-- NOTE: added @n to all pb elements -->
-        <pb xml:id="pb-orig-1r-1" facs="#facs-orig-1r-1" n="1r"/>
-        <ab>
+        <pb xml:id="pb-orig-12" facs="#facs-orig-12" n="12"/>
+        <p>
           <s xml:id="deu-s1">
-            <lb corresp="#l1"/>
-Umgekehrt zum Verlauf dieser kurzen <w>Dar-<lb corresp="#l2" />
-stellung</w> der Linie verläuft die darin zugleich <lb corresp="#l3"/>
-enthaltene
-            Darstellung der Fläche. </s>
-        <s xml:id="deu-s2"> Als die <lb corresp="#l4"/>
-Linie aktiv war, teilte sie in imaginäre
-        <lb corresp="#l5"/>
-Flächen. </s>
-      <s xml:id="deu-s3"> Dazwischen drängte sich der <w>Flächen-<lb corresp="#l6" />
-charakter</w> hervor, und wurde dann <lb corresp="#l7"/>
-aktiv, als die Linie als
-            passiv bezeichnet <lb corresp="#l8"/>
-wurde. </s>
-</ab>
-<ab>
-  <s xml:id="deu-s4">
-    <lb corresp="#l9"/>
-Die Fläche ist, rein gezüchtet, das ruhige <lb corresp="#l10" />
-Element. </s>
-  <s xml:id="deu-s5"> Gerät sie aber in Bewegung, <lb corresp="#l11"/>
-Ꚛ  <lb corresp="#l12" />
-so nähert sie sich dem Liniencharakter. </s>
-<s xml:id="deu-s6">
-  <lb corresp="#l13"/>
-Je weiter <lb corresp="#l14"/>
-Ꚛ<lb corresp="#l15"/>
-die Linie AB
-            sich fort- <lb corresp="#l16"/>
-bewegt, desto dünner wird dadurch die beschriebene <lb corresp="#l17"/>
-Fläche im Verhältnis zu ihrer Länge, <lb corresp="#l18"/>
-bis man
-            schliesslich von einem <w>Zusammen- <lb corresp="#l19"/>
-fallen</w> von A mit B sprechen
-            kann, womit <lb corresp="#l20"/>
-wir bei der aktiven Linie wieder angelangt sind. </s>
-</ab>
-<ab>
-<s xml:id="deu-s7">
-<lb corresp="#l21"/>
-* (Dieser Abschnitt ist repetirt auf Seite 143-146) </s>
-</ab>
-<ab>
-<s xml:id="deu-s8">Übung: Die Violine. Modelle: ein Violoncell, zwei Violinen</s>
-<s xml:id="deu-s9">Vorrede: Die Violine als vollendete Form, als Kunstwerk, als
+            <lb/>Umgekehrt zum Verlauf dieser kurzen <w>Dar-<lb/> stellung</w> der Linie verläuft
+            die darin zugleich <lb/> enthaltene Darstellung der Fläche. </s>
+          <s xml:id="deu-s2"> Als die <lb/> Linie aktiv war, teilte sie in imaginäre <lb/>Flächen. </s>
+          <s xml:id="deu-s3"> Dazwischen drängte sich der <w>Flächen-<lb/> charakter</w> hervor, und
+            wurde dann <lb/> aktiv, als die Linie als passiv bezeichnet <lb/> wurde. </s>
+        </p>
+        <p>
+          <s xml:id="deu-s4">
+            <lb/>Die Fläche ist, rein gezüchtet, das ruhige <lb/> Element. </s>
+          <s xml:id="deu-s5"> Gerät sie aber in Bewegung, <lb/>Ꚛ <lb/> so nähert sie sich dem
+            Liniencharakter. </s>
+          <s xml:id="deu-s6">
+            <lb corresp="#l13"/> Je weiter <lb/>Ꚛ<lb/> die Linie AB sich <w>fort-<lb/>bewegt</w>,
+            desto dünner wird dadurch die beschriebene <lb/> Fläche im Verhältnis zu ihrer Länge,
+            <lb/>bis man schliesslich von einem <w>Zusammen- <lb/> fallen</w> von A mit B sprechen
+            kann, womit <lb/> wir bei der aktiven Linie wieder angelangt sind. </s>
+        </p>
+        <p>
+          <s xml:id="deu-s7">
+            <lb/> * (Dieser Abschnitt ist repetirt auf Seite 143-146) </s>
+        </p>
+        <pb xml:id="pb-orig-13" facs="#facs-orig-13" n="13"/>
+        <p>
+          <date when="1921-11-21">21. Nov. 1921</date>
+          <s xml:id="deu-s8">Übung: Die Violine. Modelle: ein Violoncell, zwei Violinen</s>
+          <s xml:id="deu-s9">Vorrede: Die Violine als vollendete Form, als Kunstwerk, als
             selbständige Persönlichkeit (nicht Maschine).</s>
-<s xml:id="deu-s10">Die Auffassung beispielsweise bei <name ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name> und den jetzigen
-<placeName ref="#l_paris">Parisern</placeName>.
-</s>
-</ab>
-</div>
+          <s xml:id="deu-s10">Die Auffassung beispielsweise bei <name ref="#p_picasso_pablo"
+            >Picasso</name>,<name ref="#p_braque_georges">Braque</name> und den jetzigen <rs type="group-persons">Parisern</rs><note>The artists of the so-called School of <placeName ref="#l_paris">Paris</placeName>.</note>.</s>
+        </p>
+      </div>
 
-<div type="translation" xml:lang="IT">
-<pb xml:id="pb-trans-1r-1" facs="#facs-orig-1r-1" n="1r"/>
-<p>
-<s xml:id="ita-s1"> In senso inverso al decorso di questa breve rappresentazione della
-            linea procede la rappresentazione, che pure è contenuta in questa, del piano. </s>
-<s xml:id="ita-s2"> Quando la linea era attiva divideva in superfici immaginarie. </s>
-<s xml:id="ita-s3"> In mezzo ad esse si imponeva il carattere di superficie, diventando
-            attivo quando la linea veniva detta passiva. </s>
-</p>
-<p>
-<s xml:id="ita-s4"> La superficie, coltivata allo stato puro, è l’elemento calmo, ma se
-            finisce per muoversi, ◌ si avvicina al carattere della linea. </s>
-<s xml:id="ita-s5"> Quanto più la linea AB si muove in avanti, tanto più in questo modo
-            diventa sottile la superficie descritta in rapporto alla sua lunghezza, finché infine si
-            può parlare di una coincidenza tra A e B, con il che siamo di nuovo giunti alla linea
-            attiva.</s>
-<s xml:id="ita-s6"> (Questa sezione è ripresa alle pagine 143-146). </s>
-</p>
-<!-- TODO fix this -->
-<pb facs="#facs-orig-1r-2" n="2"/>
-
-<p>
-<s xml:id="ita-s7">Esercizio: il violino. Modelli: un violoncello, due violini.</s>
-</p>
-<p>
-<s xml:id="ita-s8">Premessa: il violino come forma compiuta, come opera d’arte, come
-            personalità autonoma (non macchina).</s>
-<s xml:id="ita-s9">Tale concezione a esempio in <name ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name>, e l’attuale scuola di
-<placeName ref="#l_paris">Parigi</placeName>.
-</s>
-</p>
-</div>
-</body>
-</text>
+      <div type="translation" xml:lang="IT">
+        <pb facs="#facs-orig-12" n="12"/>
+        <p>
+          <s xml:id="en-s1"> Running contrary to the trajectory of this short account of the line,
+            and at the same time contained within it, is an account of the plane. When active, the
+            line divided [it] into imaginary planes. In between, the plane-character pushed its way
+            forth; it then became active when the line was designated as passive.</s>
+          <s xml:id="en-s2">The plane, when purebred, is the element at rest. But if it starts to
+            move, then it approaches the line-character. </s>
+          <s xml:id="en-s3"> The further the line AB moves forth, the thinner the described plane
+            becomes in relation to its length, until finally one may speak of the coincidence of A
+            and B, with which we have arrived once again at the active line. </s>
+        </p>
+        <pb facs="#facs-orig-13" n="13"/>
+        <p>
+          <s xml:id="en-s7">Exercise: The Violin. Models: one cello, two violins.</s>
+        </p>
+        <p>
+          <s xml:id="en-s8">Opening words: the violin as a perfect form, as a work of art, as an
+            independent personality (not a machine). The view, for example,of <name
+              ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name>, and
+            current school of <placeName ref="#l_paris">Paris</placeName>. </s>
+        </p>
+      </div>
+    </body>
+  </text>
 </TEI>
