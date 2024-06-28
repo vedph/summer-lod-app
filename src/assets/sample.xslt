@@ -202,6 +202,58 @@
         <xsl:text> </xsl:text>
     </xsl:template>
 
+    <!-- figure -->
+    <!--
+        <figure>...</figure>
+    -->
+    <xsl:template match="tei:figure">
+        <figure>
+            <xsl:apply-templates/>
+        </figure>
+    </xsl:template>
+
+    <!-- graphic -->
+    <!--
+        <img src="@url" alt="figDesc">
+    -->
+    <xsl:template match="tei:graphic">
+        <xsl:element name="img">
+            <xsl:attribute name="src">
+                <xsl:value-of select="@url"/>
+            </xsl:attribute>
+            <xsl:if test="following-sibling::tei:figDesc">
+                <xsl:attribute name="alt">
+                    <xsl:value-of select="normalize-space(following-sibling::tei:figDesc)"/>
+                </xsl:attribute>
+            </xsl:if>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- graphic with a desc child -->
+    <!--
+        <img src="@url" alt="desc">
+    -->
+    <xsl:template match="tei:graphic[tei:desc]">
+        <xsl:element name="img">
+            <xsl:attribute name="src">
+                <xsl:value-of select="@url"/>
+            </xsl:attribute>
+            <xsl:attribute name="alt">
+                <xsl:value-of select="normalize-space(tei:desc)"/>
+            </xsl:attribute>
+        </xsl:element>
+    </xsl:template>
+
+    <!-- figDesc -->
+    <!--
+        <figcaption>...</figcaption>
+    -->
+    <xsl:template match="tei:figDesc">
+        <figcaption>
+            <xsl:apply-templates/>
+        </figcaption>
+    </xsl:template>
+
     <!-- ================================================================== -->
     <!-- HEADER -->
     <!-- ================================================================== -->
