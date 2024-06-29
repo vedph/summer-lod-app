@@ -7,11 +7,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.7 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+2. `docker build . -t vedph2020/summer-lod-app:0.0.8 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.7
+docker push vedph2020/summer-lod-app:0.0.8
 docker push vedph2020/summer-lod-app:latest
 ```
 
@@ -99,6 +99,8 @@ Additionally, a [GeoService](./src/app/services/geo.service.ts) is used to find 
 This of course assumes that our place entities use one of the two providers, which is fine for the sake of this toy app. As querying these public services takes a lot of time, the geo service caches its result and reuses it whenever possible.
 
 ## History
+
+### 0.0.8
 
 - 2024-06-29:
   - updated Angular and packages.

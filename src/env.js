@@ -4,6 +4,6 @@
 
   // environment-dependent settings
   window.__env.apiUrl = "http://localhost:5275/";
-  window.__env.version = "0.0.7";
+  window.__env.version = "0.0.8";
   window.__env.cacheDisabled = false;
 })(this);
