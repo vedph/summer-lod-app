@@ -1,6 +1,10 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { HTTP_INTERCEPTORS, provideHttpClient, withJsonpSupport } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withJsonpSupport,
+} from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
@@ -19,6 +23,7 @@ import {
   CADMUS_TEXT_ED_SERVICE_OPTIONS_TOKEN,
 } from '@myrmidon/cadmus-text-ed';
 import { GEONAMES_USERNAME_TOKEN } from '@myrmidon/cadmus-refs-geonames-lookup';
+import { WHG_USERNAME_TOKEN } from '@myrmidon/cadmus-refs-whg-lookup';
 
 export const CACHE_ID = 'VEDPHSS2024';
 
@@ -34,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: PROXY_INTERCEPTOR_OPTIONS,
       useValue: {
-        proxyUrl: (window as any).__env?.apiUrl as string + 'proxy',
+        proxyUrl: ((window as any).__env?.apiUrl as string) + 'proxy',
         urls: [
           'http://lookup.dbpedia.org/api/search',
           'http://lookup.dbpedia.org/api/prefix',
@@ -44,6 +49,11 @@ export const appConfig: ApplicationConfig = {
     // geonames
     {
       provide: GEONAMES_USERNAME_TOKEN,
+      useValue: 'myrmex',
+    },
+    // whg
+    {
+      provide: WHG_USERNAME_TOKEN,
       useValue: 'myrmex',
     },
     // editor plugins:

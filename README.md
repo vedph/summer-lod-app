@@ -100,6 +100,11 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-06-29:
+  - updated Angular and packages.
+  - updated sample XML.
+  - added image rendition to XSLT.
+  - added WHG in lookup configuration.
 - 2024-06-19: updated sample XML (thanks Paolo!).
 
 ### 0.0.7

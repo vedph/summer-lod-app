@@ -1,4 +1,3 @@
-
 import { Component, Inject, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -10,6 +9,10 @@ import {
 import { DbpediaRefLookupService } from '@myrmidon/cadmus-refs-dbpedia-lookup';
 import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup';
 import { ViafRefLookupService } from '@myrmidon/cadmus-refs-viaf-lookup';
+import {
+  GeoJsonFeature,
+  WhgRefLookupService,
+} from '@myrmidon/cadmus-refs-whg-lookup';
 
 /**
  * Link editor dialog component.
@@ -28,6 +31,7 @@ export class LodLinkEditorComponent {
     dbpediaService: DbpediaRefLookupService,
     geonamesService: GeoNamesRefLookupService,
     viafService: ViafRefLookupService,
+    whgService: WhgRefLookupService,
     @Optional()
     public dialogRef?: MatDialogRef<LodLinkEditorComponent>,
     @Optional()
@@ -54,6 +58,17 @@ export class LodLinkEditorComponent {
         service: geonamesService,
         itemIdGetter: (item: any) => item?.geonameId,
         itemLabelGetter: (item: any) => item?.toponymName,
+      },
+      // WHG
+      {
+        name: 'whg',
+        iconUrl: '/assets/img/whg128.png',
+        description: 'World Historical Gazetteer',
+        label: 'ID',
+        service: whgService,
+        itemIdGetter: (item: GeoJsonFeature) =>
+          item?.properties.place_id ? `${item.properties.place_id}` : '',
+        itemLabelGetter: (item: GeoJsonFeature) => item?.properties.title,
       },
       // viaf
       {
