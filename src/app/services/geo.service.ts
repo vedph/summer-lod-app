@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 
-import { ErrorService } from '@myrmidon/ng-tools';
+import { EnvService, ErrorService } from '@myrmidon/ng-tools';
 
 import { CACHE_ID } from '../app.config';
 import { LocalCacheService } from './local-cache.service';
@@ -32,7 +32,8 @@ export class GeoService {
   constructor(
     private http: HttpClient,
     private _cacheService: LocalCacheService,
-    private _error: ErrorService
+    private _error: ErrorService,
+    private _envService: EnvService
   ) {}
 
   getPointFromWikidata(id: string): Observable<GeoPoint> {
@@ -54,7 +55,7 @@ export class GeoService {
       query
     )}&format=json`;
 
-    console.log("Wikidata Query:\n" + query);
+    console.log('Wikidata Query:\n' + query);
 
     return this.http.get<any>(url).pipe(
       map((response) => {
@@ -85,11 +86,11 @@ export class GeoService {
                 geo:long ?long .
       }
     `;
-    const url = `http://dbpedia.org/sparql?query=${encodeURIComponent(
-      query
-    )}&format=json`;
+    const url =
+      (this._envService.get('https') ? 'https' : 'http') +
+      `://dbpedia.org/sparql?query=${encodeURIComponent(query)}&format=json`;
 
-    console.log("DBPedia Query:\n" + query);
+    console.log('DBPedia Query:\n' + query);
 
     return this.http.get<any>(url).pipe(
       map((response) => {

@@ -5,7 +5,7 @@
     <div class="floated">
       <img
         class="depiction"
-        alt="{{ info?.names?.length ? info!.names![0] : 'person' }}"
+        alt="{{ info?.names?.length ? info!.names![0].value : 'person' }}"
         [src]="info?.depiction?.value"
       />
     </div>

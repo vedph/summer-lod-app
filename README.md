@@ -7,20 +7,26 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.8 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+2. `docker build . -t vedph2020/summer-lod-app:0.0.9 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.8
+docker push vedph2020/summer-lod-app:0.0.9
 docker push vedph2020/summer-lod-app:latest
 ```
 
-Production version for temporary host environment:
+🚀 Production version for temporary host environment:
 
 1. `ng build --configuration=production`.
-2. in dist `env.js` change the API URL from `window.__env.apiUrl = "http://localhost:5275/";` to `window.__env.apiUrl = "https://summer-lod-api.fusi-soft.com/";`.
-3. `docker build . -t vedph2020/summer-lod-app-prod:0.0.8`.
-4. `docker push vedph2020/summer-lod-app-prod:0.0.8`.
+
+2. in dist `env.js`:
+
+     - change the API URL from `window.__env.apiUrl = "http://localhost:5275/";` to `window.__env.apiUrl = "https://summer-lod-api.fusi-soft.com/";`.
+     - set `window.__env.https = true;` instead of false. This will make the geo service use HTTPS rather than HTTP when querying DBPedia, thus avoiding mixed content issues from a HTTPS production environment.
+
+3. `docker build . -t vedph2020/summer-lod-app-prod:0.0.9`.
+
+4. `docker push vedph2020/summer-lod-app-prod:0.0.9`.
 
 ## Overview
 
@@ -106,6 +112,12 @@ Additionally, a [GeoService](./src/app/services/geo.service.ts) is used to find 
 This of course assumes that our place entities use one of the two providers, which is fine for the sake of this toy app. As querying these public services takes a lot of time, the geo service caches its result and reuses it whenever possible.
 
 ## History
+
+### 0.0.9
+
+- 2024-07-02:
+  - fixed alt image value in person info.
+  - added conditional HTTPS for geo service.
 
 ### 0.0.8
 
