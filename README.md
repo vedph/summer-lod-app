@@ -15,6 +15,13 @@ docker push vedph2020/summer-lod-app:0.0.8
 docker push vedph2020/summer-lod-app:latest
 ```
 
+Production version for temporary host environment:
+
+1. `ng build --configuration=production`.
+2. in dist `env.js` change the API URL from `window.__env.apiUrl = "http://localhost:5275/";` to `window.__env.apiUrl = "https://summer-lod-api.fusi-soft.com/";`.
+3. `docker build . -t vedph2020/summer-lod-app-prod:0.0.8`.
+4. `docker push vedph2020/summer-lod-app-prod:0.0.8`.
+
 ## Overview
 
 This toy application has been created for a workflow like this:
