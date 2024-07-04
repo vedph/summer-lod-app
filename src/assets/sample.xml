@@ -68,7 +68,7 @@
           </person>
           <personGrp xml:id="p_school_of_paris">
             <name>School of <placeName ref="#l_paris">Paris</placeName></name>
-            <idno type="wikipedia">https://en.wikipedia.org/wiki/School_of_Paris</idno>
+            <idno type="dbpedia">https://dbpedia.org/page/School_of_Paris</idno>
             <link target="https://en.wikipedia.org/wiki/School_of_Paris" type="wikipedia"/>
           </personGrp>
         </listPerson>
@@ -78,8 +78,7 @@
             <placeName>
               <name>Paris</name>, <country>France</country>. </placeName>
             <idno type="dbpedia">http://dbpedia.org/resource/Paris</idno>
-            <idno type="wikipedia">https://en.wikipedia.org/wiki/Paris</idno>
-            <!-- <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/> -->
+            <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/>
           </place>
         </listPlace>
       </sourceDesc>
@@ -97,9 +96,8 @@
   </standOff>
   <facsimile>
     <surface>
-      <!-- TODO use KLEE_FOrmlehere_page-0001.jpg when online -->
-      <graphic xml:id="facs-orig-12" url="http://via.placeholder.com/300x600"/>
-      <graphic xml:id="facs-orig-13" url="http://via.placeholder.com/300x600"/>
+      <graphic xml:id="facs-orig-12" url="/KLEE_Formlehre_page-0001.jpg"/>
+      <graphic xml:id="facs-orig-13" url="/KLEE_Formlehre_page-0001.jpg"/>
     </surface>
   </facsimile>
   <text>
@@ -121,13 +119,13 @@
               <lb/>Die Fläche ist, rein gezüchtet, das ruhige <lb/>Element.</s>
             <s xml:id="deu-s5">Gerät sie aber in Bewegung, <lb/>
               <figure>
-                <graphic url="http://via.placeholder.com/80x40"/>
+                <graphic url="XXX"/>
               </figure>
               <lb/>so nähert sie sich dem Liniencharakter.</s>
             <s xml:id="deu-s6">
               <lb/>Je weiter <lb/>
               <figure>
-                <graphic url="http://via.placeholder.com/80x40"/>
+                <graphic url="YYY"/>
               </figure>
               <lb/>die Linie AB sich fort<lb/>bewegt, desto dünner wird dadurch die beschriebene
               <lb/>Fläche im Verhältnis zu ihrer Länge, <lb/>bis man schliesslich von einem
@@ -181,7 +179,7 @@
               and the <rs type="persons-group" ref="#p_school_of_paris">School of <placeName ref="#l_paris">Paris</placeName></rs>.</s>
           </p>
           <p>Analytic beginnings ...</p>
-          <p>Preliminary results of rather analytischec natur</p>
+          <p>Prelminary results of rather analytischec natur</p>
         </div>
         <div type="section" n="2">
           <p>...</p>

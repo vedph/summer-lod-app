@@ -113,6 +113,8 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-07-04: updated `sample.xml`.
+
 ### 0.0.9
 
 - 2024-07-02:
