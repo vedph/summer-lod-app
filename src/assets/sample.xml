@@ -41,7 +41,7 @@
             in the summer semester of 1922.</p>
           <p>
             <dimensions>
-              <width unit="cm">17,6</width>
+              <width unit="cm">17.6</width>
               <height unit="cm">21</height>
             </dimensions>
           </p>
@@ -76,7 +76,8 @@
         <listPlace>
           <place xml:id="l_paris">
             <placeName>
-              <name>Paris</name>, <country>France</country>. </placeName>
+              <name>Paris</name>, <country>France</country>.
+            </placeName>
             <idno type="dbpedia">http://dbpedia.org/resource/Paris</idno>
             <link target="https://en.wikipedia.org/wiki/Paris" type="wikipedia"/>
           </place>
@@ -174,9 +175,9 @@
           </p>
           <p>
             <s xml:id="en-s8">Opening words: the violin as a perfect form, as a work of art, as an
-              independent personality (not a machine). The view, for example,of <name
-                ref="#p_picasso_pablo">Picasso</name>,<name ref="#p_braque_georges">Braque</name>,
-              and the <rs type="persons-group" ref="#p_school_of_paris">School of <placeName ref="#l_paris">Paris</placeName></rs>.</s>
+              independent personality (not a machine). The view, for example, of <name
+                ref="#p_picasso_pablo">Picasso</name>, <name ref="#p_braque_georges">Braque</name>,
+              and today's <rs type="persons-group" ref="#p_school_of_paris">School of <placeName ref="#l_paris">Paris</placeName></rs>.</s>
           </p>
           <p>Analytic beginnings ...</p>
           <p>Prelminary results of rather analytischec natur</p>
