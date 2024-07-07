@@ -7,11 +7,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:0.0.9 -t vedph2020/summer-lod-app:latest` (replace with the current version).
+2. `docker build . -t vedph2020/summer-lod-app:0.0.10 -t vedph2020/summer-lod-app:latest` (replace with the current version).
 3. push:
 
 ```bash
-docker push vedph2020/summer-lod-app:0.0.9
+docker push vedph2020/summer-lod-app:0.0.10
 docker push vedph2020/summer-lod-app:latest
 ```
 
@@ -24,9 +24,9 @@ docker push vedph2020/summer-lod-app:latest
      - change the API URL from `window.__env.apiUrl = "http://localhost:5275/";` to `window.__env.apiUrl = "https://summer-lod-api.fusi-soft.com/";`.
      - set `window.__env.https = true;` instead of false. This will make the geo service use HTTPS rather than HTTP when querying DBPedia, thus avoiding mixed content issues from a HTTPS production environment.
 
-3. `docker build . -t vedph2020/summer-lod-app-prod:0.0.9`.
+3. `docker build . -t vedph2020/summer-lod-app-prod:0.0.10`.
 
-4. `docker push vedph2020/summer-lod-app-prod:0.0.9`.
+4. `docker push vedph2020/summer-lod-app-prod:0.0.10`.
 
 ## Overview
 
@@ -113,6 +113,9 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+### 0.0.10
+
+- 2024-07-07: updated Angular.
 - 2024-07-04: updated `sample.xml`.
 
 ### 0.0.9
