@@ -113,6 +113,8 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2024-09-14: updated Angular and packages.
+
 ### 0.0.10
 
 - 2024-07-07: updated Angular.
