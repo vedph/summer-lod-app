@@ -1,55 +1,55 @@
 <div>
   <div class="container">
     <!-- depiction -->
-    @if (info?.depiction?.value) {
+    @if (info()?.depiction?.value) {
     <div class="floated">
       <img
         class="depiction"
-        alt="{{ info?.names?.length ? info!.names![0].value : 'person' }}"
-        [src]="info?.depiction?.value"
+        alt="{{ info()?.names?.length ? info()!.names![0].value : 'person' }}"
+        [src]="info()?.depiction?.value"
       />
     </div>
     }
     <!-- name(s) -->
-    @if (info?.names?.length) {
+    @if (info()?.names?.length) {
     <ul>
-      @for (n of info?.names; track n) {
+      @for (n of info()?.names; track n) {
       <li>{{ n.value }} ({{ n["xml:lang"] }})</li>
       }
     </ul>
     }
     <!-- birth -->
     <ul>
-      @if (info?.birthDate?.value) {
+      @if (info()?.birthDate?.value) {
       <li>
-        birth: @if (info?.birthPlace?.type === 'uri') {
-        <a target="_blank" [href]="info?.birthPlace?.value"
-          >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
+        birth: @if (info()?.birthPlace?.type === 'uri') {
+        <a target="_blank" [href]="info()?.birthPlace?.value"
+          >{{ info()?.birthPlaceLabel?.value || info()?.birthPlace?.value }}
         </a>
-        } @if (info?.birthPlace?.type !== 'uri') {
+        } @if (info()?.birthPlace?.type !== 'uri') {
         <span
-          >{{ info?.birthPlaceLabel?.value || info?.birthPlace?.value }}
+          >{{ info()?.birthPlaceLabel?.value || info()?.birthPlace?.value }}
         </span>
-        } @if (info?.birthDate?.value) {
-        <span>{{ info?.birthDate?.value }}</span>
+        } @if (info()?.birthDate?.value) {
+        <span>{{ info()?.birthDate?.value }}</span>
         }
       </li>
       }
       <!-- death -->
-      @if (info?.deathDate?.value) {
+      @if (info()?.deathDate?.value) {
       <li>
-        death: @if (info?.deathPlace?.type === 'uri') {
-        <a target="_blank" [href]="info?.deathPlace?.value"
-          >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
+        death: @if (info()?.deathPlace?.type === 'uri') {
+        <a target="_blank" [href]="info()?.deathPlace?.value"
+          >{{ info()?.deathPlaceLabel?.value || info()?.deathPlace?.value }}
         </a>
-        } @if (info?.deathPlace?.type !== 'uri') {
+        } @if (info()?.deathPlace?.type !== 'uri') {
         <span
-          >{{ info?.deathPlaceLabel?.value || info?.deathPlace?.value }}
+          >{{ info()?.deathPlaceLabel?.value || info()?.deathPlace?.value }}
         </span>
-        } @if (info?.deathDate?.value) {
-        <span>{{ info?.deathDate?.value }}</span>
-        } @if (info?.birthDate && info?.deathDate) {
-        <span> (aged {{ getAge(info?.birthDate, info?.deathDate) }})</span>
+        } @if (info()?.deathDate?.value) {
+        <span>{{ info()?.deathDate?.value }}</span>
+        } @if (info()?.birthDate && info()?.deathDate) {
+        <span> (aged {{ getAge(info()?.birthDate, info()?.deathDate) }})</span>
         }
       </li>
       }
@@ -58,18 +58,18 @@
     <div>
       <mat-form-field>
         <mat-select placeholder="abstract language" [formControl]="language">
-          @for (l of languages; track l) {
+          @for (l of languages(); track l) {
           <mat-option [value]="l">{{ getLangName(l) }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
     </div>
-    <div class="text-cols">{{ selectedAbstract }}</div>
+    <div class="text-cols">{{ selectedAbstract() }}</div>
   </div>
   <!-- wiki link -->
-  @if (info?.topic) {
+  @if (info()?.topic) {
   <div>
-    <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
+    <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
   </div>
   }
 </div>

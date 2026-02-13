@@ -1,7 +1,15 @@
-import { Component, Input } from '@angular/core';
-
 import {
-  FormBuilder,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
   FormControl,
   FormsModule,
   ReactiveFormsModule,
@@ -14,89 +22,79 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PlaceInfo } from '../../services/dbpedia-place.service';
 import { AssetService } from '../../services/asset.service';
-import { LodService, RdfTerm } from '../../services/lod.service';
+import { LodService } from '../../services/lod.service';
 
 @Component({
-    selector: 'app-place-info',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatTooltipModule
-    ],
-    templateUrl: './place-info.component.html',
-    styleUrl: './place-info.component.scss'
+  selector: 'app-place-info',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTooltipModule,
+  ],
+  templateUrl: './place-info.component.html',
+  styleUrl: './place-info.component.scss',
 })
-export class PlaceInfoComponent {
-  private _info: PlaceInfo | null = null;
-  private _subs?: Subscription[];
+export class PlaceInfoComponent implements OnInit, OnDestroy {
+  private readonly _lodService = inject(LodService);
   private _langMap?: Map<string, string>;
+  private _sub?: Subscription;
 
-  @Input()
-  public get info(): PlaceInfo | null {
-    return this._info;
-  }
+  // Signal input
+  readonly info = input<PlaceInfo | null | undefined>(null);
 
-  public set info(value: PlaceInfo | null | undefined) {
-    if (this._info === value) {
-      return;
-    }
-    this._info = value || null;
-    this.updateLanguages(value?.abstracts);
-  }
+  // Derived: available languages from abstracts
+  readonly languages = computed(() => {
+    const abstracts = this.info()?.abstracts;
+    return abstracts ? this._lodService.getLanguages(abstracts) : [];
+  });
 
-  public languages?: string[];
-  public language: FormControl<string | null>;
-  public selectedAbstract?: string;
+  // Language selector FormControl
+  readonly language = new FormControl<string | null>(null);
 
-  constructor(
-    private _lodService: LodService,
-    assetService: AssetService,
-    formBuilder: FormBuilder
-  ) {
+  // Selected abstract text
+  readonly selectedAbstract = signal<string | undefined>(undefined);
+
+  constructor() {
+    const assetService = inject(AssetService);
     assetService.loadIsoCodes().subscribe((map) => {
       this._langMap = map;
     });
-    this.language = formBuilder.control<string | null>(null);
-  }
 
-  public ngOnInit(): void {
-    this._subs = [
-      this.language.valueChanges.subscribe((_) => {
-        if (this.languages && this.info?.abstracts) {
-          const i = this.languages.findIndex((l) => {
-            return this.language.value === l;
-          });
-          this.selectedAbstract = this.info.abstracts[i]?.value;
+    // Auto-select language when languages change
+    effect(() => {
+      const langs = this.languages();
+      if (langs.length > 0) {
+        const browserLang = navigator.language.split('-')[0];
+        if (langs.includes(browserLang)) {
+          this.language.setValue(browserLang);
+        } else if (langs.includes('en')) {
+          this.language.setValue('en');
+        } else {
+          this.language.setValue(null);
         }
-      }),
-    ];
-  }
-
-  public ngOnDestroy(): void {
-    this._subs?.forEach((s) => s.unsubscribe());
-  }
-
-  private updateLanguages(abstracts: RdfTerm[] | undefined): void {
-    if (abstracts) {
-      this.languages = this._lodService.getLanguages(abstracts);
-      // select the browser's language if available, else English if available
-      const lang = navigator.language.split('-')[0];
-      if (this.languages.includes(lang)) {
-        this.language.setValue(lang);
-      } else if (this.languages.includes('en')) {
-        this.language.setValue('en');
-      } else {
-        this.language.setValue(null);
       }
-    } else {
-      this.languages = [];
-    }
+    });
   }
 
-  public getLangName(code: string): string {
-    const name = this._langMap?.get(code);
-    return name ? name : code;
+  ngOnInit(): void {
+    this._sub = this.language.valueChanges.subscribe(() => {
+      const langs = this.languages();
+      const abstracts = this.info()?.abstracts;
+      if (langs && abstracts) {
+        const i = langs.findIndex((l) => this.language.value === l);
+        this.selectedAbstract.set(abstracts[i]?.value);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._sub?.unsubscribe();
+  }
+
+  getLangName(code: string): string {
+    return this._langMap?.get(code) ?? code;
   }
 }

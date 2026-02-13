@@ -22,7 +22,7 @@
       <div id="result">
         <!-- progress -->
         <div>
-          @if (busy) {
+          @if (busy()) {
           <mat-progress-bar
             mode="indeterminate"
             color="primary"
@@ -38,7 +38,7 @@
             type="button"
             mat-icon-button
             (click)="loadXml()"
-            [disabled]="busy"
+            [disabled]="busy()"
             matTooltip="Load XML from file"
           >
             <mat-icon>upload_file</mat-icon>
@@ -48,7 +48,7 @@
             type="button"
             mat-icon-button
             (click)="saveXml()"
-            [disabled]="busy || xml.invalid"
+            [disabled]="busy() || xml.invalid"
             matTooltip="Save XML to file"
           >
             <mat-icon>save</mat-icon>
@@ -58,7 +58,7 @@
             type="button"
             mat-icon-button
             (click)="prettifyXml()"
-            [disabled]="busy || xml.invalid"
+            [disabled]="busy() || xml.invalid"
             matTooltip="Prettify XML"
           >
             <mat-icon>format_align_right</mat-icon>
@@ -69,7 +69,7 @@
             type="button"
             mat-icon-button
             (click)="loadXslt()"
-            [disabled]="busy"
+            [disabled]="busy()"
             matTooltip="Load XSLT from file"
           >
             <mat-icon>upload_file</mat-icon>
@@ -79,7 +79,7 @@
             type="button"
             mat-icon-button
             (click)="saveXslt()"
-            [disabled]="busy || xslt.invalid"
+            [disabled]="busy() || xslt.invalid"
             matTooltip="Save XSLT to file"
           >
             <mat-icon>save</mat-icon>
@@ -89,7 +89,7 @@
             type="button"
             mat-icon-button
             (click)="prettifyXslt()"
-            [disabled]="busy || xslt.invalid"
+            [disabled]="busy() || xslt.invalid"
             matTooltip="Prettify XSLT"
           >
             <mat-icon>format_align_right</mat-icon>
@@ -101,7 +101,7 @@
             mat-icon-button
             color="warn"
             (click)="resetCode()"
-            [disabled]="busy"
+            [disabled]="busy()"
             matTooltip="Reset the code"
           >
             <mat-icon class="mat-warn">restart_alt</mat-icon>
@@ -112,7 +112,7 @@
             mat-icon-button
             color="primary"
             (click)="transform()"
-            [disabled]="busy || xml.invalid || xslt.invalid"
+            [disabled]="busy() || xml.invalid || xslt.invalid"
             matTooltip="Transform XML with XSLT"
           >
             <mat-icon class="mat-primary">play_circle</mat-icon>
@@ -122,7 +122,7 @@
             type="button"
             mat-icon-button
             (click)="parseEntities()"
-            [disabled]="busy || xml.invalid"
+            [disabled]="busy() || xml.invalid"
             matTooltip="Parse XML entities"
           >
             <mat-icon class="mat-accent">people</mat-icon>
@@ -130,29 +130,28 @@
 
           <!-- error -->
           <span class="error">
-            @if (error) {
+            @if (error()) {
             <mat-icon color="warn" class="mat-warn">error</mat-icon>
-            } @if (error) {
-            <span>{{ error }}</span>
+            <span>{{ error() }}</span>
             }
           </span>
         </div>
         <div>
           <!-- html -->
-          @if (rendition) {
+          @if (rendition()) {
           <div id="rendition" class="boxed">
-            <mat-expansion-panel [expanded]="rendition" [disabled]="!rendition">
+            <mat-expansion-panel [expanded]="!!rendition()" [disabled]="!rendition()">
               <mat-expansion-panel-header>
                 <mat-panel-title>HTML</mat-panel-title>
               </mat-expansion-panel-header>
-              <div [innerHTML]="rendition | safeHtml"></div>
+              <div [innerHTML]="rendition()! | safeHtml"></div>
             </mat-expansion-panel>
           </div>
           }
           <!-- entities -->
           <div class="boxed">
             <app-entity-list
-              [entities]="entities"
+              [entities]="entities()"
               (entityPick)="pickEntity($event)"
             />
           </div>

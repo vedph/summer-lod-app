@@ -1,5 +1,20 @@
-div#map {
+:host {
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 600px;
+}
+
+mgl-map {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+}
+
+.custom-marker {
+  cursor: pointer;
+
+  img {
+    transform: translate(-50%, -100%);
+  }
 }

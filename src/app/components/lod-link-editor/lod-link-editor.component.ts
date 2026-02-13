@@ -1,4 +1,4 @@
-import { Component, Inject, Optional } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Optional } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import {
@@ -19,6 +19,7 @@ import {
  */
 @Component({
     selector: 'app-lod-link-editor',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RefLookupSetComponent],
     templateUrl: './lod-link-editor.component.html',
     styleUrl: './lod-link-editor.component.scss'

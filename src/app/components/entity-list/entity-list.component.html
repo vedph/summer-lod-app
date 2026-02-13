@@ -1,9 +1,9 @@
 <div id="container">
   <!-- filters -->
-  @if (entities.length) {
+  @if (entities().length) {
   <div id="filters">
     <div>
-      @if (busy) {
+      @if (busy()) {
       <mat-progress-bar
         mode="indeterminate"
         color="primary"
@@ -49,7 +49,7 @@
 
   <!-- entities list-->
   <div id="list">
-    @if (filteredEntities.length) {
+    @if (filteredEntities().length) {
     <table>
       <thead>
         <tr>
@@ -60,7 +60,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (e of filteredEntities; track e) {
+        @for (e of filteredEntities(); track e) {
         <tr>
           <td class="fit-width">
             <button
@@ -77,7 +77,7 @@
               type="button"
               mat-icon-button
               matTooltip="Fly to this location"
-              (click)="flyToPoint = e.point"
+              (click)="onFlyTo(e.point!)"
             >
               <mat-icon style="color: #18b179">location_on</mat-icon>
             </button>
@@ -126,14 +126,14 @@
   <!-- entity details -->
   <div id="details">
     <mat-expansion-panel
-      [expanded]="selectedEntity && (personInfo || placeInfo)"
-      [disabled]="!selectedEntity || !(personInfo || placeInfo)"
+      [expanded]="!!selectedEntity() && !!(personInfo() || placeInfo())"
+      [disabled]="!selectedEntity() || !(personInfo() || placeInfo())"
     >
       <mat-expansion-panel-header> details </mat-expansion-panel-header>
-      @if (selectedEntity?.type === 'person') {
-      <app-person-info [info]="personInfo"></app-person-info>
-      } @else if (selectedEntity?.type === 'place') {
-      <app-place-info [info]="placeInfo"></app-place-info>
+      @if (selectedEntity()?.type === 'person') {
+      <app-person-info [info]="personInfo()"></app-person-info>
+      } @else if (selectedEntity()?.type === 'place') {
+      <app-place-info [info]="placeInfo()"></app-place-info>
       }
     </mat-expansion-panel>
   </div>
@@ -141,8 +141,8 @@
   <!-- map -->
   <div id="map">
     <app-place-map
-      [entities]="filteredPlaces"
-      [flyToPoint]="flyToPoint"
+      [entities]="filteredPlaces()"
+      [flyToPoint]="flyToPoint()"
       (entityPick)="selectEntity($event)"
     ></app-place-map>
   </div>

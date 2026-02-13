@@ -1,19 +1,19 @@
 <div>
   <div class="container">
     <!-- depiction -->
-    @if (info?.depiction?.value) {
+    @if (info()?.depiction?.value) {
     <div class="floated">
       <img
         class="depiction"
-        alt="{{ info?.labels?.length ? info!.labels![0].value : 'place' }}"
-        [src]="info?.depiction?.value"
+        alt="{{ info()?.labels?.length ? info()!.labels![0].value : 'place' }}"
+        [src]="info()?.depiction?.value"
       />
     </div>
     }
     <!-- label(s) -->
-    @if (info?.labels?.length) {
+    @if (info()?.labels?.length) {
     <ul class="two-cols">
-      @for (l of info?.labels; track l) {
+      @for (l of info()?.labels; track l) {
       <li>{{ l.value }} ({{ l["xml:lang"] }})</li>
       }
     </ul>
@@ -22,18 +22,18 @@
     <div>
       <mat-form-field>
         <mat-select placeholder="abstract language" [formControl]="language">
-          @for (l of languages; track l) {
+          @for (l of languages(); track l) {
           <mat-option [value]="l">{{ getLangName(l) }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
     </div>
-    <ng-container>{{ selectedAbstract }}</ng-container>
+    <ng-container>{{ selectedAbstract() }}</ng-container>
   </div>
   <!-- wiki link -->
-  @if (info?.topic) {
+  @if (info()?.topic) {
   <div>
-    <a [href]="info?.topic?.value" target="_blank">Open Wikipedia</a>
+    <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
   </div>
   }
 </div>

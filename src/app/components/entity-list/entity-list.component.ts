@@ -1,16 +1,26 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
-  FormBuilder,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
+import {
   FormControl,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-
 import {
   debounceTime,
   distinctUntilChanged,
   firstValueFrom,
   merge,
+  Subscription,
 } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -40,183 +50,188 @@ import { PlaceInfoComponent } from '../place-info/place-info.component';
 import { PlaceMapComponent } from '../place-map/place-map.component';
 
 @Component({
-    selector: 'app-entity-list',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatExpansionModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatProgressBarModule,
-        MatSelectModule,
-        MatTabsModule,
-        MatTooltipModule,
-        NgToolsModule,
-        PersonInfoComponent,
-        PlaceInfoComponent,
-        PlaceMapComponent,
-    ],
-    templateUrl: './entity-list.component.html',
-    styleUrl: './entity-list.component.scss'
+  selector: 'app-entity-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatTabsModule,
+    MatTooltipModule,
+    NgToolsModule,
+    PersonInfoComponent,
+    PlaceInfoComponent,
+    PlaceMapComponent,
+  ],
+  templateUrl: './entity-list.component.html',
+  styleUrl: './entity-list.component.scss',
 })
-export class EntityListComponent implements OnInit {
-  private _entities: ParsedEntity[] = [];
+export class EntityListComponent implements OnInit, OnDestroy {
+  private readonly _geoService = inject(GeoService);
+  private readonly _dbpPersonService = inject(DbpediaPersonService);
+  private readonly _dbpPlaceService = inject(DbpediaPlaceService);
+  private _filterSub?: Subscription;
 
-  /**
-   * List of entities to display.
-   */
-  @Input()
-  public get entities(): ParsedEntity[] {
-    return this._entities;
+  // Signal input
+  readonly entities = input<ParsedEntity[]>([]);
+
+  // Signal output
+  readonly entityPick = output<ParsedEntity>();
+
+  // Internal state signals
+  readonly busy = signal(false);
+  readonly selectedEntity = signal<ParsedEntity | undefined>(undefined);
+  readonly personInfo = signal<PersonInfo | undefined>(undefined);
+  readonly placeInfo = signal<PlaceInfo | undefined>(undefined);
+  readonly flyToPoint = signal<GeoPoint | undefined>(undefined);
+
+  // Entities after geo-enrichment
+  private readonly _enrichedEntities = signal<ParsedEntity[]>([]);
+
+  // FormControls for filters
+  readonly typeFilter = new FormControl<string | null>(null);
+  readonly nameOrIdFilter = new FormControl<string | null>(null);
+
+  // Bridge FormControl values to signals for computed derivations
+  private readonly _typeFilterValue = signal<string | null>(null);
+  private readonly _nameOrIdFilterValue = signal<string | null>(null);
+
+  // Computed: filtered entities
+  readonly filteredEntities = computed(() => {
+    const entities = this._enrichedEntities();
+    const type = this._typeFilterValue();
+    const nameOrId = this._nameOrIdFilterValue();
+
+    return entities.filter((entity) => {
+      if (type && entity.type !== type) return false;
+      if (nameOrId) {
+        const lower = nameOrId.toLowerCase();
+        const matchesName = entity.names.some((n) =>
+          n.toLowerCase().includes(lower)
+        );
+        const matchesId = entity.ids.some((id) => id.includes(nameOrId));
+        if (!matchesName && !matchesId) return false;
+      }
+      return true;
+    });
+  });
+
+  // Computed: filtered places
+  readonly filteredPlaces = computed(() =>
+    this.filteredEntities().filter((e) => e.type === 'place')
+  );
+
+  constructor() {
+    // When input entities change, enrich with geo data
+    effect(() => {
+      const entities = this.entities();
+      this.typeFilter.reset(null);
+      this.nameOrIdFilter.reset(null);
+      this._typeFilterValue.set(null);
+      this._nameOrIdFilterValue.set(null);
+      this.enrichEntities(entities);
+    });
   }
-  public set entities(value: ParsedEntity[]) {
-    if (this._entities === value) return;
-    this.setEntities(value);
-  }
 
-  /**
-   * Emits when an entity is selected.
-   */
-  @Output()
-  public entityPick: EventEmitter<ParsedEntity> =
-    new EventEmitter<ParsedEntity>();
-
-  public busy?: boolean;
-  public typeFilter: FormControl<string | null>;
-  public nameOrIdFilter: FormControl<string | null>;
-  public filteredEntities: ParsedEntity[] = [];
-  public filteredPlaces: ParsedEntity[] = [];
-  public selectedEntity?: ParsedEntity;
-  public personInfo?: PersonInfo;
-  public placeInfo?: PlaceInfo;
-  public flyToPoint?: GeoPoint;
-
-  constructor(
-    private _geoService: GeoService,
-    private _dbpPersonService: DbpediaPersonService,
-    private _dbpPlaceService: DbpediaPlaceService,
-    formBuilder: FormBuilder
-  ) {
-    this.typeFilter = formBuilder.control(null);
-    this.nameOrIdFilter = formBuilder.control(null);
-  }
-
-  public ngOnInit(): void {
-    merge(this.typeFilter.valueChanges, this.nameOrIdFilter.valueChanges)
+  ngOnInit(): void {
+    // Bridge FormControl changes to signals (debounced)
+    this._filterSub = merge(
+      this.typeFilter.valueChanges,
+      this.nameOrIdFilter.valueChanges
+    )
       .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => this.filterEntities());
+      .subscribe(() => {
+        this._typeFilterValue.set(this.typeFilter.value);
+        this._nameOrIdFilterValue.set(this.nameOrIdFilter.value);
+      });
   }
 
-  private resetFilters(): void {
-    this.typeFilter.reset(null);
-    this.nameOrIdFilter.reset(null);
+  ngOnDestroy(): void {
+    this._filterSub?.unsubscribe();
   }
 
-  private async setEntities(entities: ParsedEntity[]): Promise<void> {
-    this._entities = entities;
+  private async enrichEntities(entities: ParsedEntity[]): Promise<void> {
+    this.busy.set(true);
 
-    this.busy = true;
-    setTimeout(async () => {
-      for (const entity of entities) {
-        // only places have coordinates
-        if (entity.type === 'place') {
-          // find the first id having coordinates
-          for (const id of entity.ids) {
-            if (id.startsWith('http://dbpedia.org/resource/')) {
-              // DBpedia
-              try {
-                const point = await firstValueFrom(
-                  this._geoService.getPointFromDBpedia(id)
-                );
-                if (point) {
-                  entity.point = point;
-                  break;
-                }
-              } catch (error) {
-                console.error(error);
+    for (const entity of entities) {
+      if (entity.type === 'place') {
+        for (const id of entity.ids) {
+          if (id.startsWith('http://dbpedia.org/resource/')) {
+            try {
+              const point = await firstValueFrom(
+                this._geoService.getPointFromDBpedia(id)
+              );
+              if (point) {
+                entity.point = point;
+                break;
               }
-            } else if (id.startsWith('Q')) {
-              // Wikidata
-              try {
-                const point = await firstValueFrom(
-                  this._geoService.getPointFromWikidata(id)
-                );
-                if (point) {
-                  entity.point = point;
-                  break;
-                }
-              } catch (error) {
-                console.error(error);
+            } catch (error) {
+              console.error(error);
+            }
+          } else if (id.startsWith('Q')) {
+            try {
+              const point = await firstValueFrom(
+                this._geoService.getPointFromWikidata(id)
+              );
+              if (point) {
+                entity.point = point;
+                break;
               }
+            } catch (error) {
+              console.error(error);
             }
           }
         }
       }
-    });
-    this.busy = false;
-    this.resetFilters();
-    this.filterEntities();
+    }
+
+    // Spread to create new array reference for signal change detection
+    this._enrichedEntities.set([...entities]);
+    this.busy.set(false);
   }
 
-  private filterEntities(): void {
-    this.filteredEntities = this._entities.filter((entity) => {
-      if (this.typeFilter.value && entity.type !== this.typeFilter.value) {
-        return false;
-      }
-      if (
-        this.nameOrIdFilter.value &&
-        !entity.names.some((n) =>
-          n.toLowerCase().includes(this.nameOrIdFilter.value!.toLowerCase())
-        ) &&
-        !entity.ids.some((id) => id.includes(this.nameOrIdFilter.value!))
-      ) {
-        return false;
-      }
-      return true;
-    });
-    this.filteredPlaces = this.filteredEntities.filter(
-      (e) => e.type === 'place'
+  selectEntity(entity: ParsedEntity): void {
+    if (this.busy()) return;
+    this.selectedEntity.set(entity);
+
+    const id = entity.ids.find((id) =>
+      id.startsWith('http://dbpedia.org/resource/')
     );
-  }
-
-  private getDbpediaId(ids: string[]): string | undefined {
-    return ids.find((id) => id.startsWith('http://dbpedia.org/resource/'));
-  }
-
-  public selectEntity(entity: ParsedEntity): void {
-    if (this.busy) return;
-    this.selectedEntity = entity;
-    const id = this.getDbpediaId(entity.ids);
     if (!id) {
+      this.entityPick.emit(entity);
       return;
     }
 
     if (entity.type === 'person') {
-      this.busy = true;
+      this.busy.set(true);
       this._dbpPersonService.getInfo(id).subscribe({
         next: (info) => {
-          this.personInfo = info || undefined;
+          this.personInfo.set(info || undefined);
           this.entityPick.emit(entity);
         },
-        complete: () => {
-          this.busy = false;
-        },
+        complete: () => this.busy.set(false),
       });
     } else if (entity.type === 'place') {
-      this.busy = true;
+      this.busy.set(true);
       this._dbpPlaceService.getInfo(id).subscribe({
         next: (info) => {
-          this.placeInfo = info || undefined;
+          this.placeInfo.set(info || undefined);
           this.entityPick.emit(entity);
         },
-        complete: () => {
-          this.busy = false;
-        },
+        complete: () => this.busy.set(false),
       });
     } else {
       this.entityPick.emit(entity);
     }
+  }
+
+  onFlyTo(point: GeoPoint): void {
+    this.flyToPoint.set(point);
   }
 }

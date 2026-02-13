@@ -1,8 +1,15 @@
-<div
-  id="map"
-  leaflet
-  [leafletOptions]="leafletOptions"
-  [leafletLayers]="leafletLayers"
-  [leafletLayersControl]="layersControl"
-  (leafletMapReady)="onMapReady($event)"
-></div>
+<mgl-map
+  [mapStyle]="mapStyle"
+  [zoom]="mapZoom"
+  [center]="mapCenter"
+  (mapLoad)="onMapLoad($event)"
+>
+  @for (entity of markerEntities(); track entity) {
+    <mgl-marker [lngLat]="[entity.point!.long, entity.point!.lat]">
+      <div class="custom-marker" (click)="onMarkerClick(entity)"
+           [title]="entity.names[0]">
+        <img src="assets/img/marker-icon.png" alt="marker" width="25" height="41" />
+      </div>
+    </mgl-marker>
+  }
+</mgl-map>

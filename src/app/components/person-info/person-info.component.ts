@@ -1,117 +1,114 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-
 import {
-  FormBuilder,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
   FormControl,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PersonInfo } from '../../services/dbpedia-person.service';
 import { AssetService } from '../../services/asset.service';
 import { LodService, RdfTerm } from '../../services/lod.service';
 
 @Component({
-    selector: 'app-person-info',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatTooltipModule
-    ],
-    templateUrl: './person-info.component.html',
-    styleUrl: './person-info.component.scss'
+  selector: 'app-person-info',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTooltipModule,
+  ],
+  templateUrl: './person-info.component.html',
+  styleUrl: './person-info.component.scss',
 })
 export class PersonInfoComponent implements OnInit, OnDestroy {
-  private _subs?: Subscription[];
+  private readonly _lodService = inject(LodService);
   private _langMap?: Map<string, string>;
-  private _info: PersonInfo | null = null;
+  private _sub?: Subscription;
 
-  @Input()
-  public get info(): PersonInfo | null {
-    return this._info;
-  }
-  public set info(value: PersonInfo | null | undefined) {
-    if (this._info === value) {
-      return;
-    }
-    this._info = value || null;
-    this.updateLanguages(value?.abstracts);
-  }
+  // Signal input
+  readonly info = input<PersonInfo | null | undefined>(null);
 
-  public languages?: string[];
-  public language: FormControl<string | null>;
-  public selectedAbstract?: string;
+  // Derived: available languages from abstracts
+  readonly languages = computed(() => {
+    const abstracts = this.info()?.abstracts;
+    return abstracts ? this._lodService.getLanguages(abstracts) : [];
+  });
 
-  constructor(
-    private _lodService: LodService,
-    assetService: AssetService,
-    formBuilder: FormBuilder
-  ) {
+  // Language selector FormControl
+  readonly language = new FormControl<string | null>(null);
+
+  // Selected abstract text
+  readonly selectedAbstract = signal<string | undefined>(undefined);
+
+  constructor() {
+    const assetService = inject(AssetService);
     assetService.loadIsoCodes().subscribe((map) => {
       this._langMap = map;
     });
-    this.language = formBuilder.control<string | null>(null);
-  }
 
-  public ngOnInit(): void {
-    this._subs = [
-      this.language.valueChanges.subscribe((_) => {
-        if (this.languages && this.info?.abstracts) {
-          const i = this.languages.findIndex((l) => {
-            return this.language.value === l;
-          });
-          this.selectedAbstract = this.info.abstracts[i]?.value;
+    // Auto-select language when languages change
+    effect(() => {
+      const langs = this.languages();
+      if (langs.length > 0) {
+        const browserLang = navigator.language.split('-')[0];
+        if (langs.includes(browserLang)) {
+          this.language.setValue(browserLang);
+        } else if (langs.includes('en')) {
+          this.language.setValue('en');
+        } else {
+          this.language.setValue(null);
         }
-      }),
-    ];
-  }
-
-  public ngOnDestroy(): void {
-    this._subs?.forEach((s) => s.unsubscribe());
-  }
-
-  private updateLanguages(abstracts: RdfTerm[] | undefined): void {
-    if (abstracts) {
-      this.languages = this._lodService.getLanguages(abstracts);
-      // select the browser's language if available, else english if available
-      const lang = navigator.language.split('-')[0];
-      if (this.languages.includes(lang)) {
-        this.language.setValue(lang);
-      } else if (this.languages.includes('en')) {
-        this.language.setValue('en');
-      } else {
-        this.language.setValue(null);
       }
-    } else {
-      this.languages = [];
-    }
+    });
   }
 
-  public getLangName(code: string): string {
-    const name = this._langMap?.get(code);
-    return name ? name : code;
+  ngOnInit(): void {
+    this._sub = this.language.valueChanges.subscribe(() => {
+      const langs = this.languages();
+      const abstracts = this.info()?.abstracts;
+      if (langs && abstracts) {
+        const i = langs.findIndex((l) => this.language.value === l);
+        this.selectedAbstract.set(abstracts[i]?.value);
+      }
+    });
   }
 
-  public getYear(date: string): number {
+  ngOnDestroy(): void {
+    this._sub?.unsubscribe();
+  }
+
+  getLangName(code: string): string {
+    return this._langMap?.get(code) ?? code;
+  }
+
+  getYear(date: string): number {
     const m = /^([0-9]+)/.exec(date);
     return m ? parseInt(m[1], 10) : 0;
   }
 
-  public getIdFromUri(uri: string): string {
+  getIdFromUri(uri: string): string {
     return this._lodService.getIdFromUri(uri);
   }
 
-  public getAge(birthDate?: RdfTerm, deathDate?: RdfTerm) {
-    if (!birthDate || !deathDate) {
-      return 0;
-    }
+  getAge(birthDate?: RdfTerm, deathDate?: RdfTerm): number {
+    if (!birthDate || !deathDate) return 0;
     return this.getYear(deathDate.value) - this.getYear(birthDate.value);
   }
 }

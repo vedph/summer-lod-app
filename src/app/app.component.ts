@@ -1,13 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { EnvService } from '@myrmidon/ng-tools';
 
-
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, LeafletModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [RouterOutlet],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })

@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   HTTP_INTERCEPTORS,
@@ -29,6 +29,7 @@ export const CACHE_ID = 'VEDPHSS2024';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimationsAsync(),
     EnvServiceProvider,
