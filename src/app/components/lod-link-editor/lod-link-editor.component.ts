@@ -18,11 +18,10 @@ import {
  * Link editor dialog component.
  */
 @Component({
-  selector: 'app-lod-link-editor',
-  standalone: true,
-  imports: [RefLookupSetComponent],
-  templateUrl: './lod-link-editor.component.html',
-  styleUrl: './lod-link-editor.component.scss',
+    selector: 'app-lod-link-editor',
+    imports: [RefLookupSetComponent],
+    templateUrl: './lod-link-editor.component.html',
+    styleUrl: './lod-link-editor.component.scss'
 })
 export class LodLinkEditorComponent {
   public readonly configs: RefLookupConfig[];

@@ -34,26 +34,25 @@ import { AssetService } from '../../services/asset.service';
 import { EntityListComponent } from '../../components/entity-list/entity-list.component';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatTooltipModule,
-    NgeMonacoModule,
-    NgToolsModule,
-    EntityListComponent,
-  ],
-  providers: [CadmusTextEdService],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'app-home',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatProgressBarModule,
+        MatTooltipModule,
+        NgeMonacoModule,
+        NgToolsModule,
+        EntityListComponent,
+    ],
+    providers: [CadmusTextEdService],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private _subs?: Subscription[];

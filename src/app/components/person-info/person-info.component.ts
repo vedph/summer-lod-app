@@ -17,17 +17,16 @@ import { AssetService } from '../../services/asset.service';
 import { LodService, RdfTerm } from '../../services/lod.service';
 
 @Component({
-  selector: 'app-person-info',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatTooltipModule
-],
-  templateUrl: './person-info.component.html',
-  styleUrl: './person-info.component.scss',
+    selector: 'app-person-info',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatTooltipModule
+    ],
+    templateUrl: './person-info.component.html',
+    styleUrl: './person-info.component.scss'
 })
 export class PersonInfoComponent implements OnInit, OnDestroy {
   private _subs?: Subscription[];

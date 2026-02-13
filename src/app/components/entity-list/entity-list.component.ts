@@ -40,27 +40,26 @@ import { PlaceInfoComponent } from '../place-info/place-info.component';
 import { PlaceMapComponent } from '../place-map/place-map.component';
 
 @Component({
-  selector: 'app-entity-list',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatTabsModule,
-    MatTooltipModule,
-    NgToolsModule,
-    PersonInfoComponent,
-    PlaceInfoComponent,
-    PlaceMapComponent,
-  ],
-  templateUrl: './entity-list.component.html',
-  styleUrl: './entity-list.component.scss',
+    selector: 'app-entity-list',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatProgressBarModule,
+        MatSelectModule,
+        MatTabsModule,
+        MatTooltipModule,
+        NgToolsModule,
+        PersonInfoComponent,
+        PlaceInfoComponent,
+        PlaceMapComponent,
+    ],
+    templateUrl: './entity-list.component.html',
+    styleUrl: './entity-list.component.scss'
 })
 export class EntityListComponent implements OnInit {
   private _entities: ParsedEntity[] = [];

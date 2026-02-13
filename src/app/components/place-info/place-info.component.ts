@@ -17,17 +17,16 @@ import { AssetService } from '../../services/asset.service';
 import { LodService, RdfTerm } from '../../services/lod.service';
 
 @Component({
-  selector: 'app-place-info',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatTooltipModule
-],
-  templateUrl: './place-info.component.html',
-  styleUrl: './place-info.component.scss',
+    selector: 'app-place-info',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatTooltipModule
+    ],
+    templateUrl: './place-info.component.html',
+    styleUrl: './place-info.component.scss'
 })
 export class PlaceInfoComponent {
   private _info: PlaceInfo | null = null;

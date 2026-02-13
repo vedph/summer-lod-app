@@ -28,11 +28,10 @@ const OSM_ATTR =
   '&copy; <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 @Component({
-  selector: 'app-place-map',
-  standalone: true,
-  imports: [LeafletModule],
-  templateUrl: './place-map.component.html',
-  styleUrl: './place-map.component.scss',
+    selector: 'app-place-map',
+    imports: [LeafletModule],
+    templateUrl: './place-map.component.html',
+    styleUrl: './place-map.component.scss'
 })
 export class PlaceMapComponent implements OnInit, AfterViewInit {
   private _flyToPoint?: GeoPoint;
