@@ -33,10 +33,6 @@ import { NgToolsModule } from '@myrmidon/ng-tools';
 
 import { ParsedEntity } from '../../services/xml.service';
 import { GeoPoint, GeoService } from '../../services/geo.service';
-import {
-  DbpediaPersonService,
-  PersonInfo,
-} from '../../services/dbpedia-person.service';
 import { PersonInfoComponent } from '../person-info/person-info.component';
 import { PlaceInfoComponent } from '../place-info/place-info.component';
 import { PlaceMapComponent } from '../place-map/place-map.component';
@@ -66,7 +62,6 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
 })
 export class EntityListComponent implements OnInit, OnDestroy {
   private readonly _geoService = inject(GeoService);
-  private readonly _dbpPersonService = inject(DbpediaPersonService);
   private _filterSub?: Subscription;
 
   // Signal input
@@ -78,7 +73,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
   // Internal state signals
   readonly busy = signal(false);
   readonly selectedEntity = signal<ParsedEntity | undefined>(undefined);
-  readonly personInfo = signal<PersonInfo | undefined>(undefined);
+  readonly personUri = signal<string | undefined>(undefined);
   readonly placeUri = signal<string | undefined>(undefined);
   readonly flyToPoint = signal<GeoPoint | undefined>(undefined);
 
@@ -192,14 +187,9 @@ export class EntityListComponent implements OnInit, OnDestroy {
     }
 
     if (entity.type === 'person') {
-      this.busy.set(true);
-      this._dbpPersonService.getInfo(id).subscribe({
-        next: (info) => {
-          this.personInfo.set(info || undefined);
-          this.entityPick.emit(entity);
-        },
-        complete: () => this.busy.set(false),
-      });
+      // Pass the URI to person-info component; it will fetch data itself
+      this.personUri.set(id);
+      this.entityPick.emit(entity);
     } else if (entity.type === 'place') {
       // Pass the URI to place-info component; it will fetch data itself
       this.placeUri.set(id);

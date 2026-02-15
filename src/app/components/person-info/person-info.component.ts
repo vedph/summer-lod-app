@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   input,
@@ -9,18 +8,14 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { PersonInfo } from '../../services/dbpedia-person.service';
+import { PersonInfo, DbpediaPersonService } from '../../services/dbpedia-person.service';
 import { AssetService } from '../../services/asset.service';
 import { LodService, RdfTerm } from '../../services/lod.service';
 
@@ -38,24 +33,23 @@ import { LodService, RdfTerm } from '../../services/lod.service';
   styleUrl: './person-info.component.scss',
 })
 export class PersonInfoComponent implements OnInit, OnDestroy {
+  private readonly _personService = inject(DbpediaPersonService);
   private readonly _lodService = inject(LodService);
   private _langMap?: Map<string, string>;
   private _sub?: Subscription;
 
-  // Signal input
-  readonly info = input<PersonInfo | null | undefined>(null);
-
-  // Derived: available languages from abstracts
-  readonly languages = computed(() => {
-    const abstracts = this.info()?.abstracts;
-    return abstracts ? this._lodService.getLanguages(abstracts) : [];
-  });
+  // Signal inputs
+  readonly uri = input<string | null | undefined>(null);
 
   // Language selector FormControl
-  readonly language = new FormControl<string | null>(null);
+  readonly language = new FormControl<string>('en');
 
-  // Selected abstract text
-  readonly selectedAbstract = signal<string | undefined>(undefined);
+  // Available languages
+  readonly languages = ['en', 'it'];
+
+  // Fetched person info
+  readonly info = signal<PersonInfo | null>(null);
+  readonly busy = signal<boolean>(false);
 
   constructor() {
     const assetService = inject(AssetService);
@@ -63,35 +57,35 @@ export class PersonInfoComponent implements OnInit, OnDestroy {
       this._langMap = map;
     });
 
-    // Auto-select language when languages change
+    // Fetch person info when URI or language changes
     effect(() => {
-      const langs = this.languages();
-      if (langs.length > 0) {
-        const browserLang = navigator.language.split('-')[0];
-        if (langs.includes(browserLang)) {
-          this.language.setValue(browserLang);
-        } else if (langs.includes('en')) {
-          this.language.setValue('en');
-        } else {
-          this.language.setValue(null);
-        }
+      const currentUri = this.uri();
+      const currentLang = this.language.value;
+      if (currentUri && currentLang) {
+        this.fetchPersonInfo(currentUri, currentLang);
       }
     });
   }
 
   ngOnInit(): void {
-    this._sub = this.language.valueChanges.subscribe(() => {
-      const langs = this.languages();
-      const abstracts = this.info()?.abstracts;
-      if (langs && abstracts) {
-        const i = langs.findIndex((l) => this.language.value === l);
-        this.selectedAbstract.set(abstracts[i]?.value);
+    this._sub = this.language.valueChanges.subscribe((lang) => {
+      const currentUri = this.uri();
+      if (currentUri && lang) {
+        this.fetchPersonInfo(currentUri, lang);
       }
     });
   }
 
   ngOnDestroy(): void {
     this._sub?.unsubscribe();
+  }
+
+  private fetchPersonInfo(uri: string, language: string): void {
+    this.busy.set(true);
+    this._personService.getInfo(uri, language).subscribe((info) => {
+      this.info.set(info);
+      this.busy.set(false);
+    });
   }
 
   getLangName(code: string): string {

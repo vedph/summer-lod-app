@@ -46,7 +46,7 @@ export class LodService {
   public addTerm(
     binding: SparqlResultBinding,
     name: string,
-    set?: RdfTerm[]
+    set?: RdfTerm[],
   ): RdfTerm[] {
     if (!set) {
       set = [];
@@ -75,7 +75,7 @@ export class LodService {
     binding: SparqlResultBinding,
     name: string,
     preferredLang: string | null,
-    term: RdfTerm | null
+    term: RdfTerm | null,
   ): RdfTerm {
     if (!term) {
       term = {
@@ -115,7 +115,7 @@ export class LodService {
     d: number,
     m: number,
     s: number,
-    direction: string
+    direction: string,
   ): number {
     let dd = d + m / 60 + s / (60 * 60);
 
@@ -128,7 +128,7 @@ export class LodService {
 
   public static buildLangFilter(
     variable: string,
-    languages?: string[]
+    languages?: string[],
   ): string {
     if (!languages || languages.length === 0) {
       return '';

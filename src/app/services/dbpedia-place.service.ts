@@ -125,16 +125,16 @@ WHERE {
   ?place rdfs:label ?label .
   FILTER(lang(?label) = "${language}")
 
-  # Abstract
+  # Abstract - try without strict language filter
   OPTIONAL {
     ?place dbo:abstract ?abstract .
-    FILTER(lang(?abstract) = "${language}")
+    FILTER(lang(?abstract) = "${language}" || lang(?abstract) = "")
   }
 
   # Description (using rdfs:comment)
   OPTIONAL {
     ?place rdfs:comment ?description .
-    FILTER(lang(?description) = "${language}")
+    FILTER(lang(?description) = "${language}" || lang(?description) = "")
   }
 
   # Spatial data with multiple format support
@@ -148,7 +148,7 @@ WHERE {
   # Wikipedia topic
   OPTIONAL { ?place foaf:isPrimaryTopicOf ?topic . }
 }
-LIMIT 1`;
+LIMIT 10`;
   }
 
   public buildPosQuery(id: string): string {
@@ -178,18 +178,32 @@ WHERE {
       return null;
     }
 
-    const binding = bindings[0]; // LIMIT 1 ensures single result
+    console.log('Place bindings received (all rows):', bindings);
+
+    // Find the first binding with abstract or description
+    let bestBinding = bindings[0];
+    for (const binding of bindings) {
+      if (binding['abstract'] || binding['description']) {
+        bestBinding = binding;
+        break;
+      }
+    }
+
+    console.log('Place best binding selected:', bestBinding);
+
     const info: PlaceInfo = {
       uri: uri,
-      label: binding['label'] || undefined,
-      abstract: binding['abstract'] || undefined,
-      description: binding['description'] || undefined,
-      depiction: binding['depiction'] || undefined,
-      topic: binding['topic'] || undefined,
+      label: bestBinding['label'] || undefined,
+      abstract: bestBinding['abstract'] || undefined,
+      description: bestBinding['description'] || undefined,
+      depiction: bestBinding['depiction'] || undefined,
+      topic: bestBinding['topic'] || undefined,
     };
 
+    console.log('Place info built:', info);
+
     // Extract coordinates from multiple possible sources
-    const coords = this.extractCoordinates(binding);
+    const coords = this.extractCoordinates(bestBinding);
     if (coords.lat && coords.long) {
       info.lat = coords.lat;
       info.long = coords.long;
