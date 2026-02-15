@@ -1,39 +1,53 @@
 <div>
   <div class="container">
-    <!-- depiction -->
-    @if (info()?.depiction?.value) {
-    <div class="floated">
-      <img
-        class="depiction"
-        alt="{{ info()?.labels?.length ? info()!.labels![0].value : 'place' }}"
-        [src]="info()?.depiction?.value"
-      />
-    </div>
-    }
-    <!-- label(s) -->
-    @if (info()?.labels?.length) {
-    <ul class="two-cols">
-      @for (l of info()?.labels; track l) {
-      <li>{{ l.value }} ({{ l["xml:lang"] }})</li>
-      }
-    </ul>
-    }
-    <!-- abstract -->
+    <!-- Language selector -->
     <div>
       <mat-form-field>
-        <mat-select placeholder="abstract language" [formControl]="language">
-          @for (l of languages(); track l) {
-          <mat-option [value]="l">{{ getLangName(l) }}</mat-option>
+        <mat-select placeholder="Language" [formControl]="language">
+          @for (l of languages; track l) {
+            <mat-option [value]="l">{{ getLangName(l) }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
     </div>
-    <ng-container>{{ selectedAbstract() }}</ng-container>
+
+    @if (busy()) {
+      <div>Loading...</div>
+    } @else if (info()) {
+      <!-- depiction -->
+      @if (info()?.depiction?.value) {
+        <div class="floated">
+          <img
+            class="depiction"
+            alt="{{ info()?.label?.value || 'place' }}"
+            [src]="info()?.depiction?.value"
+          />
+        </div>
+      }
+      <!-- label -->
+      @if (info()?.label?.value) {
+        <h3>{{ info()!.label!.value }}</h3>
+      }
+      <!-- abstract -->
+      @if (info()?.abstract?.value) {
+        <p>{{ info()!.abstract!.value }}</p>
+      } @else if (info()?.description?.value) {
+        <p>{{ info()!.description!.value }}</p>
+      }
+      <!-- coordinates -->
+      @if (info()?.lat?.value && info()?.long?.value) {
+        <p>
+          <small>
+            Coordinates: {{ info()!.lat!.value }}, {{ info()!.long!.value }}
+          </small>
+        </p>
+      }
+    }
   </div>
   <!-- wiki link -->
   @if (info()?.topic) {
-  <div>
-    <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
-  </div>
+    <div>
+      <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
+    </div>
   }
 </div>

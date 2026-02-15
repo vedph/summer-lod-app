@@ -10,11 +10,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -41,10 +37,6 @@ import {
   DbpediaPersonService,
   PersonInfo,
 } from '../../services/dbpedia-person.service';
-import {
-  DbpediaPlaceService,
-  PlaceInfo,
-} from '../../services/dbpedia-place.service';
 import { PersonInfoComponent } from '../person-info/person-info.component';
 import { PlaceInfoComponent } from '../place-info/place-info.component';
 import { PlaceMapComponent } from '../place-map/place-map.component';
@@ -75,7 +67,6 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
 export class EntityListComponent implements OnInit, OnDestroy {
   private readonly _geoService = inject(GeoService);
   private readonly _dbpPersonService = inject(DbpediaPersonService);
-  private readonly _dbpPlaceService = inject(DbpediaPlaceService);
   private _filterSub?: Subscription;
 
   // Signal input
@@ -88,7 +79,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
   readonly busy = signal(false);
   readonly selectedEntity = signal<ParsedEntity | undefined>(undefined);
   readonly personInfo = signal<PersonInfo | undefined>(undefined);
-  readonly placeInfo = signal<PlaceInfo | undefined>(undefined);
+  readonly placeUri = signal<string | undefined>(undefined);
   readonly flyToPoint = signal<GeoPoint | undefined>(undefined);
 
   // Entities after geo-enrichment
@@ -113,7 +104,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
       if (nameOrId) {
         const lower = nameOrId.toLowerCase();
         const matchesName = entity.names.some((n) =>
-          n.toLowerCase().includes(lower)
+          n.toLowerCase().includes(lower),
         );
         const matchesId = entity.ids.some((id) => id.includes(nameOrId));
         if (!matchesName && !matchesId) return false;
@@ -124,7 +115,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
 
   // Computed: filtered places
   readonly filteredPlaces = computed(() =>
-    this.filteredEntities().filter((e) => e.type === 'place')
+    this.filteredEntities().filter((e) => e.type === 'place'),
   );
 
   constructor() {
@@ -143,7 +134,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
     // Bridge FormControl changes to signals (debounced)
     this._filterSub = merge(
       this.typeFilter.valueChanges,
-      this.nameOrIdFilter.valueChanges
+      this.nameOrIdFilter.valueChanges,
     )
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
@@ -164,7 +155,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
         for (const id of entity.ids) {
           if (id.startsWith('http://dbpedia.org/resource/')) {
             const point = await firstValueFrom(
-              this._geoService.getPointFromDBpedia(id)
+              this._geoService.getPointFromDBpedia(id),
             );
             if (point) {
               entity.point = point;
@@ -172,7 +163,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
             }
           } else if (id.startsWith('Q')) {
             const point = await firstValueFrom(
-              this._geoService.getPointFromWikidata(id)
+              this._geoService.getPointFromWikidata(id),
             );
             if (point) {
               entity.point = point;
@@ -193,7 +184,7 @@ export class EntityListComponent implements OnInit, OnDestroy {
     this.selectedEntity.set(entity);
 
     const id = entity.ids.find((id) =>
-      id.startsWith('http://dbpedia.org/resource/')
+      id.startsWith('http://dbpedia.org/resource/'),
     );
     if (!id) {
       this.entityPick.emit(entity);
@@ -210,14 +201,9 @@ export class EntityListComponent implements OnInit, OnDestroy {
         complete: () => this.busy.set(false),
       });
     } else if (entity.type === 'place') {
-      this.busy.set(true);
-      this._dbpPlaceService.getInfo(id).subscribe({
-        next: (info) => {
-          this.placeInfo.set(info || undefined);
-          this.entityPick.emit(entity);
-        },
-        complete: () => this.busy.set(false),
-      });
+      // Pass the URI to place-info component; it will fetch data itself
+      this.placeUri.set(id);
+      this.entityPick.emit(entity);
     } else {
       this.entityPick.emit(entity);
     }

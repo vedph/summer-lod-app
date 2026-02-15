@@ -12,9 +12,9 @@ const POS_PREFIX = 'pos.';
 
 export interface PlaceInfo {
   uri: string;
-  labels: RdfTerm[];
+  label?: RdfTerm;
   description?: RdfTerm;
-  abstracts?: RdfTerm[];
+  abstract?: RdfTerm;
   depiction?: RdfTerm;
   topic?: RdfTerm;
   lat?: RdfTerm;
@@ -110,47 +110,45 @@ export class DbpediaPlaceService {
     return { lat: null, long: null };
   }
 
-  public buildQuery(id: string, languages?: string[]): string {
+  public buildQuery(id: string, language: string = 'en'): string {
     return `PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX dbp: <http://dbpedia.org/property/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 PREFIX georss: <http://www.georss.org/georss/>
-SELECT DISTINCT
-  <${id}> as ?place ?label
-  ?topic ?depiction ?abstract ?description
-  ?lat ?long ?wkt ?point
+SELECT ?label ?abstract ?description ?lat ?long ?wkt ?point ?depiction ?topic
 WHERE {
-  <${id}> rdfs:label ?label.
-  ${LodService.buildLangFilter('?label', languages)}
+  BIND(<${id}> AS ?place)
+
+  # Primary label for the specified language
+  ?place rdfs:label ?label .
+  FILTER(lang(?label) = "${language}")
+
+  # Abstract
   OPTIONAL {
-    <${id}> geo:lat ?lat;
-    geo:long ?long.
+    ?place dbo:abstract ?abstract .
+    FILTER(lang(?abstract) = "${language}")
   }
+
+  # Description (using rdfs:comment)
   OPTIONAL {
-    <${id}> geo:geometry ?wkt.
+    ?place rdfs:comment ?description .
+    FILTER(lang(?description) = "${language}")
   }
-  OPTIONAL {
-    <${id}> georss:point ?point.
-  }
-  OPTIONAL {
-    <${id}> foaf:isPrimaryTopicOf ?topic.
-  }
-  OPTIONAL {
-    SELECT ?depiction WHERE {
-      <${id}> foaf:depiction ?depiction.
-    } LIMIT 1
-  }
-  OPTIONAL {
-    <${id}> dbo:abstract ?abstract.
-    ${LodService.buildLangFilter('?abstract', languages)}
-  }
-  OPTIONAL {
-    <${id}> dbo:description ?description.
-    ${LodService.buildLangFilter('?description', languages)}
-  }
-}`;
+
+  # Spatial data with multiple format support
+  OPTIONAL { ?place geo:lat ?lat ; geo:long ?long . }
+  OPTIONAL { ?place geo:geometry ?wkt . }
+  OPTIONAL { ?place georss:point ?point . }
+
+  # Depiction
+  OPTIONAL { ?place foaf:depiction ?depiction . }
+
+  # Wikipedia topic
+  OPTIONAL { ?place foaf:isPrimaryTopicOf ?topic . }
+}
+LIMIT 1`;
   }
 
   public buildPosQuery(id: string): string {
@@ -171,7 +169,7 @@ WHERE {
 }`;
   }
 
-  public buildInfo(result: SparqlResult): PlaceInfo | null {
+  public buildInfo(result: SparqlResult, uri: string): PlaceInfo | null {
     if (!result) {
       return null;
     }
@@ -179,80 +177,49 @@ WHERE {
     if (!bindings?.length) {
       return null;
     }
+
+    const binding = bindings[0]; // LIMIT 1 ensures single result
     const info: PlaceInfo = {
-      uri: '',
-      labels: [],
+      uri: uri,
+      label: binding['label'] || undefined,
+      abstract: binding['abstract'] || undefined,
+      description: binding['description'] || undefined,
+      depiction: binding['depiction'] || undefined,
+      topic: binding['topic'] || undefined,
     };
-    for (const binding of bindings) {
-      // place (just once)
-      if (!info.uri) {
-        info.uri = binding['place']?.value || '';
-      }
 
-      // labels
-      info.labels = this._lodService.addTerm(binding, 'label', info.labels);
-
-      // abstract
-      info.abstracts = this._lodService.addTerm(
-        binding,
-        'abstract',
-        info.abstracts,
-      );
-
-      // description (fallback for abstract)
-      info.description = this._lodService.replaceTerm(
-        binding,
-        'description',
-        null,
-        info.description || null,
-      );
-
-      // depiction
-      info.depiction = this._lodService.replaceTerm(
-        binding,
-        'depiction',
-        null,
-        info.depiction || null,
-      );
-
-      // topic
-      info.topic = this._lodService.replaceTerm(
-        binding,
-        'topic',
-        null,
-        info.topic || null,
-      );
-
-      // Extract coordinates from multiple possible sources
-      if (!info.lat || !info.long) {
-        const coords = this.extractCoordinates(binding);
-        if (coords.lat && coords.long) {
-          info.lat = coords.lat;
-          info.long = coords.long;
-        }
-      }
+    // Extract coordinates from multiple possible sources
+    const coords = this.extractCoordinates(binding);
+    if (coords.lat && coords.long) {
+      info.lat = coords.lat;
+      info.long = coords.long;
     }
+
     return info;
   }
 
-  public getInfo(id: string): Observable<PlaceInfo | null> {
-    const cached = this._cacheService.get<SparqlResult>(CACHE_ID, id);
+  public getInfo(
+    id: string,
+    language: string = 'en',
+  ): Observable<PlaceInfo | null> {
+    const cacheKey = `${id}:${language}`;
+    const cached = this._cacheService.get<SparqlResult>(CACHE_ID, cacheKey);
     if (cached) {
-      return of(this.buildInfo(cached));
+      return of(this.buildInfo(cached, id));
     }
 
-    const query = this.buildQuery(id, ['en', 'it']);
+    const query = this.buildQuery(id, language);
     console.log('query', query);
     return this._dbpService.get(query).pipe(
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {
-        this._cacheService.add(CACHE_ID, id, r);
-        return this.buildInfo(r);
+        this._cacheService.add(CACHE_ID, cacheKey, r);
+        return this.buildInfo(r, id);
       }),
     );
   }
 
-  public buildPosInfo(result: SparqlResult): PlaceInfo | null {
+  public buildPosInfo(result: SparqlResult, uri: string): PlaceInfo | null {
     if (!result) {
       return null;
     }
@@ -261,15 +228,9 @@ WHERE {
       return null;
     }
     const info: PlaceInfo = {
-      uri: '',
-      labels: [],
+      uri: uri,
     };
     for (const binding of bindings) {
-      // place (just once)
-      if (!info.uri) {
-        info.uri = binding['place']?.value || '';
-      }
-
       // Extract coordinates from multiple possible sources
       if (!info.lat || !info.long) {
         const coords = this.extractCoordinates(binding);
@@ -290,7 +251,7 @@ WHERE {
     );
     if (cached) {
       console.log(`Cache hit for place ${id}`, cached);
-      return of(this.buildPosInfo(cached));
+      return of(this.buildPosInfo(cached, id));
     }
 
     const query = this.buildPosQuery(id);
@@ -299,7 +260,7 @@ WHERE {
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {
         this._cacheService.add(CACHE_ID, POS_PREFIX + id, r);
-        return this.buildPosInfo(r);
+        return this.buildPosInfo(r, id);
       }),
     );
   }

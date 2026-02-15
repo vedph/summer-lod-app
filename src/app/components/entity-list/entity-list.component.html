@@ -1,139 +1,139 @@
 <div id="container">
   <!-- filters -->
   @if (entities().length) {
-  <div id="filters">
-    <div>
-      @if (busy()) {
-      <mat-progress-bar
-        mode="indeterminate"
-        color="primary"
-        class="mat-primary"
-      />
-      }
-    </div>
-    <form class="form-row">
-      <mat-icon class="mat-primary">filter_alt</mat-icon>
-      <!-- type filter -->
-      <mat-form-field>
-        <mat-label>type</mat-label>
-        <mat-select [formControl]="typeFilter">
-          <mat-option [value]="null">any</mat-option>
-          <mat-option value="person">person</mat-option>
-          <mat-option value="organization">organization</mat-option>
-          <mat-option value="place">place</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <!-- name or ID filter -->
-      <mat-form-field>
-        <input
-          matInput
-          placeholder="name or ID"
-          [formControl]="nameOrIdFilter"
-        />
-        @if (nameOrIdFilter.value) {
-        <button
-          type="button"
-          matSuffix
-          mat-icon-button
-          aria-label="Clear"
-          (click)="nameOrIdFilter.reset()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
+    <div id="filters">
+      <div>
+        @if (busy()) {
+          <mat-progress-bar
+            mode="indeterminate"
+            color="primary"
+            class="mat-primary"
+          />
         }
-      </mat-form-field>
-    </form>
-  </div>
+      </div>
+      <form class="form-row">
+        <mat-icon class="mat-primary">filter_alt</mat-icon>
+        <!-- type filter -->
+        <mat-form-field>
+          <mat-label>type</mat-label>
+          <mat-select [formControl]="typeFilter">
+            <mat-option [value]="null">any</mat-option>
+            <mat-option value="person">person</mat-option>
+            <mat-option value="organization">organization</mat-option>
+            <mat-option value="place">place</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- name or ID filter -->
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="name or ID"
+            [formControl]="nameOrIdFilter"
+          />
+          @if (nameOrIdFilter.value) {
+            <button
+              type="button"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="nameOrIdFilter.reset()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </form>
+    </div>
   }
 
   <!-- entities list-->
   <div id="list">
     @if (filteredEntities().length) {
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>type</th>
-          <th>name(s)</th>
-          <th>link(s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (e of filteredEntities(); track e) {
-        <tr>
-          <td class="fit-width">
-            <button
-              color="primary"
-              type="button"
-              mat-icon-button
-              matTooltip="View details"
-              (click)="selectEntity(e)"
-            >
-              <mat-icon class="mat-primary">info</mat-icon>
-            </button>
-            @if (e.type === 'place' && e.point) {
-            <button
-              type="button"
-              mat-icon-button
-              matTooltip="Fly to this location"
-              (click)="onFlyTo(e.point!)"
-            >
-              <mat-icon style="color: #18b179">location_on</mat-icon>
-            </button>
-            }
-          </td>
-          <td>{{ e.type }}</td>
-          <td>
-            @if (e.names.length === 1) {
-            {{ e.names[0] }}
-            } @else {
-            <ul>
-              @for (name of e.names; track name) {
-              <li>{{ name }}</li>
-              }
-            </ul>
-            }
-          </td>
-          <td>
-            @if (e.links?.length === 1) {
-            <a href="{{ e.links![0] }}" target="_blank" rel="noopener">{{
-              e.links![0]
-            }}</a>
-            } @else {
-            <ul>
-              @for (link of e.links; track link) {
-              <li>
-                <a [href]="link" target="_blank" rel="noopener">{{
-                  link | ellipsis
-                }}</a>
-              </li>
-              }
-            </ul>
-            }
-          </td>
-        </tr>
-        } @empty {
-        <tr id="placeholder">
-          <td colspan="4">(no entities)</td>
-        </tr>
-        }
-      </tbody>
-    </table>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>type</th>
+            <th>name(s)</th>
+            <th>link(s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of filteredEntities(); track e) {
+            <tr>
+              <td class="fit-width">
+                <button
+                  color="primary"
+                  type="button"
+                  mat-icon-button
+                  matTooltip="View details"
+                  (click)="selectEntity(e)"
+                >
+                  <mat-icon class="mat-primary">info</mat-icon>
+                </button>
+                @if (e.type === "place" && e.point) {
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Fly to this location"
+                    (click)="onFlyTo(e.point!)"
+                  >
+                    <mat-icon style="color: #18b179">location_on</mat-icon>
+                  </button>
+                }
+              </td>
+              <td>{{ e.type }}</td>
+              <td>
+                @if (e.names.length === 1) {
+                  {{ e.names[0] }}
+                } @else {
+                  <ul>
+                    @for (name of e.names; track name) {
+                      <li>{{ name }}</li>
+                    }
+                  </ul>
+                }
+              </td>
+              <td>
+                @if (e.links?.length === 1) {
+                  <a href="{{ e.links![0] }}" target="_blank" rel="noopener">{{
+                    e.links![0]
+                  }}</a>
+                } @else {
+                  <ul>
+                    @for (link of e.links; track link) {
+                      <li>
+                        <a [href]="link" target="_blank" rel="noopener">{{
+                          link | ellipsis
+                        }}</a>
+                      </li>
+                    }
+                  </ul>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr id="placeholder">
+              <td colspan="4">(no entities)</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     }
   </div>
 
   <!-- entity details -->
   <div id="details">
     <mat-expansion-panel
-      [expanded]="!!selectedEntity() && !!(personInfo() || placeInfo())"
-      [disabled]="!selectedEntity() || !(personInfo() || placeInfo())"
+      [expanded]="!!selectedEntity() && !!(personInfo() || placeUri())"
+      [disabled]="!selectedEntity() || !(personInfo() || placeUri())"
     >
       <mat-expansion-panel-header> details </mat-expansion-panel-header>
-      @if (selectedEntity()?.type === 'person') {
-      <app-person-info [info]="personInfo()"></app-person-info>
-      } @else if (selectedEntity()?.type === 'place') {
-      <app-place-info [info]="placeInfo()"></app-place-info>
+      @if (selectedEntity()?.type === "person") {
+        <app-person-info [info]="personInfo()"></app-person-info>
+      } @else if (selectedEntity()?.type === "place") {
+        <app-place-info [uri]="placeUri()"></app-place-info>
       }
     </mat-expansion-panel>
   </div>
