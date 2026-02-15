@@ -163,28 +163,20 @@ export class EntityListComponent implements OnInit, OnDestroy {
       if (entity.type === 'place') {
         for (const id of entity.ids) {
           if (id.startsWith('http://dbpedia.org/resource/')) {
-            try {
-              const point = await firstValueFrom(
-                this._geoService.getPointFromDBpedia(id)
-              );
-              if (point) {
-                entity.point = point;
-                break;
-              }
-            } catch (error) {
-              console.error(error);
+            const point = await firstValueFrom(
+              this._geoService.getPointFromDBpedia(id)
+            );
+            if (point) {
+              entity.point = point;
+              break;
             }
           } else if (id.startsWith('Q')) {
-            try {
-              const point = await firstValueFrom(
-                this._geoService.getPointFromWikidata(id)
-              );
-              if (point) {
-                entity.point = point;
-                break;
-              }
-            } catch (error) {
-              console.error(error);
+            const point = await firstValueFrom(
+              this._geoService.getPointFromWikidata(id)
+            );
+            if (point) {
+              entity.point = point;
+              break;
             }
           }
         }

@@ -35,15 +35,15 @@ export class GeoService {
     private _http: HttpClient,
     private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,
-    private _error: ErrorService
+    private _error: ErrorService,
   ) {}
 
-  getPointFromWikidata(id: string): Observable<GeoPoint> {
-    const cached = this._cacheService.get<GeoPoint>(
+  getPointFromWikidata(id: string): Observable<GeoPoint | null> {
+    const cached = this._cacheService.get<GeoPoint | null>(
       CACHE_ID,
-      GEO_PREFIX + id
+      GEO_PREFIX + id,
     );
-    if (cached) {
+    if (cached !== undefined) {
       console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
     }
@@ -57,7 +57,7 @@ export class GeoService {
       }
     `;
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
-      query
+      query,
     )}&format=json`;
 
     console.log('Wikidata Query:\n' + query);
@@ -66,26 +66,33 @@ export class GeoService {
       map((response) => {
         const bindings = response?.results?.bindings;
         if (!bindings?.length) {
-          throw new Error(`No Wikidata geo results for ${id}`);
+          console.log(`No Wikidata geo results for ${id}`);
+          this._cacheService.add(CACHE_ID, GEO_PREFIX + id, null);
+          return null;
         }
         const lat = parseFloat(bindings[0].lat.value);
         const long = parseFloat(bindings[0].long.value);
         if (isNaN(lat) || isNaN(long)) {
-          throw new Error(`Invalid Wikidata coordinates for ${id}`);
+          console.log(`Invalid Wikidata coordinates for ${id}`);
+          this._cacheService.add(CACHE_ID, GEO_PREFIX + id, null);
+          return null;
         }
         this._cacheService.add(CACHE_ID, GEO_PREFIX + id, { lat, long });
         return { lat, long };
       }),
-      catchError(this._error.handleError)
+      catchError((error) => {
+        console.error(`Error fetching Wikidata coordinates for ${id}:`, error);
+        return of(null);
+      }),
     );
   }
 
-  getPointFromDBpedia(id: string): Observable<GeoPoint> {
-    const cached = this._cacheService.get<GeoPoint>(
+  getPointFromDBpedia(id: string): Observable<GeoPoint | null> {
+    const cached = this._cacheService.get<GeoPoint | null>(
       CACHE_ID,
-      GEO_PREFIX + id
+      GEO_PREFIX + id,
     );
-    if (cached) {
+    if (cached !== undefined) {
       console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
     }
@@ -103,17 +110,24 @@ WHERE {
       map((response: SparqlResult) => {
         const bindings = response?.results?.bindings;
         if (!bindings?.length) {
-          throw new Error(`No DBpedia geo results for ${id}`);
+          console.log(`No DBpedia geo results for ${id}`);
+          this._cacheService.add(CACHE_ID, GEO_PREFIX + id, null);
+          return null;
         }
         const lat = parseFloat(bindings[0]['lat']?.value);
         const long = parseFloat(bindings[0]['long']?.value);
         if (isNaN(lat) || isNaN(long)) {
-          throw new Error(`Invalid DBpedia coordinates for ${id}`);
+          console.log(`Invalid DBpedia coordinates for ${id}`);
+          this._cacheService.add(CACHE_ID, GEO_PREFIX + id, null);
+          return null;
         }
         this._cacheService.add(CACHE_ID, GEO_PREFIX + id, { lat, long });
         return { lat, long };
       }),
-      catchError(this._error.handleError)
+      catchError((error) => {
+        console.error(`Error fetching DBpedia coordinates for ${id}:`, error);
+        return of(null);
+      }),
     );
   }
 }
