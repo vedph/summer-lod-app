@@ -13,6 +13,7 @@ const POS_PREFIX = 'pos.';
 export interface PlaceInfo {
   uri: string;
   labels: RdfTerm[];
+  description?: RdfTerm;
   abstracts?: RdfTerm[];
   depiction?: RdfTerm;
   topic?: RdfTerm;
@@ -31,48 +32,143 @@ export class DbpediaPlaceService {
     private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,
     private _errorService: ErrorService,
-    private _lodService: LodService
+    private _lodService: LodService,
   ) {}
 
+  /**
+   * Parse coordinates from WKT POINT format: "POINT(long lat)".
+   * @param wkt The WKT string.
+   * @returns An object with lat and long as strings, or null if parsing fails.
+   */
+  private parseWkt(wkt: string): { lat: string; long: string } | null {
+    const match = wkt.match(/POINT\s*\(\s*([\d.-]+)\s+([\d.-]+)\s*\)/i);
+    if (match) {
+      return {
+        long: match[1],
+        lat: match[2],
+      };
+    }
+    return null;
+  }
+
+  /**
+   * Parse coordinates from georss:point format: "lat long".
+   * @param point The point string.
+   * @returns An object with lat and long as strings, or null if parsing fails.
+   */
+  private parsePoint(point: string): { lat: string; long: string } | null {
+    const parts = point.trim().split(/\s+/);
+    if (parts.length === 2) {
+      return {
+        lat: parts[0],
+        long: parts[1],
+      };
+    }
+    return null;
+  }
+
+  /**
+   * Extract coordinates from SPARQL binding, trying multiple sources.
+   * Priority: geo:lat/long > georss:point > geo:geometry (WKT).
+   * @param binding The SPARQL result binding.
+   * @returns An object with lat and long RdfTerms, or null if no coordinates found.
+   */
+  private extractCoordinates(binding: any): {
+    lat: RdfTerm | null;
+    long: RdfTerm | null;
+  } {
+    let lat: RdfTerm | null = null;
+    let long: RdfTerm | null = null;
+
+    // Priority 1: Try geo:lat and geo:long
+    if (binding['lat'] && binding['long']) {
+      lat = binding['lat'];
+      long = binding['long'];
+      return { lat, long };
+    }
+
+    // Priority 2: Try georss:point
+    if (binding['point']?.value) {
+      const parsed = this.parsePoint(binding['point'].value);
+      if (parsed) {
+        lat = { type: 'literal', value: parsed.lat };
+        long = { type: 'literal', value: parsed.long };
+        return { lat, long };
+      }
+    }
+
+    // Priority 3: Try geo:geometry (WKT)
+    if (binding['wkt']?.value) {
+      const parsed = this.parseWkt(binding['wkt'].value);
+      if (parsed) {
+        lat = { type: 'literal', value: parsed.lat };
+        long = { type: 'literal', value: parsed.long };
+        return { lat, long };
+      }
+    }
+
+    return { lat: null, long: null };
+  }
+
   public buildQuery(id: string, languages?: string[]): string {
-    return `PREFIX dbp: <http://dbpedia.org/property/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    SELECT DISTINCT
-      <${id}> as ?place ?label
-      ?topic ?depiction ?abstract
-      ?lat ?long
-    WHERE {
-      <${id}> rdfs:label ?label.
-      ${LodService.buildLangFilter('?label', languages)}
-      OPTIONAL {
-        <${id}> geo:lat ?lat;
-        geo:long ?long.
-      }
-      OPTIONAL {
-        <${id}> foaf:isPrimaryTopicOf ?topic.
-      }
-      OPTIONAL {
-        <${id}> foaf:depiction ?depiction.
-      }
-      OPTIONAL {
-        <${id}> dbo:abstract ?abstract.
-        ${LodService.buildLangFilter('?abstract', languages)}
-      }
-    }`;
+    return `PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX georss: <http://www.georss.org/georss/>
+SELECT DISTINCT
+  <${id}> as ?place ?label
+  ?topic ?depiction ?abstract ?description
+  ?lat ?long ?wkt ?point
+WHERE {
+  <${id}> rdfs:label ?label.
+  ${LodService.buildLangFilter('?label', languages)}
+  OPTIONAL {
+    <${id}> geo:lat ?lat;
+    geo:long ?long.
+  }
+  OPTIONAL {
+    <${id}> geo:geometry ?wkt.
+  }
+  OPTIONAL {
+    <${id}> georss:point ?point.
+  }
+  OPTIONAL {
+    <${id}> foaf:isPrimaryTopicOf ?topic.
+  }
+  OPTIONAL {
+    SELECT ?depiction WHERE {
+      <${id}> foaf:depiction ?depiction.
+    } LIMIT 1
+  }
+  OPTIONAL {
+    <${id}> dbo:abstract ?abstract.
+    ${LodService.buildLangFilter('?abstract', languages)}
+  }
+  OPTIONAL {
+    <${id}> dbo:description ?description.
+    ${LodService.buildLangFilter('?description', languages)}
+  }
+}`;
   }
 
   public buildPosQuery(id: string): string {
-    return `PREFIX dbp: <http://dbpedia.org/property/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-    SELECT DISTINCT <${id}> as ?place ?lat ?long
-    WHERE {
-      <${id}> geo:lat ?lat;
-        geo:long ?long.
-    }`;
+    return `PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX georss: <http://www.georss.org/georss/>
+SELECT DISTINCT <${id}> as ?place ?lat ?long ?wkt ?point
+WHERE {
+  OPTIONAL {
+    <${id}> geo:lat ?lat;
+      geo:long ?long.
+  }
+  OPTIONAL {
+    <${id}> geo:geometry ?wkt.
+  }
+  OPTIONAL {
+    <${id}> georss:point ?point.
+  }
+}`;
   }
 
   public buildInfo(result: SparqlResult): PlaceInfo | null {
@@ -80,6 +176,9 @@ export class DbpediaPlaceService {
       return null;
     }
     const bindings = result.results.bindings;
+    if (!bindings?.length) {
+      return null;
+    }
     const info: PlaceInfo = {
       uri: '',
       labels: [],
@@ -87,7 +186,7 @@ export class DbpediaPlaceService {
     for (const binding of bindings) {
       // place (just once)
       if (!info.uri) {
-        info.uri = binding['place'].value;
+        info.uri = binding['place']?.value || '';
       }
 
       // labels
@@ -97,7 +196,15 @@ export class DbpediaPlaceService {
       info.abstracts = this._lodService.addTerm(
         binding,
         'abstract',
-        info.abstracts
+        info.abstracts,
+      );
+
+      // description (fallback for abstract)
+      info.description = this._lodService.replaceTerm(
+        binding,
+        'description',
+        null,
+        info.description || null,
       );
 
       // depiction
@@ -105,7 +212,7 @@ export class DbpediaPlaceService {
         binding,
         'depiction',
         null,
-        info.depiction || null
+        info.depiction || null,
       );
 
       // topic
@@ -113,24 +220,17 @@ export class DbpediaPlaceService {
         binding,
         'topic',
         null,
-        info.topic || null
+        info.topic || null,
       );
 
-      // lat
-      info.lat = this._lodService.replaceTerm(
-        binding,
-        'lat',
-        null,
-        info.lat || null
-      );
-
-      // long
-      info.long = this._lodService.replaceTerm(
-        binding,
-        'long',
-        null,
-        info.long || null
-      );
+      // Extract coordinates from multiple possible sources
+      if (!info.lat || !info.long) {
+        const coords = this.extractCoordinates(binding);
+        if (coords.lat && coords.long) {
+          info.lat = coords.lat;
+          info.long = coords.long;
+        }
+      }
     }
     return info;
   }
@@ -148,7 +248,7 @@ export class DbpediaPlaceService {
       map((r: SparqlResult) => {
         this._cacheService.add(CACHE_ID, id, r);
         return this.buildInfo(r);
-      })
+      }),
     );
   }
 
@@ -157,6 +257,9 @@ export class DbpediaPlaceService {
       return null;
     }
     const bindings = result.results.bindings;
+    if (!bindings?.length) {
+      return null;
+    }
     const info: PlaceInfo = {
       uri: '',
       labels: [],
@@ -164,26 +267,17 @@ export class DbpediaPlaceService {
     for (const binding of bindings) {
       // place (just once)
       if (!info.uri) {
-        info.uri = binding['place'].value;
+        info.uri = binding['place']?.value || '';
       }
 
-      // lat
-      info.lat = this._lodService.replaceTerm(
-        binding,
-        'lat',
-        null,
-        info.lat || null
-      );
-
-      // long
-      info.long = this._lodService.replaceTerm(
-        binding,
-        'long',
-        null,
-        info.long || null
-      );
-      if (info.lat.value && info.long.value) {
-        break;
+      // Extract coordinates from multiple possible sources
+      if (!info.lat || !info.long) {
+        const coords = this.extractCoordinates(binding);
+        if (coords.lat && coords.long) {
+          info.lat = coords.lat;
+          info.long = coords.long;
+          break;
+        }
       }
     }
     return info;
@@ -192,7 +286,7 @@ export class DbpediaPlaceService {
   public getPosition(id: string): Observable<PlaceInfo | null> {
     const cached = this._cacheService.get<SparqlResult>(
       CACHE_ID,
-      POS_PREFIX + id
+      POS_PREFIX + id,
     );
     if (cached) {
       console.log(`Cache hit for place ${id}`, cached);
@@ -205,8 +299,8 @@ export class DbpediaPlaceService {
       catchError(this._errorService.handleError),
       map((r: SparqlResult) => {
         this._cacheService.add(CACHE_ID, POS_PREFIX + id, r);
-        return this.buildInfo(r);
-      })
+        return this.buildPosInfo(r);
+      }),
     );
   }
 }

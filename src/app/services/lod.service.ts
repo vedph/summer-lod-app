@@ -93,7 +93,7 @@ export class LodService {
       // update term
       term.type = binding[name]?.type;
       term.value = binding[name]?.value;
-      term['xml:lang'] = binding['xml:lang']?.value;
+      term['xml:lang'] = binding[name]?.['xml:lang'];
       term.datatype = binding[name]?.datatype;
     }
     return term;

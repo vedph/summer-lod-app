@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 
-import { EnvService, ErrorService } from '@myrmidon/ng-tools';
+import { ErrorService } from '@myrmidon/ng-tools';
 
 import { CACHE_ID } from '../app.config';
+import { DbpediaSparqlService } from './dbpedia-sparql.service';
 import { LocalCacheService } from './local-cache.service';
+import { SparqlResult } from './lod.service';
 
 export interface GeoPoint {
   lat: number;
@@ -30,14 +32,17 @@ const GEO_PREFIX = 'geo.';
 })
 export class GeoService {
   constructor(
-    private http: HttpClient,
+    private _http: HttpClient,
+    private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,
-    private _error: ErrorService,
-    private _envService: EnvService
+    private _error: ErrorService
   ) {}
 
   getPointFromWikidata(id: string): Observable<GeoPoint> {
-    const cached = this._cacheService.get<GeoPoint>(CACHE_ID, GEO_PREFIX + id);
+    const cached = this._cacheService.get<GeoPoint>(
+      CACHE_ID,
+      GEO_PREFIX + id
+    );
     if (cached) {
       console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
@@ -57,11 +62,17 @@ export class GeoService {
 
     console.log('Wikidata Query:\n' + query);
 
-    return this.http.get<any>(url).pipe(
+    return this._http.get<any>(url).pipe(
       map((response) => {
-        const bindings = response.results.bindings[0];
-        const lat = parseFloat(bindings.lat.value);
-        const long = parseFloat(bindings.long.value);
+        const bindings = response?.results?.bindings;
+        if (!bindings?.length) {
+          throw new Error(`No Wikidata geo results for ${id}`);
+        }
+        const lat = parseFloat(bindings[0].lat.value);
+        const long = parseFloat(bindings[0].long.value);
+        if (isNaN(lat) || isNaN(long)) {
+          throw new Error(`Invalid Wikidata coordinates for ${id}`);
+        }
         this._cacheService.add(CACHE_ID, GEO_PREFIX + id, { lat, long });
         return { lat, long };
       }),
@@ -70,33 +81,35 @@ export class GeoService {
   }
 
   getPointFromDBpedia(id: string): Observable<GeoPoint> {
-    const cached = this._cacheService.get<GeoPoint>(CACHE_ID, GEO_PREFIX + id);
+    const cached = this._cacheService.get<GeoPoint>(
+      CACHE_ID,
+      GEO_PREFIX + id
+    );
     if (cached) {
       console.log(`cache hit for ${GEO_PREFIX + id}`, cached);
       return of(cached);
     }
 
-    const query = `
-      PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-      PREFIX dbo: <http://dbpedia.org/ontology/>
+    const query = `PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+SELECT ?lat ?long
+WHERE {
+  <${id}> geo:lat ?lat ;
+          geo:long ?long .
+}`;
 
-      SELECT ?lat ?long
-      WHERE {
-        <${id}> geo:lat ?lat ;
-                geo:long ?long .
-      }
-    `;
-    const url =
-      (this._envService.get('https') ? 'https' : 'http') +
-      `://dbpedia.org/sparql?query=${encodeURIComponent(query)}&format=json`;
+    console.log('DBPedia Geo Query:\n' + query);
 
-    console.log('DBPedia Query:\n' + query);
-
-    return this.http.get<any>(url).pipe(
-      map((response) => {
-        const bindings = response.results.bindings[0];
-        const lat = parseFloat(bindings.lat.value);
-        const long = parseFloat(bindings.long.value);
+    return this._dbpService.get(query).pipe(
+      map((response: SparqlResult) => {
+        const bindings = response?.results?.bindings;
+        if (!bindings?.length) {
+          throw new Error(`No DBpedia geo results for ${id}`);
+        }
+        const lat = parseFloat(bindings[0]['lat']?.value);
+        const long = parseFloat(bindings[0]['long']?.value);
+        if (isNaN(lat) || isNaN(long)) {
+          throw new Error(`Invalid DBpedia coordinates for ${id}`);
+        }
         this._cacheService.add(CACHE_ID, GEO_PREFIX + id, { lat, long });
         return { lat, long };
       }),
