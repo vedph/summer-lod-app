@@ -4,12 +4,10 @@ import {
   effect,
   inject,
   input,
-  OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,17 +30,19 @@ import { LodService, RdfTerm } from '../../services/lod.service';
   templateUrl: './person-info.component.html',
   styleUrl: './person-info.component.scss',
 })
-export class PersonInfoComponent implements OnInit, OnDestroy {
+export class PersonInfoComponent {
   private readonly _personService = inject(DbpediaPersonService);
   private readonly _lodService = inject(LodService);
   private _langMap?: Map<string, string>;
-  private _sub?: Subscription;
 
   // Signal inputs
   readonly uri = input<string | null | undefined>(null);
 
   // Language selector FormControl
   readonly language = new FormControl<string>('en');
+  private readonly _language = toSignal(this.language.valueChanges, {
+    initialValue: 'en',
+  });
 
   // Available languages
   readonly languages = ['en', 'it'];
@@ -57,27 +57,14 @@ export class PersonInfoComponent implements OnInit, OnDestroy {
       this._langMap = map;
     });
 
-    // Fetch person info when URI or language changes
+    // Fetch person info when URI or language changes (both tracked reactively)
     effect(() => {
       const currentUri = this.uri();
-      const currentLang = this.language.value;
+      const currentLang = this._language();
       if (currentUri && currentLang) {
         this.fetchPersonInfo(currentUri, currentLang);
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._sub = this.language.valueChanges.subscribe((lang) => {
-      const currentUri = this.uri();
-      if (currentUri && lang) {
-        this.fetchPersonInfo(currentUri, lang);
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this._sub?.unsubscribe();
   }
 
   private fetchPersonInfo(uri: string, language: string): void {

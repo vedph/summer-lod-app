@@ -74,6 +74,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   private _xsltEditor?: monaco.editor.IStandaloneCodeEditor;
   private _xmlModel?: monaco.editor.ITextModel;
   private _xsltModel?: monaco.editor.ITextModel;
+  private _xmlModelSub?: monaco.IDisposable;
+  private _xsltModelSub?: monaco.IDisposable;
 
   // Signal state
   readonly rendition = signal<string | undefined>(undefined);
@@ -129,6 +131,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this._xmlModel = this._xmlModel || monaco.editor.createModel('', 'xml');
     editor.setModel(this._xmlModel);
+    this._xmlModelSub?.dispose();
+    this._xmlModelSub = this._xmlModel.onDidChangeContent(() => {
+      this.xml.setValue(this._xmlModel!.getValue(), { emitEvent: false });
+      this._cdr.markForCheck();
+    });
     this._xmlEditor = editor as monaco.editor.IStandaloneCodeEditor;
 
     this._xmlEditor.addCommand(
@@ -158,6 +165,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this._xsltModel = this._xsltModel || monaco.editor.createModel('', 'xml');
     editor.setModel(this._xsltModel);
+    this._xsltModelSub?.dispose();
+    this._xsltModelSub = this._xsltModel.onDidChangeContent(() => {
+      this.xslt.setValue(this._xsltModel!.getValue(), { emitEvent: false });
+      this._cdr.markForCheck();
+    });
     this._xsltEditor = editor as monaco.editor.IStandaloneCodeEditor;
     this.loadDefaultXslt();
   }
@@ -217,6 +229,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subs?.forEach((sub) => sub.unsubscribe());
+    this._xmlModelSub?.dispose();
+    this._xsltModelSub?.dispose();
   }
 
   transform(): void {

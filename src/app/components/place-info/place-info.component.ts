@@ -4,8 +4,6 @@ import {
   effect,
   inject,
   input,
-  OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -13,7 +11,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -35,16 +33,18 @@ import { AssetService } from '../../services/asset.service';
   templateUrl: './place-info.component.html',
   styleUrl: './place-info.component.scss',
 })
-export class PlaceInfoComponent implements OnInit, OnDestroy {
+export class PlaceInfoComponent {
   private readonly _placeService = inject(DbpediaPlaceService);
   private _langMap?: Map<string, string>;
-  private _sub?: Subscription;
 
   // Signal inputs
   readonly uri = input<string | null | undefined>(null);
 
   // Language selector FormControl
   readonly language = new FormControl<string>('en');
+  private readonly _language = toSignal(this.language.valueChanges, {
+    initialValue: 'en',
+  });
 
   // Available languages
   readonly languages = ['en', 'it'];
@@ -59,27 +59,14 @@ export class PlaceInfoComponent implements OnInit, OnDestroy {
       this._langMap = map;
     });
 
-    // Fetch place info when URI or language changes
+    // Fetch place info when URI or language changes (both tracked reactively)
     effect(() => {
       const currentUri = this.uri();
-      const currentLang = this.language.value;
+      const currentLang = this._language();
       if (currentUri && currentLang) {
         this.fetchPlaceInfo(currentUri, currentLang);
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._sub = this.language.valueChanges.subscribe((lang) => {
-      const currentUri = this.uri();
-      if (currentUri && lang) {
-        this.fetchPlaceInfo(currentUri, lang);
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this._sub?.unsubscribe();
   }
 
   private fetchPlaceInfo(uri: string, language: string): void {

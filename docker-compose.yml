@@ -3,7 +3,7 @@ version: '3.7'
 services:
   # api
   summer-lod-api:
-    image: vedph2020/summer-lod-api:1.0.0
+    image: vedph2020/summer-lod-api:1.0.1
     container_name: summer-lod-api
     ports:
       - 5275:8080
@@ -14,12 +14,14 @@ services:
 
   # app
   summer-lod-app:
-    image: vedph2020/summer-lod-app:1.0.0
+    image: vedph2020/summer-lod-app:1.0.1
     container_name: summer-lod-app
     ports:
       - 4200:80
     depends_on:
       - summer-lod-api
+    #volumes:
+    #  - ./env.js:/usr/share/nginx/html/env.js
     networks:
       - summer-lod-network
 
