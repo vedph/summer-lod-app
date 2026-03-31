@@ -113,6 +113,11 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2026-03-31: updated Angular and packages.
+- 2026-02-15:
+  - updated Angular and packages.
+  - ⚠️ migrated to MapLibre.
+  - ⚠️ gone zoneless.
 - 2024-09-14: updated Angular and packages.
 
 ### 0.0.10
