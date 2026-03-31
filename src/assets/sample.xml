@@ -48,21 +48,21 @@
         <listPlace>
           <place xml:id="l_bologna">
             <placeName>
-              <name>Bologna</name>,              <district>Emilia Romagna</district>,
+              <name>Bologna</name>, <district>Emilia Romagna</district>,
               <country>Italy</country>.
             </placeName>
             <idno type="URI">http://dbpedia.org/resource/Bologna</idno>
           </place>
           <place xml:id="l_roma">
             <placeName>
-              <name>Rome</name>,              <district>Lazio</district>,
+              <name>Rome</name>, <district>Lazio</district>,
               <country>Italy</country>.
             </placeName>
             <idno type="URI">http://dbpedia.org/resource/Rome</idno>
           </place>
           <place xml:id="l_venezia">
             <placeName>
-              <name>Venice</name>,              <district>Veneto</district>,
+              <name>Venice</name>, <district>Veneto</district>,
               <country>Italy</country>.
             </placeName>
             <idno type="URI">http://dbpedia.org/resource/Venice</idno>

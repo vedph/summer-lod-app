@@ -69,6 +69,22 @@
     </p>
   </xsl:template>
 
+  <!-- l -->
+  <!--
+        <p>...</p>
+    -->
+  <xsl:template match="tei:l">
+    <p>
+      <xsl:if test="@n">
+        <span class="line-nr">
+          <xsl:value-of select="@n" />
+        </span>
+        <xsl:text> </xsl:text>
+      </xsl:if>
+      <xsl:apply-templates />
+    </p>
+  </xsl:template>
+
   <!-- title -->
   <!--
         <span class="LNAME">...</span>
@@ -80,11 +96,11 @@
   </xsl:template>
 
   <!-- title in head -->
-  <!-- CSS: h2.@type
+  <!-- CSS: h3.@type
         in figure: fallback to default for title
         else:
         <a name="h_N"> if @n
-        <h2 class="@type">...</h2>
+        <h3 class="@type">...</h3>
     -->
   <xsl:template match="tei:head/tei:title">
     <xsl:choose>
@@ -97,7 +113,7 @@
             <xsl:attribute name="name">h_<xsl:value-of select="@n" /></xsl:attribute>
           </xsl:element>
         </xsl:if>
-        <xsl:element name="h2">
+        <xsl:element name="h3">
           <xsl:if test="@type">
             <xsl:attribute name="class">
               <xsl:value-of select="@type" />
@@ -606,7 +622,9 @@
   <xsl:template match="/tei:TEI">
     <html>
       <head>
-        <title>TEI Sample</title>
+        <title>
+          <xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title" />
+        </title>
         <style>
           body {
           font-family: sans-serif;
@@ -653,15 +671,19 @@
           figcaption {
           font-size: 0.8em;
           }
-          h2 {
-          color: ;
+          h1,h2,h3 {
+            color: silver;
           }
-          h2.main {
-          font-size: 1.2em;
+          h3.main {
+          font-size: 1.1em;
           }
-          h2.desc {
+          h3.desc {
           font-weight: italic;
           font-size: 1em;
+          }
+          .line-nr {
+          color: silver;
+          font-size: smaller;
           }
           .name {
           color: #F37748;
@@ -763,16 +785,18 @@
           }</style>
       </head>
       <body>
-        <h1>TEI Sample</h1>
+        <h2>
+          <xsl:value-of select="tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title" />
+        </h2>
         <xsl:apply-templates />
         <!-- footnotes -->
-        <h2>Notes</h2>
+        <h3>Notes</h3>
         <xsl:for-each select=".//tei:note[@type='footnote']">
           <xsl:sort select="@n" />
           <xsl:apply-templates select="." mode="full" />
         </xsl:for-each>
         <!-- toc -->
-        <h2>Table of Contents</h2>
+        <h3>Table of Contents</h3>
         <ol>
           <xsl:for-each select="//tei:head/tei:title[@n]">
             <li>
@@ -789,15 +813,15 @@
         <!-- lists -->
         <hr />
         <xsl:if test="tei:teiHeader//tei:listPerson">
-          <h2>Persons</h2>
+          <h3>Persons</h3>
           <xsl:apply-templates select="tei:teiHeader//tei:listPerson" />
         </xsl:if>
         <xsl:if test="tei:teiHeader//tei:listOrg">
-          <h2>Organizations</h2>
+          <h3>Organizations</h3>
           <xsl:apply-templates select="tei:teiHeader//tei:listOrg" />
         </xsl:if>
         <xsl:if test="tei:teiHeader//tei:listPlace">
-          <h2>Places</h2>
+          <h3>Places</h3>
           <xsl:apply-templates select="tei:teiHeader//tei:listPlace" />
         </xsl:if>
       </body>

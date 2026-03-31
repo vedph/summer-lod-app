@@ -105,6 +105,8 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2026-03-31: updated XSLT.
+
 ### 1.0.1
 
 - 2026-03-31:
