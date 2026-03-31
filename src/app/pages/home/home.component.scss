@@ -6,9 +6,9 @@
 }
 
 #title {
-  background-color: #e1af17;
+  background-color: var(--mat-sys-primary);
   text-align: center;
-  color: white;
+  color: var(--mat-sys-on-primary);
   margin-bottom: 8px;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .boxed {
-  border: 1px solid #ccc;
+  border: 1px solid var(--mat-sys-on-surface-variant);
   border-radius: 6px;
   padding: 8px;
   margin: 8px 0;
@@ -44,12 +44,12 @@
 }
 
 #rendition {
-  border: 1px solid #ccc;
+  border: 1px solid var(--mat-sys-on-surface-variant);
   padding: 8px;
 }
 
 .error {
-  color: red;
+  color: var(--mat-sys-error);
   font-size: 0.9em;
 }
 

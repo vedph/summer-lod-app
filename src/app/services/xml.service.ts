@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 
-import { EnvService, ErrorService } from '@myrmidon/ng-tools';
+import { EnvService, ErrorService } from '@myrmidon/ngx-tools';
 
 import { GeoPoint } from './geo.service';
 

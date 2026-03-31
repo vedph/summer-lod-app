@@ -23,11 +23,11 @@
         <!-- progress -->
         <div>
           @if (busy()) {
-          <mat-progress-bar
-            mode="indeterminate"
-            color="primary"
-            class="mat-primary"
-          />
+            <mat-progress-bar
+              mode="indeterminate"
+              color="primary"
+              class="mat-primary"
+            />
           }
         </div>
         <!-- toolbar -->
@@ -131,22 +131,25 @@
           <!-- error -->
           <span class="error">
             @if (error()) {
-            <mat-icon color="warn" class="mat-warn">error</mat-icon>
-            <span>{{ error() }}</span>
+              <mat-icon color="warn" class="mat-warn">error</mat-icon>
+              <span>{{ error() }}</span>
             }
           </span>
         </div>
         <div>
           <!-- html -->
           @if (rendition()) {
-          <div id="rendition" class="boxed">
-            <mat-expansion-panel [expanded]="!!rendition()" [disabled]="!rendition()">
-              <mat-expansion-panel-header>
-                <mat-panel-title>HTML</mat-panel-title>
-              </mat-expansion-panel-header>
-              <div [innerHTML]="rendition()! | safeHtml"></div>
-            </mat-expansion-panel>
-          </div>
+            <div id="rendition" class="boxed">
+              <mat-expansion-panel
+                [expanded]="!!rendition()"
+                [disabled]="!rendition()"
+              >
+                <mat-expansion-panel-header>
+                  <mat-panel-title>HTML</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div [innerHTML]="rendition()! | safeHtml"></div>
+              </mat-expansion-panel>
+            </div>
           }
           <!-- entities -->
           <div class="boxed">

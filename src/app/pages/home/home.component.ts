@@ -33,7 +33,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
-import { NgToolsModule } from '@myrmidon/ng-tools';
+import { SafeHtmlPipe } from '@myrmidon/ngx-tools';
 import { CadmusTextEdService } from '@myrmidon/cadmus-text-ed';
 
 import { ParsedEntity, XmlService } from '../../services/xml.service';
@@ -55,7 +55,7 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     MatProgressBarModule,
     MatTooltipModule,
     NgeMonacoModule,
-    NgToolsModule,
+    SafeHtmlPipe,
     EntityListComponent,
   ],
   providers: [CadmusTextEdService],
@@ -135,13 +135,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
       () => {
         this.applyEdit('txt.emoji');
-      }
+      },
     );
     this._xmlEditor.addCommand(
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL,
       () => {
         this.applyEdit('lod.link');
-      }
+      },
     );
 
     this.loadDefaultXml();
@@ -156,8 +156,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       wordWrap: 'on',
       automaticLayout: true,
     });
-    this._xsltModel =
-      this._xsltModel || monaco.editor.createModel('', 'xml');
+    this._xsltModel = this._xsltModel || monaco.editor.createModel('', 'xml');
     editor.setModel(this._xsltModel);
     this._xsltEditor = editor as monaco.editor.IStandaloneCodeEditor;
     this.loadDefaultXslt();
@@ -207,12 +206,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         .pipe(distinctUntilChanged(), debounceTime(200))
         .subscribe(() => {
           this._xmlModel?.setValue(this.xml.value);
-        })
+        }),
     );
     this._subs.push(
       this.xslt.valueChanges
         .pipe(distinctUntilChanged(), debounceTime(200))
-        .subscribe(() => this._xsltModel?.setValue(this.xslt.value))
+        .subscribe(() => this._xsltModel?.setValue(this.xslt.value)),
     );
   }
 

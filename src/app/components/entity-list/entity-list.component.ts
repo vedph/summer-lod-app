@@ -29,7 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgToolsModule } from '@myrmidon/ng-tools';
+import { EllipsisPipe } from '@myrmidon/ngx-tools';
 
 import { ParsedEntity } from '../../services/xml.service';
 import { GeoPoint, GeoService } from '../../services/geo.service';
@@ -52,7 +52,7 @@ import { PlaceMapComponent } from '../place-map/place-map.component';
     MatSelectModule,
     MatTabsModule,
     MatTooltipModule,
-    NgToolsModule,
+    EllipsisPipe,
     PersonInfoComponent,
     PlaceInfoComponent,
     PlaceMapComponent,

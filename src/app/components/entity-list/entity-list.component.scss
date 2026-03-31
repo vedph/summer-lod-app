@@ -8,22 +8,28 @@
   flex: 0 0 auto;
 }
 table {
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
+  color: var(--mat-sys-on-surface-variant);
 }
-
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
 tbody tr:nth-child(odd) {
-  background-color: #e2e2e2;
+  background-color: var(--mat-sys-surface-container);
+}
+th {
+  text-align: left;
+  font-weight: normal;
+  color: var(--mat-sys-on-surface-variant);
+}
+tbody tr:hover {
+  background-color: var(--mat-sys-surface-container-high);
 }
 td.fit-width {
   width: 1px;
   white-space: nowrap;
+}
+tbody tr.selected {
+  background-color: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
 }
 div#container {
   display: grid;
@@ -49,6 +55,6 @@ div#map {
   grid-area: map;
 }
 tr#placeholder {
-  color: silver;
+  color: var(--mat-sys-on-surface-variant);
   text-align: center;
 }

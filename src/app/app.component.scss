@@ -14,16 +14,16 @@ footer {
   z-index: 0;
 }
 footer {
-  color: #808080;
+  color: var(--mat-sys-on-surface-variant);
   padding: 4px;
   text-align: center;
   margin-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--mat-sys-on-surface-variant);
   padding-top: 16px;
   font-size: 95%;
 }
 footer a {
-  color: #808080;
+  color: var(--mat-sys-on-surface-variant);
 }
 .tb-fill-remaining-space {
   flex: 1 1 auto;
@@ -32,5 +32,5 @@ footer a {
   margin: 0 16px;
 }
 .text-muted {
-  color: #808080;
+  color: var(--mat-sys-on-surface-variant);
 }

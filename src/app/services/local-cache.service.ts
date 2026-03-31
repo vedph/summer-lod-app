@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EnvService, LocalStorageService } from '@myrmidon/ng-tools';
+import { EnvService, LocalStorageService } from '@myrmidon/ngx-tools';
 
 interface CacheItem<T> {
   ordinal: number;

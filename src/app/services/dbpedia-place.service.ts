@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, catchError, map } from 'rxjs';
 
-import { ErrorService } from '@myrmidon/ng-tools';
+import { ErrorService } from '@myrmidon/ngx-tools';
 
 import { CACHE_ID } from '../app.config';
 import { DbpediaSparqlService } from './dbpedia-sparql.service';

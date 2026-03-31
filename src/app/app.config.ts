@@ -1,4 +1,8 @@
-import { ApplicationConfig, importProvidersFrom, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   HTTP_INTERCEPTORS,
@@ -9,7 +13,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
-import { EnvServiceProvider } from '@myrmidon/ng-tools';
 import {
   PROXY_INTERCEPTOR_OPTIONS,
   ProxyInterceptor,
@@ -31,8 +34,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideAnimationsAsync(),
-    EnvServiceProvider,
     provideHttpClient(withJsonpSupport()),
     importProvidersFrom(NgeMonacoModule.forRoot({})),
     // proxy
@@ -66,7 +67,7 @@ export const appConfig: ApplicationConfig = {
       provide: CADMUS_TEXT_ED_SERVICE_OPTIONS_TOKEN,
       useFactory: (
         mdEmojiCtePlugin: TxtEmojiCtePlugin,
-        lodLinkCtePlugin: LodLinkCtePlugin
+        lodLinkCtePlugin: LodLinkCtePlugin,
       ) => {
         return {
           plugins: [mdEmojiCtePlugin, lodLinkCtePlugin],
