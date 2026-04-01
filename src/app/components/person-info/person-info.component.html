@@ -33,34 +33,37 @@
       @if (info()?.birthDate?.value) {
       <li>
         birth:
-        @if (info()?.birthPlace?.type === "uri") {
-        <a target="_blank" [href]="info()?.birthPlace?.value">{{
-          info()?.birthPlaceLabel?.value || info()?.birthPlace?.value
-        }}</a>
-        } @if (info()?.birthPlace?.type !== "uri") {
-        <span>{{
-          info()?.birthPlaceLabel?.value || info()?.birthPlace?.value
-        }}</span>
-        } @if (info()?.birthDate?.value) {
-        <span>{{ info()?.birthDate?.value }}</span>
+        @if (info()?.birthPlace?.value) {
+          @if (info()?.birthPlace?.type === "uri") {
+          <a target="_blank" [href]="info()?.birthPlace?.value">{{
+            info()?.birthPlaceLabel?.value || info()?.birthPlace?.value
+          }}</a>
+          } @else {
+          <span>{{
+            info()?.birthPlaceLabel?.value || info()?.birthPlace?.value
+          }}</span>
+          }
         }
+        <span>{{ info()?.birthDate?.value }}</span>
       </li>
       }
       <!-- death -->
       @if (info()?.deathDate?.value) {
       <li>
         death:
-        @if (info()?.deathPlace?.type === "uri") {
-        <a target="_blank" [href]="info()?.deathPlace?.value">{{
-          info()?.deathPlaceLabel?.value || info()?.deathPlace?.value
-        }}</a>
-        } @if (info()?.deathPlace?.type !== "uri") {
-        <span>{{
-          info()?.deathPlaceLabel?.value || info()?.deathPlace?.value
-        }}</span>
-        } @if (info()?.deathDate?.value) {
+        @if (info()?.deathPlace?.value) {
+          @if (info()?.deathPlace?.type === "uri") {
+          <a target="_blank" [href]="info()?.deathPlace?.value">{{
+            info()?.deathPlaceLabel?.value || info()?.deathPlace?.value
+          }}</a>
+          } @else {
+          <span>{{
+            info()?.deathPlaceLabel?.value || info()?.deathPlace?.value
+          }}</span>
+          }
+        }
         <span>{{ info()?.deathDate?.value }}</span>
-        } @if (info()?.birthDate && info()?.deathDate) {
+        @if (info()?.birthDate && info()?.deathDate) {
         <span> (aged {{ getAge(info()?.birthDate, info()?.deathDate) }})</span>
         }
       </li>

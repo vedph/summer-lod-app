@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, catchError, map } from 'rxjs';
+import { Observable, of, catchError, map, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 import { ErrorService } from '@myrmidon/ngx-tools';
 
@@ -29,6 +30,7 @@ export interface PlaceInfo {
 })
 export class DbpediaPlaceService {
   constructor(
+    private _http: HttpClient,
     private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,
     private _errorService: ErrorService,
@@ -112,7 +114,6 @@ export class DbpediaPlaceService {
 
   public buildQuery(id: string, language: string = 'en'): string {
     return `PREFIX dbo: <http://dbpedia.org/ontology/>
-PREFIX dbp: <http://dbpedia.org/property/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -121,23 +122,26 @@ SELECT ?label ?abstract ?description ?lat ?long ?wkt ?point ?depiction ?topic
 WHERE {
   BIND(<${id}> AS ?place)
 
-  # Primary label for the specified language
-  ?place rdfs:label ?label .
-  FILTER(lang(?label) = "${language}")
+  # Label in the requested language (OPTIONAL so coordinates still return
+  # even when no label exists in this language)
+  OPTIONAL {
+    ?place rdfs:label ?label .
+    FILTER(langMatches(lang(?label), "${language}"))
+  }
 
-  # Abstract - try without strict language filter
+  # Abstract (dbo:abstract; English coverage is best, other languages limited)
   OPTIONAL {
     ?place dbo:abstract ?abstract .
-    FILTER(lang(?abstract) = "${language}" || lang(?abstract) = "")
+    FILTER(langMatches(lang(?abstract), "${language}"))
   }
 
-  # Description (using rdfs:comment)
+  # Short description — rdfs:comment has broader multilingual coverage
   OPTIONAL {
     ?place rdfs:comment ?description .
-    FILTER(lang(?description) = "${language}" || lang(?description) = "")
+    FILTER(langMatches(lang(?description), "${language}"))
   }
 
-  # Spatial data with multiple format support
+  # Spatial data: try direct lat/long, then WKT, then georss:point
   OPTIONAL { ?place geo:lat ?lat ; geo:long ?long . }
   OPTIONAL { ?place geo:geometry ?wkt . }
   OPTIONAL { ?place georss:point ?point . }
@@ -148,7 +152,7 @@ WHERE {
   # Wikipedia topic
   OPTIONAL { ?place foaf:isPrimaryTopicOf ?topic . }
 }
-LIMIT 10`;
+LIMIT 20`;
   }
 
   public buildPosQuery(id: string): string {
@@ -178,38 +182,47 @@ WHERE {
       return null;
     }
 
-    console.log('Place bindings received (all rows):', bindings);
+    // Merge all bindings: each row may carry a different subset of data
+    // (e.g. one row has abstract, another has coordinates) — take the first
+    // non-null value encountered for each field.
+    const info: PlaceInfo = { uri };
 
-    // Find the first binding with abstract or description
-    let bestBinding = bindings[0];
-    for (const binding of bindings) {
-      if (binding['abstract'] || binding['description']) {
-        bestBinding = binding;
-        break;
+    for (const b of bindings) {
+      if (!info.label && b['label']) info.label = b['label'];
+      if (!info.abstract && b['abstract']) info.abstract = b['abstract'];
+      if (!info.description && b['description']) info.description = b['description'];
+      if (!info.depiction && b['depiction']) info.depiction = b['depiction'];
+      if (!info.topic && b['topic']) info.topic = b['topic'];
+
+      if (!info.lat || !info.long) {
+        const coords = this.extractCoordinates(b);
+        if (coords.lat && coords.long) {
+          info.lat = coords.lat;
+          info.long = coords.long;
+        }
       }
     }
 
-    console.log('Place best binding selected:', bestBinding);
-
-    const info: PlaceInfo = {
-      uri: uri,
-      label: bestBinding['label'] || undefined,
-      abstract: bestBinding['abstract'] || undefined,
-      description: bestBinding['description'] || undefined,
-      depiction: bestBinding['depiction'] || undefined,
-      topic: bestBinding['topic'] || undefined,
-    };
-
-    console.log('Place info built:', info);
-
-    // Extract coordinates from multiple possible sources
-    const coords = this.extractCoordinates(bestBinding);
-    if (coords.lat && coords.long) {
-      info.lat = coords.lat;
-      info.long = coords.long;
-    }
-
     return info;
+  }
+
+  /**
+   * Fetch the plain-text summary (abstract) from the Wikipedia REST API.
+   * The topic URL (from foaf:isPrimaryTopicOf) encodes language and title:
+   * e.g. http://en.wikipedia.org/wiki/Venice → lang=en, title=Venice
+   * We substitute the requested language; Wikipedia follows redirects so
+   * "Venice" on it.wikipedia.org resolves to "Venezia" automatically.
+   */
+  private getWikipediaExtract(topicUrl: string, language: string): Observable<string | null> {
+    const m = /\/wiki\/([^#?]+)/.exec(topicUrl);
+    if (!m) return of(null);
+    const title = decodeURIComponent(m[1]);
+    const url = `https://${language}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+    console.log('[Wikipedia] fetching abstract from', url);
+    return this._http.get<{ extract?: string }>(url).pipe(
+      map(r => r?.extract || null),
+      catchError(() => of(null))
+    );
   }
 
   public getInfo(
@@ -218,18 +231,33 @@ WHERE {
   ): Observable<PlaceInfo | null> {
     const cacheKey = `${id}:${language}`;
     const cached = this._cacheService.get<SparqlResult>(CACHE_ID, cacheKey);
-    if (cached) {
-      return of(this.buildInfo(cached, id));
-    }
 
-    const query = this.buildQuery(id, language);
-    console.log('query', query);
-    return this._dbpService.get(query).pipe(
-      catchError(this._errorService.handleError),
-      map((r: SparqlResult) => {
-        this._cacheService.add(CACHE_ID, cacheKey, r);
-        return this.buildInfo(r, id);
-      }),
+    const sparql$: Observable<PlaceInfo | null> = cached
+      ? of(this.buildInfo(cached, id))
+      : this._dbpService.get(this.buildQuery(id, language)).pipe(
+          catchError(this._errorService.handleError),
+          map((r: SparqlResult) => {
+            this._cacheService.add(CACHE_ID, cacheKey, r);
+            return this.buildInfo(r, id);
+          }),
+        );
+
+    return sparql$.pipe(
+      switchMap((info: PlaceInfo | null) => {
+        // If SPARQL already returned an abstract/description, or there is no
+        // Wikipedia topic URL to fall back on, return as-is.
+        if (!info || info.abstract?.value || info.description?.value || !info.topic?.value) {
+          return of(info);
+        }
+        return this.getWikipediaExtract(info.topic.value, language).pipe(
+          map(extract => {
+            if (extract) {
+              info.abstract = { type: 'literal', value: extract, 'xml:lang': language };
+            }
+            return info;
+          })
+        );
+      })
     );
   }
 
