@@ -7,7 +7,7 @@ import { ErrorService } from '@myrmidon/ngx-tools';
 import { CACHE_ID } from '../app.config';
 import { DbpediaSparqlService } from './dbpedia-sparql.service';
 import { LocalCacheService } from './local-cache.service';
-import { LodService, RdfTerm, SparqlResult } from './lod.service';
+import { RdfTerm, SparqlResult } from './lod.service';
 
 const POS_PREFIX = 'pos.';
 
@@ -34,7 +34,6 @@ export class DbpediaPlaceService {
     private _dbpService: DbpediaSparqlService,
     private _cacheService: LocalCacheService,
     private _errorService: ErrorService,
-    private _lodService: LodService,
   ) {}
 
   /**
@@ -207,21 +206,56 @@ WHERE {
   }
 
   /**
-   * Fetch the plain-text summary (abstract) from the Wikipedia REST API.
-   * The topic URL (from foaf:isPrimaryTopicOf) encodes language and title:
-   * e.g. http://en.wikipedia.org/wiki/Venice → lang=en, title=Venice
-   * We substitute the requested language; Wikipedia follows redirects so
-   * "Venice" on it.wikipedia.org resolves to "Venezia" automatically.
+   * Fetch extract + short description from the Wikipedia REST API for the
+   * requested language. See DbpediaPersonService.getWikipediaData for the
+   * full strategy (direct call → langlinks fallback → Wikidata description).
    */
-  private getWikipediaExtract(topicUrl: string, language: string): Observable<string | null> {
+  private getWikipediaData(
+    topicUrl: string,
+    language: string,
+  ): Observable<{ extract: string | null; description: string | null }> {
     const m = /\/wiki\/([^#?]+)/.exec(topicUrl);
-    if (!m) return of(null);
+    if (!m) return of({ extract: null, description: null });
     const title = decodeURIComponent(m[1]);
-    const url = `https://${language}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-    console.log('[Wikipedia] fetching abstract from', url);
-    return this._http.get<{ extract?: string }>(url).pipe(
-      map(r => r?.extract || null),
-      catchError(() => of(null))
+
+    const parse = (r: any) => ({
+      extract: (r?.extract as string) || null,
+      description: (r?.description as string) || null,
+    });
+    const empty = of({ extract: null, description: null });
+
+    const summaryUrl = (lang: string, t: string) =>
+      `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`;
+
+    if (language === 'en') {
+      return this._http.get<any>(summaryUrl('en', title)).pipe(
+        map(parse),
+        catchError(() => empty),
+      );
+    }
+
+    return this._http.get<any>(summaryUrl(language, title)).pipe(
+      switchMap(r => {
+        if (r?.extract) return of(parse(r));
+        const linksUrl =
+          `https://en.wikipedia.org/w/api.php?action=query` +
+          `&titles=${encodeURIComponent(title)}` +
+          `&prop=langlinks&lllang=${language}&format=json&origin=*`;
+        return this._http.get<any>(linksUrl).pipe(
+          switchMap(linksData => {
+            const pages = linksData?.query?.pages;
+            const page = pages ? (Object.values(pages)[0] as any) : null;
+            const langTitle: string | undefined = page?.langlinks?.[0]?.['*'];
+            if (!langTitle) return of(parse(r));
+            return this._http.get<any>(summaryUrl(language, langTitle)).pipe(
+              map(parse),
+              catchError(() => of(parse(r))),
+            );
+          }),
+          catchError(() => of(parse(r))),
+        );
+      }),
+      catchError(() => empty),
     );
   }
 
@@ -244,20 +278,20 @@ WHERE {
 
     return sparql$.pipe(
       switchMap((info: PlaceInfo | null) => {
-        // If SPARQL already returned an abstract/description, or there is no
-        // Wikipedia topic URL to fall back on, return as-is.
-        if (!info || info.abstract?.value || info.description?.value || !info.topic?.value) {
-          return of(info);
-        }
-        return this.getWikipediaExtract(info.topic.value, language).pipe(
-          map(extract => {
-            if (extract) {
-              info.abstract = { type: 'literal', value: extract, 'xml:lang': language };
+        if (!info || !info.topic?.value) return of(info);
+        if (info.abstract?.value && info.description?.value) return of(info);
+        return this.getWikipediaData(info.topic.value, language).pipe(
+          map(data => {
+            if (!info.abstract?.value && data.extract) {
+              info.abstract = { type: 'literal', value: data.extract, 'xml:lang': language };
+            }
+            if (!info.description?.value && data.description) {
+              info.description = { type: 'literal', value: data.description, 'xml:lang': language };
             }
             return info;
-          })
+          }),
         );
-      })
+      }),
     );
   }
 

@@ -138,22 +138,63 @@ LIMIT 20`;
   }
 
   /**
-   * Fetch the plain-text summary (abstract) from the Wikipedia REST API.
-   * The topic URL (from foaf:isPrimaryTopicOf) encodes language and title:
-   * e.g. http://en.wikipedia.org/wiki/Plato → lang=en, title=Plato
-   * We substitute the requested language so the correct language edition is
-   * queried; Wikipedia follows redirects, so "Plato" on it.wikipedia.org
-   * correctly resolves to "Platone".
+   * Fetch extract + short description from the Wikipedia REST API for the
+   * requested language. The topic URL (foaf:isPrimaryTopicOf) always points
+   * to the English Wikipedia article. For non-English requests we first try
+   * the target-language edition with the same title (Wikipedia redirects often
+   * handle this), and fall back to a langlinks lookup when it doesn't.
+   * The `description` field in the API response is the Wikidata short
+   * description and provides a reliable multilingual fallback.
    */
-  private getWikipediaExtract(topicUrl: string, language: string): Observable<string | null> {
+  private getWikipediaData(
+    topicUrl: string,
+    language: string,
+  ): Observable<{ extract: string | null; description: string | null }> {
     const m = /\/wiki\/([^#?]+)/.exec(topicUrl);
-    if (!m) return of(null);
+    if (!m) return of({ extract: null, description: null });
     const title = decodeURIComponent(m[1]);
-    const url = `https://${language}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-    console.log('[Wikipedia] fetching abstract from', url);
-    return this._http.get<{ extract?: string }>(url).pipe(
-      map(r => r?.extract || null),
-      catchError(() => of(null))
+
+    const parse = (r: any) => ({
+      extract: (r?.extract as string) || null,
+      description: (r?.description as string) || null,
+    });
+    const empty = of({ extract: null, description: null });
+
+    const summaryUrl = (lang: string, t: string) =>
+      `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`;
+
+    if (language === 'en') {
+      return this._http.get<any>(summaryUrl('en', title)).pipe(
+        map(parse),
+        catchError(() => empty),
+      );
+    }
+
+    // Non-English: try direct call first (works when Wikipedia has a redirect,
+    // e.g. "Plato" → "Platone" on it.wikipedia.org)
+    return this._http.get<any>(summaryUrl(language, title)).pipe(
+      switchMap(r => {
+        if (r?.extract) return of(parse(r));
+        // No extract: look up the correct title via the langlinks API
+        const linksUrl =
+          `https://en.wikipedia.org/w/api.php?action=query` +
+          `&titles=${encodeURIComponent(title)}` +
+          `&prop=langlinks&lllang=${language}&format=json&origin=*`;
+        return this._http.get<any>(linksUrl).pipe(
+          switchMap(linksData => {
+            const pages = linksData?.query?.pages;
+            const page = pages ? (Object.values(pages)[0] as any) : null;
+            const langTitle: string | undefined = page?.langlinks?.[0]?.['*'];
+            if (!langTitle) return of(parse(r)); // use whatever came from the direct call
+            return this._http.get<any>(summaryUrl(language, langTitle)).pipe(
+              map(parse),
+              catchError(() => of(parse(r))),
+            );
+          }),
+          catchError(() => of(parse(r))),
+        );
+      }),
+      catchError(() => empty),
     );
   }
 
@@ -176,20 +217,21 @@ LIMIT 20`;
 
     return sparql$.pipe(
       switchMap((info: PersonInfo | null) => {
-        // If SPARQL already returned an abstract/description, or there is no
-        // Wikipedia topic URL to fall back on, return as-is.
-        if (!info || info.abstract?.value || info.description?.value || !info.topic?.value) {
-          return of(info);
-        }
-        return this.getWikipediaExtract(info.topic.value, language).pipe(
-          map(extract => {
-            if (extract) {
-              info.abstract = { type: 'literal', value: extract, 'xml:lang': language };
+        if (!info || !info.topic?.value) return of(info);
+        // Skip Wikipedia call only if SPARQL already returned both fields
+        if (info.abstract?.value && info.description?.value) return of(info);
+        return this.getWikipediaData(info.topic.value, language).pipe(
+          map(data => {
+            if (!info.abstract?.value && data.extract) {
+              info.abstract = { type: 'literal', value: data.extract, 'xml:lang': language };
+            }
+            if (!info.description?.value && data.description) {
+              info.description = { type: 'literal', value: data.description, 'xml:lang': language };
             }
             return info;
-          })
+          }),
         );
-      })
+      }),
     );
   }
 }
