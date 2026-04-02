@@ -28,9 +28,9 @@
     @if (info()?.name?.value) {
     <h3>{{ info()!.name!.value }}</h3>
     }
-    <!-- birth -->
+    <!-- birth / death -->
     <ul>
-      @if (info()?.birthDate?.value) {
+      @if (info()?.birthDate?.value || info()?.birthPlace?.value) {
       <li>
         birth:
         @if (info()?.birthPlace?.value) {
@@ -44,11 +44,12 @@
           }}</span>
           }
         }
+        @if (info()?.birthDate?.value) {
         <span>{{ info()?.birthDate?.value }}</span>
+        }
       </li>
       }
-      <!-- death -->
-      @if (info()?.deathDate?.value) {
+      @if (info()?.deathDate?.value || info()?.deathPlace?.value) {
       <li>
         death:
         @if (info()?.deathPlace?.value) {
@@ -62,7 +63,9 @@
           }}</span>
           }
         }
+        @if (info()?.deathDate?.value) {
         <span>{{ info()?.deathDate?.value }}</span>
+        }
         @if (info()?.birthDate && info()?.deathDate) {
         <span> (aged {{ getAge(info()?.birthDate, info()?.deathDate) }})</span>
         }
