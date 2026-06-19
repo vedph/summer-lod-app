@@ -4,17 +4,21 @@
     <div id="container">
       <!-- xml -->
       <div id="xml" class="boxed">
-        <nge-monaco-editor
-          style="--editor-height: 100%"
-          (ready)="onXmlEditorInit($event)"
+        <ngx-monaco-editor
+          [formControl]="xml"
+          [language]="'xml'"
+          [options]="editorOptions"
+          (editorInitialized)="onXmlEditorInit($event)"
         />
       </div>
 
       <!-- xslt -->
       <div id="xslt" class="boxed">
-        <nge-monaco-editor
-          style="--editor-height: 100%"
-          (ready)="onXsltEditorInit($event)"
+        <ngx-monaco-editor
+          [formControl]="xslt"
+          [language]="'xml'"
+          [options]="editorOptions"
+          (editorInitialized)="onXsltEditorInit($event)"
         />
       </div>
 
@@ -147,7 +151,10 @@
                 <mat-expansion-panel-header>
                   <mat-panel-title>HTML</mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="html-preview" [innerHTML]="rendition()! | safeHtml"></div>
+                <div
+                  class="html-preview"
+                  [innerHTML]="rendition()! | safeHtml"
+                ></div>
               </mat-expansion-panel>
             </div>
           }

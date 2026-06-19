@@ -8,10 +8,14 @@ import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
   withJsonpSupport,
+  withXhr,
 } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import {
+  DefaultMonacoLoader,
+  NGX_MONACO_LOADER_PROVIDER,
+} from '@jean-merelis/ngx-monaco-editor';
 
 import {
   PROXY_INTERCEPTOR_OPTIONS,
@@ -34,8 +38,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withJsonpSupport()),
-    importProvidersFrom(NgeMonacoModule.forRoot({})),
+    provideHttpClient(withXhr(), withJsonpSupport()),
+    {
+      provide: NGX_MONACO_LOADER_PROVIDER,
+      useFactory: () => new DefaultMonacoLoader({ paths: { vs: '/vs' } }),
+    },
     // proxy
     { provide: HTTP_INTERCEPTORS, useClass: ProxyInterceptor, multi: true },
     {

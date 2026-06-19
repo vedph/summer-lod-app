@@ -105,6 +105,9 @@ This of course assumes that our place entities use one of the two providers, whi
 
 ## History
 
+- 2026-06-19:
+  - ⚠️ upgraded to Angular 22.
+  - ⚠️ migrated to [new Monaco wrapper](https://vedph.github.io/cadmus-doc/history/20260613-monaco.html).
 - 2026-03-31: updated XSLT.
 
 ### 1.0.1

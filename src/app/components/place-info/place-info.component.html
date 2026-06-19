@@ -20,7 +20,7 @@
           <img
             class="depiction"
             alt="{{ info()?.label?.value || 'place' }}"
-            [src]="info()?.depiction?.value"
+            [src]="$safeNavigationMigration(info()?.depiction?.value)"
           />
         </div>
       }
@@ -47,7 +47,7 @@
   <!-- wiki link -->
   @if (info()?.topic) {
     <div>
-      <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
+      <a [href]="$safeNavigationMigration(info()?.topic?.value)" target="_blank">Open Wikipedia</a>
     </div>
   }
 </div>

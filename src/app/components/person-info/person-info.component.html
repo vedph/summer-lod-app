@@ -20,7 +20,7 @@
       <img
         class="depiction"
         alt="{{ info()?.name?.value || 'person' }}"
-        [src]="info()?.depiction?.value"
+        [src]="$safeNavigationMigration(info()?.depiction?.value)"
       />
     </div>
     }
@@ -35,7 +35,7 @@
         birth:
         @if (info()?.birthPlace?.value) {
           @if (info()?.birthPlace?.type === "uri") {
-          <a target="_blank" [href]="info()?.birthPlace?.value">{{
+          <a target="_blank" [href]="$safeNavigationMigration(info()?.birthPlace?.value)">{{
             info()?.birthPlaceLabel?.value || info()?.birthPlace?.value
           }}</a>
           } @else {
@@ -54,7 +54,7 @@
         death:
         @if (info()?.deathPlace?.value) {
           @if (info()?.deathPlace?.type === "uri") {
-          <a target="_blank" [href]="info()?.deathPlace?.value">{{
+          <a target="_blank" [href]="$safeNavigationMigration(info()?.deathPlace?.value)">{{
             info()?.deathPlaceLabel?.value || info()?.deathPlace?.value
           }}</a>
           } @else {
@@ -67,7 +67,7 @@
         <span>{{ info()?.deathDate?.value }}</span>
         }
         @if (info()?.birthDate && info()?.deathDate) {
-        <span> (aged {{ getAge(info()?.birthDate, info()?.deathDate) }})</span>
+        <span> (aged {{ getAge($safeNavigationMigration(info()?.birthDate), $safeNavigationMigration(info()?.deathDate)) }})</span>
         }
       </li>
       }
@@ -82,7 +82,7 @@
   <!-- wiki link -->
   @if (info()?.topic) {
   <div>
-    <a [href]="info()?.topic?.value" target="_blank">Open Wikipedia</a>
+    <a [href]="$safeNavigationMigration(info()?.topic?.value)" target="_blank">Open Wikipedia</a>
   </div>
   }
 </div>

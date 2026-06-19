@@ -3,8 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   inject,
-  OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -13,13 +11,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  Subscription,
-  debounceTime,
-  distinctUntilChanged,
-  forkJoin,
-  take,
-} from 'rxjs';
+import { forkJoin, take } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -31,7 +23,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import {
+  EditorInitializedEvent,
+  NgxMonacoEditorComponent,
+  StandaloneCodeEditor,
+  StandaloneEditorConstructionOptions,
+} from '@jean-merelis/ngx-monaco-editor';
 
 import { SafeHtmlPipe } from '@myrmidon/ngx-tools';
 import { CadmusTextEdService } from '@myrmidon/cadmus-text-ed';
@@ -54,7 +51,7 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
     MatInputModule,
     MatProgressBarModule,
     MatTooltipModule,
-    NgeMonacoModule,
+    NgxMonacoEditorComponent,
     SafeHtmlPipe,
     EntityListComponent,
   ],
@@ -62,30 +59,31 @@ import { EntityListComponent } from '../../components/entity-list/entity-list.co
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent {
   private readonly _xmlService = inject(XmlService);
   private readonly _assetService = inject(AssetService);
   private readonly _editService = inject(CadmusTextEdService);
   private readonly _snackbar = inject(MatSnackBar);
   private readonly _cdr = inject(ChangeDetectorRef);
 
-  private _subs?: Subscription[];
-  private _xmlEditor?: monaco.editor.IStandaloneCodeEditor;
-  private _xsltEditor?: monaco.editor.IStandaloneCodeEditor;
-  private _xmlModel?: monaco.editor.ITextModel;
-  private _xsltModel?: monaco.editor.ITextModel;
-  private _xmlModelSub?: monaco.IDisposable;
-  private _xsltModelSub?: monaco.IDisposable;
+  private _xmlEditor?: StandaloneCodeEditor;
+  private _xsltEditor?: StandaloneCodeEditor;
+
+  public readonly editorOptions: StandaloneEditorConstructionOptions = {
+    minimap: { side: 'right' },
+    wordWrap: 'on',
+    automaticLayout: true,
+  };
 
   // Signal state
-  readonly rendition = signal<string | undefined>(undefined);
-  readonly entities = signal<ParsedEntity[]>([]);
-  readonly error = signal<string | undefined>(undefined);
-  readonly busy = signal(false);
+  public readonly rendition = signal<string | undefined>(undefined);
+  public readonly entities = signal<ParsedEntity[]>([]);
+  public readonly error = signal<string | undefined>(undefined);
+  public readonly busy = signal(false);
 
   // FormControls (kept for Monaco integration)
-  readonly xml: FormControl<string>;
-  readonly xslt: FormControl<string>;
+  public readonly xml: FormControl<string>;
+  public readonly xslt: FormControl<string>;
 
   constructor() {
     this.xml = new FormControl<string>('', {
@@ -121,56 +119,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  onXmlEditorInit(editor: monaco.editor.IEditor) {
-    editor.updateOptions({
-      minimap: {
-        side: 'right',
-      },
-      wordWrap: 'on',
-      automaticLayout: true,
-    });
-    this._xmlModel = this._xmlModel || monaco.editor.createModel('', 'xml');
-    editor.setModel(this._xmlModel);
-    this._xmlModelSub?.dispose();
-    this._xmlModelSub = this._xmlModel.onDidChangeContent(() => {
-      this.xml.setValue(this._xmlModel!.getValue(), { emitEvent: false });
-      this._cdr.markForCheck();
-    });
-    this._xmlEditor = editor as monaco.editor.IStandaloneCodeEditor;
-
-    this._xmlEditor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE,
-      () => {
-        this.applyEdit('txt.emoji');
-      },
-    );
-    this._xmlEditor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL,
-      () => {
-        this.applyEdit('lod.link');
-      },
-    );
-
+  public onXmlEditorInit(event: EditorInitializedEvent) {
+    this._xmlEditor = event.editor;
+    this._xmlEditor.focus();
     this.loadDefaultXml();
-    editor.focus();
   }
 
-  onXsltEditorInit(editor: monaco.editor.IEditor) {
-    editor.updateOptions({
-      minimap: {
-        side: 'right',
-      },
-      wordWrap: 'on',
-      automaticLayout: true,
-    });
-    this._xsltModel = this._xsltModel || monaco.editor.createModel('', 'xml');
-    editor.setModel(this._xsltModel);
-    this._xsltModelSub?.dispose();
-    this._xsltModelSub = this._xsltModel.onDidChangeContent(() => {
-      this.xslt.setValue(this._xsltModel!.getValue(), { emitEvent: false });
-      this._cdr.markForCheck();
-    });
-    this._xsltEditor = editor as monaco.editor.IStandaloneCodeEditor;
+  public onXsltEditorInit(event: EditorInitializedEvent) {
+    this._xsltEditor = event.editor;
+    this._xsltEditor.focus();
     this.loadDefaultXslt();
   }
 
@@ -208,29 +165,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         error: (err) => this.error.set(err.message),
         complete: () => this.busy.set(false),
       });
-  }
-
-  ngOnInit(): void {
-    this._subs = [];
-    // Sync FormControl -> Monaco model
-    this._subs.push(
-      this.xml.valueChanges
-        .pipe(distinctUntilChanged(), debounceTime(200))
-        .subscribe(() => {
-          this._xmlModel?.setValue(this.xml.value);
-        }),
-    );
-    this._subs.push(
-      this.xslt.valueChanges
-        .pipe(distinctUntilChanged(), debounceTime(200))
-        .subscribe(() => this._xsltModel?.setValue(this.xslt.value)),
-    );
-  }
-
-  ngOnDestroy(): void {
-    this._subs?.forEach((sub) => sub.unsubscribe());
-    this._xmlModelSub?.dispose();
-    this._xsltModelSub?.dispose();
   }
 
   transform(): void {
