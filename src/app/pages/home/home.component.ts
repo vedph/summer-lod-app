@@ -133,7 +133,7 @@ export class HomeComponent {
 
   private loadDefaultXml(): void {
     this.busy.set(true);
-    this._assetService.loadText('sample.xml').subscribe({
+    this._assetService.loadText('sample-veronica.xml').subscribe({
       next: (xml) => this.xml.setValue(xml),
       error: (err) => this.error.set(err.message),
       complete: () => this.busy.set(false),

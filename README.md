@@ -7,8 +7,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 🐋 Quick Docker image build:
 
 1. update version in `env.js` (and in Docker compose file), then `ng build --configuration=production`;
-2. `docker build . -t vedph2020/summer-lod-app:1.0.2 -t vedph2020/summer-lod-app:latest` (replace with the current version).
-3. push:
+2. `docker buildx build --platform linux/amd64,linux/arm64 -t vedph2020/summer-lod-app:1.0.3 -t vedph2020/summer-lod-app:latest --push .`
 
 ```bash
 docker push vedph2020/summer-lod-app:1.0.2
